@@ -25,32 +25,37 @@ class _LoginState extends State<Login> {
         title: Text("Iniciar Sesión"),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: formKey,
-          child: Container(
-            child: Stack(
-              children: <Widget>[
-                SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(),
-                    child: Card(
-                      color: Colors.white70,
-                      margin: EdgeInsets.only(left: 20, right: 20, top: 80, bottom: 80),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      elevation: 8.0,
-                      child: Padding(
-                        padding: EdgeInsets.all(25),
-                        child: Column(
-                          children: formLogin(),
-                        ),
+      body: Form(
+        key: formKey,
+        child: Container(
+          child: Stack(
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  colors: [Colors.blue[100], Colors.white])
+                ),
+              ),
+              SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(),
+                  child: Card(
+                    color: Colors.white70,
+                    margin: EdgeInsets.only(left: 20, right: 20, top: 40, bottom: 80),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    elevation: 8.0,
+                    child: Padding(
+                      padding: EdgeInsets.all(25),
+                      child: Column(
+                        children: formLogin(),
                       ),
-                    )
+                    ),
                   )
                 )
-              ],
-            ),
+              )
+            ],
           ),
         ),
       ),
@@ -59,6 +64,7 @@ class _LoginState extends State<Login> {
 
   List<Widget> formLogin(){
     return [
+      Image.asset("images/adminconfia.png"),
       padded(
         childs: TextFormField(
           controller: email,

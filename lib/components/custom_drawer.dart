@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
+import 'package:sgcartera_app/pages/cartera.dart';
+import 'package:sgcartera_app/pages/mis_solicitudes.dart';
+import 'package:sgcartera_app/pages/nuevas_solicitudes.dart';
 import 'package:sgcartera_app/pages/root_page.dart';
+import 'package:sgcartera_app/pages/solicitud.dart';
 
 class CustomDrawer extends StatefulWidget {
   CustomDrawer({this.authFirebase, this.onSingIn});
@@ -18,8 +22,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
       child: ListView(
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName: Text(email),
-            accountEmail: Text(name),
+            accountName: Text(email, style: TextStyle(color: Colors.black),),
+            accountEmail: Text(name, style: TextStyle(color: Colors.black)),
             currentAccountPicture: GestureDetector(
               child: CircleAvatar(
                 backgroundColor: Colors.grey,
@@ -27,7 +31,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
               ),
             ),
             decoration: BoxDecoration(
-              color: Colors.blue
+                gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [Colors.blue, Colors.white])
             ),
           ),
           InkWell(
@@ -38,28 +45,21 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           InkWell(
-            onTap: (){},
+            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes() ));},
+            child: ListTile(
+              title: Text("Nueva Solicitud de Crédito"),
+              leading: Icon(Icons.add_to_photos, color: Colors.blue,),
+            ),
+          ),
+          InkWell(
+            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> MisSolicitudes() ));},
             child: ListTile(
               title: Text("Mis Solicitudes"),
               leading: Icon(Icons.folder_open, color: Colors.blue,),
             ),
           ),
           InkWell(
-            onTap: (){},
-            child: ListTile(
-              title: Text("Solicitud de Crédito  Individual"),
-              leading: Icon(Icons.note_add, color: Colors.blue,),
-            ),
-          ),
-          InkWell(
-            onTap: (){},
-            child: ListTile(
-              title: Text("Solicitud de Crédito  Grupal"),
-              leading: Icon(Icons.group_add, color: Colors.blue,),
-            ),
-          ),
-          InkWell(
-            onTap: (){},
+            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera() ));},
             child: ListTile(
               title: Text("Mi Cartera"),
               leading: Icon(Icons.account_balance_wallet, color: Colors.blue,),

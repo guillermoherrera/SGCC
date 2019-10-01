@@ -1,23 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:sgcartera_app/classes/auth_firebase.dart';
-import 'package:sgcartera_app/components/custom_drawer.dart';
 
-class HomePage extends StatefulWidget {
-  HomePage({this.onSingIn});
-  final VoidCallback onSingIn;
+class MisSolicitudes extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _MisSolicitudesState createState() => _MisSolicitudesState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MisSolicitudesState extends State<MisSolicitudes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Sistema Gestión de Cartera"),
+        title: Text("Mis Solicitudes"),
         centerTitle: true,
       ),
-      drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn),
       body: Container(
         child: Stack(
           children: <Widget>[
@@ -31,7 +26,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ]
         )
-      )
+      ),
     );
   }
 }
