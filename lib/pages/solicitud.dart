@@ -1,5 +1,8 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:sgcartera_app/models/solicitud.dart';
+import 'package:sgcartera_app/pages/solicitud2.dart';
+//import 'package:intl/intl.dart';
 
 class Solicitud extends StatefulWidget {
   Solicitud({this.title});
@@ -21,28 +24,31 @@ class _SolicitudState extends State<Solicitud> {
   var importe = TextEditingController();
   bool buttonEnabled = true;
 
-  DateTime selectedDate = DateTime.now();
-  var formatter = new DateFormat('dd / MM / yyyy');
+  DateTime selectedDate = DateTime(2000, 1);
+  //var formatter = new DateFormat('dd / MM / yyyy');
   
   String formatted;
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
+      context: context,
+      initialDate: selectedDate,
+      locale: const Locale('es'),
+      firstDate: DateTime(1950, 1),
+      lastDate: DateTime(2019));
     if (picked != null && picked != selectedDate)
       setState(() {
         selectedDate = picked;
-        formatted = formatter.format(selectedDate);
-        fechaNacimiento.text = formatted;
+        //formatted = formatter.format(selectedDate);
+        //fechaNacimiento.text = formatted;
+        fechaNacimiento.text = formatDate(selectedDate, [dd, '/', mm, '/', yyyy]);
+        getCurpRfc();
       });
   }
 
   @override
   void initState() {
-    formatted = formatter.format(selectedDate);
+    //formatted = formatter.format(selectedDate);
     //fechaNacimiento.text = formatted;
     // TODO: implement initState
     super.initState();
@@ -51,6 +57,7 @@ class _SolicitudState extends State<Solicitud> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(widget.title),
         centerTitle: true,
@@ -121,8 +128,9 @@ class _SolicitudState extends State<Solicitud> {
               decoration: InputDecoration(
                 labelText: "Nombre"
               ),
-              textCapitalization: TextCapitalization.sentences,
+              textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
+                getCurpRfc();
                 if (nombre.text != value.toUpperCase())
                   nombre.value = nombre.value.copyWith(text: value.toUpperCase());
               },
@@ -137,8 +145,8 @@ class _SolicitudState extends State<Solicitud> {
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
-                if (nombre.text != value.toUpperCase())
-                  nombre.value = nombre.value.copyWith(text: value.toUpperCase());
+                if (nombreAdicional.text != value.toUpperCase())
+                  nombreAdicional.value = nombre.value.copyWith(text: value.toUpperCase());
               },
               //validator: (value){return value.isEmpty ? "Por favor ingresa tu nombre" : null;},
             )
@@ -154,10 +162,11 @@ class _SolicitudState extends State<Solicitud> {
               decoration: InputDecoration(
                 labelText: "Primer Apellido"
               ),
-              textCapitalization: TextCapitalization.sentences,
+              textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
-                if (nombre.text != value.toUpperCase())
-                  nombre.value = nombre.value.copyWith(text: value.toUpperCase());
+                getCurpRfc();
+                if (apellidoPrimero.text != value.toUpperCase())
+                  apellidoPrimero.value = nombre.value.copyWith(text: value.toUpperCase());
               },
               validator: (value){return value.isEmpty ? "Ingresa el apellido" : null;},
             )
@@ -168,10 +177,11 @@ class _SolicitudState extends State<Solicitud> {
               decoration: InputDecoration(
                 labelText: "Segundo Apellido"
               ),
-              textCapitalization: TextCapitalization.sentences,
+              textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
-                if (nombre.text != value.toUpperCase())
-                  nombre.value = nombre.value.copyWith(text: value.toUpperCase());
+                getCurpRfc();
+                if (apellidoSegundo.text != value.toUpperCase())
+                  apellidoSegundo.value = nombre.value.copyWith(text: value.toUpperCase());
               },
               //validator: (value){return value.isEmpty ? "Por favor ingresa tu nombre" : null;},
             )
@@ -184,7 +194,7 @@ class _SolicitudState extends State<Solicitud> {
             controller: fechaNacimiento,
             maxLength: 14,
             decoration: InputDecoration(
-              labelText: "Fecha de Nacimiento (DD/MM/AAAA)",
+              labelText: "Fecha de Nacimiento (Día/Mes/Año)",
               icon: Icon(Icons.calendar_today)
             ),
             textCapitalization: TextCapitalization.sentences,
@@ -201,30 +211,44 @@ class _SolicitudState extends State<Solicitud> {
         children: <Widget>[
           flexPadded(TextFormField(
               controller: curp,
-              maxLength: 13,
+              maxLength: 18,
               decoration: InputDecoration(
                 labelText: "CURP"
               ),
-              textCapitalization: TextCapitalization.sentences,
+              textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
-                if (nombre.text != value.toUpperCase())
-                  nombre.value = nombre.value.copyWith(text: value.toUpperCase());
+                if (curp.text != value.toUpperCase())
+                  curp.value = nombre.value.copyWith(text: value.toUpperCase());
               },
-              validator: (value){return value.isEmpty ? "Ingresa la CURP" : null;},
+              validator: (value){
+                if(value.isEmpty){
+                  return "Ingresa la CURP";
+                }else if(value.length < 18){
+                  return "Complenta la CURP";
+                }
+                return null;
+              },
             )
           ),
           flexPadded(TextFormField(
-              controller: apellidoSegundo,
-              maxLength: 10,
+              controller: rfc,
+              maxLength: 13,
               decoration: InputDecoration(
                 labelText: "RFC"
               ),
-              textCapitalization: TextCapitalization.sentences,
+              textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
-                if (nombre.text != value.toUpperCase())
-                  nombre.value = nombre.value.copyWith(text: value.toUpperCase());
+                if (rfc.text != value.toUpperCase())
+                  rfc.value = nombre.value.copyWith(text: value.toUpperCase());
               },
-              validator: (value){return value.isEmpty ? "Ingresa el RFC" : null;},
+              validator: (value){
+                if(value.isEmpty){
+                  return "Ingresa el RFC";
+                }else if(value.length < 13){
+                  return "Complenta el RFC";
+                }
+                return null;
+              },
             )
           )
         ]
@@ -276,10 +300,23 @@ class _SolicitudState extends State<Solicitud> {
     FocusScope.of(context).requestFocus(FocusNode());
     if(formKey.currentState.validate()){
       _buttonStatus();
+      SolicitudObj solicitudObj;
+      solicitudObj = new SolicitudObj(
+        nombre: nombre.text,
+        nombreSegundo: nombreAdicional.text,
+        apellido:  apellidoPrimero.text,
+        apellidoSegundo: apellidoSegundo.text,
+        curp: curp.text,
+        rfc: rfc.text,
+        importe: double.parse(importe.text),
+        fechaNacimiento: selectedDate
+      );
+      _buttonStatus();
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudArchivos(title: widget.title, datos: solicitudObj)));
     }else{
       final snackBar = SnackBar(
-        content: Text("Error al guardar.", style: TextStyle(fontWeight: FontWeight.bold),),
-        backgroundColor: Colors.pink[800],
+        content: Text("Error al guardar. Revisa el formulario para más información.", style: TextStyle(fontWeight: FontWeight.bold),),
+        backgroundColor: Colors.red[300],
         duration: Duration(seconds: 3),
       );
       _scaffoldKey.currentState.showSnackBar(snackBar);
@@ -290,5 +327,34 @@ class _SolicitudState extends State<Solicitud> {
     setState(() {
      buttonEnabled = buttonEnabled ? false : true; 
     });
+  }
+
+  void getCurpRfc(){
+    String curpStr = "";
+    List<String> vocales = <String>['A','E','I','O','U','a','e','i','o','u'];
+
+    curpStr = curpStr + (apellidoPrimero.text.length > 0 ? apellidoPrimero.text[0] : 'X');
+
+    bool bandera = false;
+    for(int i = 0;(bandera == false && apellidoPrimero.text.length > 0); i++){
+      if(vocales.contains(apellidoPrimero.text[i])){
+        bandera = true;
+        curpStr = curpStr + apellidoPrimero.text[i];
+      }
+      if(apellidoPrimero.text.length == i+1)
+        bandera = true;
+    }
+
+    curpStr = curpStr + (apellidoSegundo.text.length > 0 ? apellidoSegundo.text[0] : 'X');
+    curpStr = curpStr + (nombre.text.length > 0 ? nombre.text[0] : 'X');
+
+    if(fechaNacimiento.text.length > 0){
+      curpStr = curpStr + fechaNacimiento.text[8] +fechaNacimiento.text [9];
+      curpStr = curpStr + fechaNacimiento.text[3] +fechaNacimiento.text [4];
+      curpStr = curpStr + fechaNacimiento.text[0] +fechaNacimiento.text [1];
+    }
+
+    curp.text = curpStr;
+    rfc.text = curpStr;
   }
 }
