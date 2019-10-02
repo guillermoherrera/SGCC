@@ -29,6 +29,7 @@ dependencies:
   firebase_auth: ^0.14.0+5
   #intl: ^0.16.0
   date_format: ^1.0.6
+  image_picker: ^0.6.1+4
 
 dev_dependencies:
   flutter_test:
@@ -53,6 +54,7 @@ flutter:
   assets:
     - images/adminconfia.png
     - images/adminconfiaicon.png
+    - images/noImage.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
