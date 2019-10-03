@@ -1,5 +1,6 @@
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud2.dart';
 //import 'package:intl/intl.dart';
@@ -300,19 +301,25 @@ class _SolicitudState extends State<Solicitud> {
     FocusScope.of(context).requestFocus(FocusNode());
     if(formKey.currentState.validate()){
       _buttonStatus();
-      SolicitudObj solicitudObj;
-      solicitudObj = new SolicitudObj(
+      Persona persona;
+      persona = new Persona(
         nombre: nombre.text,
         nombreSegundo: nombreAdicional.text,
         apellido:  apellidoPrimero.text,
         apellidoSegundo: apellidoSegundo.text,
         curp: curp.text,
         rfc: rfc.text,
-        importe: double.parse(importe.text),
         fechaNacimiento: selectedDate
       );
+      SolicitudObj solicitudObj;
+      solicitudObj = new SolicitudObj(
+        persona: persona.toJson(),
+        importe: double.parse(importe.text),
+        tipoContrato: 1,
+        userID: "userID"
+      );
       _buttonStatus();
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudArchivos(title: widget.title, datos: solicitudObj)));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: solicitudObj)));
     }else{
       final snackBar = SnackBar(
         content: Text("Error al guardar. Revisa el formulario para más información.", style: TextStyle(fontWeight: FontWeight.bold),),

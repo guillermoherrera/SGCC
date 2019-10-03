@@ -1,25 +1,39 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 
-class SolicitudArchivos extends StatefulWidget {
-  SolicitudArchivos({this.title, this.datos});
+class SolicitudDocumentos extends StatefulWidget {
+  SolicitudDocumentos({this.title, this.datos});
   final String title;
   final SolicitudObj datos;
   @override
-  _SolicitudArchivosState createState() => _SolicitudArchivosState();
+  _SolicitudDocumentosState createState() => _SolicitudDocumentosState();
 }
 
-class _SolicitudArchivosState extends State<SolicitudArchivos> {
+class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
   File identidicacionFile;
   File domicilioFile;
   File buroFile;
+  bool buttonEnabled = true;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  Firestore _firestore = Firestore.instance;
+  var SolicitudID;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(widget.title),
         centerTitle: true,
@@ -61,7 +75,7 @@ class _SolicitudArchivosState extends State<SolicitudArchivos> {
     return [
       Container(
         child: Center(
-          child: Text("ADJUNTAR ARCHIVOS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          child: Text("ADJUNTAR DOCUMENTOS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         ),
       ),
       Divider(),
@@ -201,29 +215,36 @@ class _SolicitudArchivosState extends State<SolicitudArchivos> {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            Text("IMPORTE CAPITAL: "),
+            Text(widget.datos.importe.toStringAsFixed(2)),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
             Text("NOMBRE: "),
-            Text(widget.datos.nombre +" "+ widget.datos.nombreSegundo +" "+ widget.datos.apellido +" "+ widget.datos.apellidoSegundo),
+            Text(widget.datos.persona['nombre'] +" "+ widget.datos.persona['nombreSegundo'] +" "+ widget.datos.persona['apellido'] +" "+ widget.datos.persona['apellidoSegundo']),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Text("FECHA DE NACIMIENTO: "),
-            Text(formatDate(widget.datos.fechaNacimiento, [dd, '/', mm, '/', yyyy])),
+            Text(formatDate(widget.datos.persona['fechaNacimiento'], [dd, '/', mm, '/', yyyy])),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Text("CURP: "),
-            Text(widget.datos.curp),
+            Text(widget.datos.persona['curp']),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Text("RFC: "),
-            Text(widget.datos.rfc),
+            Text(widget.datos.persona['rfc']),
           ],
         ),
       ],
@@ -232,18 +253,53 @@ class _SolicitudArchivosState extends State<SolicitudArchivos> {
 
   List<Widget> buttonWidget(){
     return [
-      styleButton((){}, "GUARDAR")
+      styleButton(validaSubmit, buttonEnabled ? "GUARDAR" : "GUARDANDO ...")
     ];
   }
 
   Widget styleButton(VoidCallback onPressed, String text){
     return RaisedButton(
-      onPressed: onPressed,
+      onPressed: buttonEnabled ? onPressed : (){},
       color: Colors.blue,
       textColor: Colors.white,
       child: Text(text),
     );
   }
+
+  void validaSubmit() async{
+    if(identidicacionFile != null && domicilioFile != null && buroFile != null){
+      _buttonStatus();
+      
+      List<Map> documentos = [];
+      Documento documento1 = new Documento(tipo:1, documento: "ruta1");
+      documentos.add(documento1.toJson());
+      Documento documento2 = new Documento(tipo:1, documento: "ruta2");
+      documentos.add(documento2.toJson());
+      Documento documento3 = new Documento(tipo:1, documento: "ruta3");
+      documentos.add(documento3.toJson());
+      widget.datos.documentos = documentos;
+
+      widget.datos.fechaCaputra = DateTime.now();
+      var result = await _firestore.collection("Solicitudes").add(widget.datos.toJson());
+      SolicitudID = result.documentID;
+      
+      _buttonStatus();
+    }else{
+      final snackBar = SnackBar(
+        content: Text("Error al guardar. Agrega todos los documentos para poder guardar la solicitud.", style: TextStyle(fontWeight: FontWeight.bold),),
+        backgroundColor: Colors.red[300],
+        duration: Duration(seconds: 3),
+      );
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    }
+  }
+
+  void _buttonStatus(){
+    setState(() {
+      buttonEnabled = buttonEnabled ? false : true;
+    });
+  }
+
 }
 
 class ImageDetail extends StatelessWidget {

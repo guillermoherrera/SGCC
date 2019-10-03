@@ -30,6 +30,8 @@ dependencies:
   #intl: ^0.16.0
   date_format: ^1.0.6
   image_picker: ^0.6.1+4
+  cloud_firestore: ^0.12.9+4
+  firebase_storage: ^3.0.6
 
 dev_dependencies:
   flutter_test:

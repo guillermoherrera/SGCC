@@ -1,21 +1,26 @@
 class SolicitudObj{
-  String nombre;
-  String nombreSegundo;
-  String apellido;
-  String apellidoSegundo;
-  DateTime fechaNacimiento;
-  String curp;
-  String rfc;
+  Map persona;
   double importe;
+  DateTime fechaCaputra;
+  int tipoContrato; 
+  String userID;
+  List<Map> documentos;
 
   SolicitudObj({
-    this.nombre,
-    this.apellido,
-    this.apellidoSegundo,
-    this.curp,
-    this.fechaNacimiento,
+    this.persona,
     this.importe,
-    this.nombreSegundo,
-    this.rfc
+    this.fechaCaputra,
+    this.tipoContrato,
+    this.userID,
+    this.documentos
   });
+
+  Map<String, dynamic> toJson()=>{
+    'persona': persona,
+    'importe': importe,
+    'fechaCaputra': fechaCaputra,
+    'tipoContrato': tipoContrato,
+    'userID': userID,
+    'documentos': documentos
+  };
 }
