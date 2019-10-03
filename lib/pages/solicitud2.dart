@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sgcartera_app/models/documento.dart';
@@ -273,16 +274,26 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       List<Map> documentos = [];
       Documento documento1 = new Documento(tipo:1, documento: "ruta1");
       documentos.add(documento1.toJson());
-      Documento documento2 = new Documento(tipo:1, documento: "ruta2");
+      Documento documento2 = new Documento(tipo:2, documento: "ruta2");
       documentos.add(documento2.toJson());
-      Documento documento3 = new Documento(tipo:1, documento: "ruta3");
+      Documento documento3 = new Documento(tipo:3, documento: "ruta3");
       documentos.add(documento3.toJson());
-      widget.datos.documentos = documentos;
+      //widget.datos.documentos = documentos;
 
-      widget.datos.fechaCaputra = DateTime.now();
-      var result = await _firestore.collection("Solicitudes").add(widget.datos.toJson());
-      SolicitudID = result.documentID;
+      await saveFireStore(documentos).then((lista) async{
+        widget.datos.documentos = lista;   
+        widget.datos.fechaCaputra = DateTime.now();
+        var result = await _firestore.collection("Solicitudes").add(widget.datos.toJson());
+        SolicitudID = result.documentID;
+      });
+
       
+      final snackBar = SnackBar(
+        content: Text("OK.", style: TextStyle(fontWeight: FontWeight.bold),),
+        backgroundColor: Colors.green[300],
+        duration: Duration(seconds: 3),
+      );
+      _scaffoldKey.currentState.showSnackBar(snackBar);
       _buttonStatus();
     }else{
       final snackBar = SnackBar(
@@ -293,6 +304,16 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       _scaffoldKey.currentState.showSnackBar(snackBar);
     }
   }
+
+  Future<List<Map>> saveFireStore(listaDocs) async{
+    for(var doc in listaDocs){
+      StorageReference reference = FirebaseStorage.instance.ref().child('Documentos').child(DateTime.now().toString()+"_"+doc['tipo'].toString());
+      StorageUploadTask uploadTask = reference.putFile(doc['tipo']==1?identidicacionFile:doc['tipo']==2?domicilioFile:buroFile);
+      StorageTaskSnapshot downloadUrl = await uploadTask.onComplete;
+      doc['documento'] = await downloadUrl.ref.getDownloadURL();
+    }
+    return listaDocs;
+  }  
 
   void _buttonStatus(){
     setState(() {
