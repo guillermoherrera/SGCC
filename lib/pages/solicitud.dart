@@ -184,7 +184,7 @@ class _SolicitudState extends State<Solicitud> {
                 if (apellidoSegundo.text != value.toUpperCase())
                   apellidoSegundo.value = nombre.value.copyWith(text: value.toUpperCase());
               },
-              //validator: (value){return value.isEmpty ? "Por favor ingresa tu nombre" : null;},
+              validator: (value){return value.isEmpty ? "Ingresa el segundo apellido" : null;},
             )
           )
         ]

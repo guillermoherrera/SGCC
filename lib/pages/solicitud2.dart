@@ -5,6 +5,7 @@ import 'package:date_format/date_format.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sgcartera_app/classes/backblaze.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 
@@ -17,7 +18,7 @@ class SolicitudDocumentos extends StatefulWidget {
 }
 
 class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
-  File identidicacionFile;
+  File identificacionFile;
   File domicilioFile;
   File buroFile;
   bool buttonEnabled = true;
@@ -166,7 +167,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
     }
     switch (tipo){
       case 1:
-        identidicacionFile = auxFile;
+        identificacionFile = auxFile;
         break;
       case 2:
         domicilioFile = auxFile;
@@ -182,7 +183,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
     File auxFile;
     switch (tipo){
       case 1:
-        auxFile = identidicacionFile;
+        auxFile = identificacionFile;
         break;
       case 2:
         auxFile = domicilioFile;
@@ -254,7 +255,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
 
   List<Widget> buttonWidget(){
     return [
-      styleButton(validaSubmit, buttonEnabled ? "GUARDAR" : "GUARDANDO ...")
+      styleButton(validaSubmit2, buttonEnabled ? "GUARDAR" : "GUARDANDO ...")
     ];
   }
 
@@ -267,8 +268,19 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
     );
   }
 
+  void validaSubmit2() async{
+    if(identificacionFile != null){
+      BackBlaze backBlaze = new BackBlaze();
+      //await backBlaze.b2_authorize_account();
+      //await backBlaze.b2_get_upload_url();
+      //String mimeType = mime(fileName);
+      
+      await backBlaze.b2UploadFile(identificacionFile);
+    }
+  }
+
   void validaSubmit() async{
-    if(identidicacionFile != null && domicilioFile != null && buroFile != null){
+    if(identificacionFile != null && domicilioFile != null && buroFile != null){
       _buttonStatus();
       
       List<Map> documentos = [];
@@ -308,7 +320,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
   Future<List<Map>> saveFireStore(listaDocs) async{
     for(var doc in listaDocs){
       StorageReference reference = FirebaseStorage.instance.ref().child('Documentos').child(DateTime.now().toString()+"_"+doc['tipo'].toString());
-      StorageUploadTask uploadTask = reference.putFile(doc['tipo']==1?identidicacionFile:doc['tipo']==2?domicilioFile:buroFile);
+      StorageUploadTask uploadTask = reference.putFile(doc['tipo']==1?identificacionFile:doc['tipo']==2?domicilioFile:buroFile);
       StorageTaskSnapshot downloadUrl = await uploadTask.onComplete;
       doc['documento'] = await downloadUrl.ref.getDownloadURL();
     }
