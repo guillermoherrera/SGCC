@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sgcartera_app/classes/backblaze.dart';
+import 'package:sgcartera_app/models/backBlaze_request.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 
@@ -84,7 +85,8 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       adjuntarId(),
       Divider(),
       datosPrevios(),
-      Column(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: buttonWidget(),
       ),
       Row(
@@ -255,7 +257,9 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
 
   List<Widget> buttonWidget(){
     return [
-      styleButton(validaSubmit2, buttonEnabled ? "GUARDAR" : "GUARDANDO ...")
+      styleButton(validaSubmit, buttonEnabled ? "GUARDAR Fbase" : "GUARDANDO ..."),
+      Text(" "),
+      styleButton(validaSubmit2, buttonEnabled ? "GUARDAR Bblaze" : "GUARDANDO ...")
     ];
   }
 
@@ -269,15 +273,51 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
   }
 
   void validaSubmit2() async{
-    if(identificacionFile != null){
-      BackBlaze backBlaze = new BackBlaze();
-      //await backBlaze.b2_authorize_account();
-      //await backBlaze.b2_get_upload_url();
-      //String mimeType = mime(fileName);
+    if(identificacionFile != null && domicilioFile != null && buroFile != null){
+      _buttonStatus();
       
-      await backBlaze.b2UploadFile(identificacionFile);
+      List<Map> documentos = [];
+      Documento documento1 = new Documento(tipo:1, documento: "Id1");
+      documentos.add(documento1.toJson());
+      Documento documento2 = new Documento(tipo:2, documento: "Id2");
+      documentos.add(documento2.toJson());
+      Documento documento3 = new Documento(tipo:3, documento: "Id3");
+      documentos.add(documento3.toJson());
+      //widget.datos.documentos = documentos;
+
+      await saveBackBlaze(documentos).then((lista) async{
+        widget.datos.documentos = lista;   
+        widget.datos.fechaCaputra = DateTime.now();
+        var result = await _firestore.collection("Solicitudes").add(widget.datos.toJson());
+        SolicitudID = result.documentID;
+      });
+
+      
+      final snackBar = SnackBar(
+        content: Text("OK.", style: TextStyle(fontWeight: FontWeight.bold),),
+        backgroundColor: Colors.green[300],
+        duration: Duration(seconds: 3),
+      );
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _buttonStatus();
+    }else{
+      final snackBar = SnackBar(
+        content: Text("Error al guardar. Agrega todos los documentos para poder guardar la solicitud.", style: TextStyle(fontWeight: FontWeight.bold),),
+        backgroundColor: Colors.red[300],
+        duration: Duration(seconds: 3),
+      );
+      _scaffoldKey.currentState.showSnackBar(snackBar);
     }
   }
+
+  Future<List<Map>> saveBackBlaze(listaDocs) async{
+    BackBlaze backBlaze = new BackBlaze(); 
+    for(var doc in listaDocs){
+      BackBlazeRequest backBlazeRequest = await backBlaze.b2UploadFile(doc['tipo']==1?identificacionFile:doc['tipo']==2?domicilioFile:buroFile);
+      doc['documento'] = backBlazeRequest.documentId;
+    }
+    return listaDocs;
+  }  
 
   void validaSubmit() async{
     if(identificacionFile != null && domicilioFile != null && buroFile != null){
@@ -318,8 +358,9 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
   }
 
   Future<List<Map>> saveFireStore(listaDocs) async{
+    FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
     for(var doc in listaDocs){
-      StorageReference reference = FirebaseStorage.instance.ref().child('Documentos').child(DateTime.now().toString()+"_"+doc['tipo'].toString());
+      StorageReference reference = _firebaseStorage.ref().child('Documentos').child(DateTime.now().toString()+"_"+doc['tipo'].toString());
       StorageUploadTask uploadTask = reference.putFile(doc['tipo']==1?identificacionFile:doc['tipo']==2?domicilioFile:buroFile);
       StorageTaskSnapshot downloadUrl = await uploadTask.onComplete;
       doc['documento'] = await downloadUrl.ref.getDownloadURL();

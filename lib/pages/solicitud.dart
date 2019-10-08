@@ -245,7 +245,7 @@ class _SolicitudState extends State<Solicitud> {
               validator: (value){
                 if(value.isEmpty){
                   return "Ingresa el RFC";
-                }else if(value.length < 13){
+                }else if(value.length < 10){
                   return "Complenta el RFC";
                 }
                 return null;
