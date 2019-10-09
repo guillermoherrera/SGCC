@@ -6,8 +6,9 @@ import 'package:sgcartera_app/pages/solicitud2.dart';
 //import 'package:intl/intl.dart';
 
 class Solicitud extends StatefulWidget {
-  Solicitud({this.title});
+  Solicitud({this.title, this.colorTema});
   final String title;
+  final MaterialColor colorTema;
   @override
   _SolicitudState createState() => _SolicitudState();
 }
@@ -23,6 +24,7 @@ class _SolicitudState extends State<Solicitud> {
   var curp = TextEditingController();
   var rfc = TextEditingController();
   var importe = TextEditingController();
+  var telefono = TextEditingController();
   bool buttonEnabled = true;
 
   DateTime selectedDate = DateTime(2000, 1);
@@ -73,7 +75,7 @@ class _SolicitudState extends State<Solicitud> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [Colors.blue[100], Colors.white])
+                  colors: [widget.colorTema[100], Colors.white])
                 ),
               ),
               SingleChildScrollView(
@@ -111,9 +113,10 @@ class _SolicitudState extends State<Solicitud> {
         TextFormField(
           controller: importe,
           maxLength: 14,
+          style: TextStyle(fontWeight: FontWeight.bold),
           decoration: InputDecoration(
             labelText: "Importe Capital",
-            icon: Icon(Icons.attach_money)
+            prefixIcon: Icon(Icons.attach_money)
           ),
           keyboardType: TextInputType.number,
           //enabled: false,
@@ -126,6 +129,7 @@ class _SolicitudState extends State<Solicitud> {
           flexPadded(TextFormField(
               controller: nombre,
               maxLength: 30,
+              style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                 labelText: "Nombre"
               ),
@@ -141,6 +145,7 @@ class _SolicitudState extends State<Solicitud> {
           flexPadded(TextFormField(
               controller: nombreAdicional,
               maxLength: 30,
+              style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                 labelText: "Segundo Nombre"
               ),
@@ -160,6 +165,7 @@ class _SolicitudState extends State<Solicitud> {
           flexPadded(TextFormField(
               controller: apellidoPrimero,
               maxLength: 30,
+              style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                 labelText: "Primer Apellido"
               ),
@@ -175,6 +181,7 @@ class _SolicitudState extends State<Solicitud> {
           flexPadded(TextFormField(
               controller: apellidoSegundo,
               maxLength: 30,
+              style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                 labelText: "Segundo Apellido"
               ),
@@ -184,35 +191,37 @@ class _SolicitudState extends State<Solicitud> {
                 if (apellidoSegundo.text != value.toUpperCase())
                   apellidoSegundo.value = nombre.value.copyWith(text: value.toUpperCase());
               },
-              validator: (value){return value.isEmpty ? "Ingresa el segundo apellido" : null;},
+              //validator: (value){return value.isEmpty ? "Ingresa el segundo apellido" : null;},
             )
           )
         ]
       ),
-      padded(
-        InkWell(
-          child: AbsorbPointer(child:TextFormField(
-            controller: fechaNacimiento,
-            maxLength: 14,
-            decoration: InputDecoration(
-              labelText: "Fecha de Nacimiento (Día/Mes/Año)",
-              icon: Icon(Icons.calendar_today)
-            ),
-            textCapitalization: TextCapitalization.sentences,
-            keyboardType: TextInputType.datetime,
-            //enabled: false,
-            validator: (value){return value.isEmpty ? "Por favor ingresa la fecha de nacimiento" : null;},
-          ),),
-          onTap: () => _selectDate(context),
-        )
-      ),
-      Divider(),
+
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          flexPadded(InkWell(
+              child: AbsorbPointer(child:TextFormField(
+                controller: fechaNacimiento,
+                maxLength: 14,
+                style: TextStyle(fontWeight: FontWeight.bold),
+                decoration: InputDecoration(
+                  labelText: "Fecha de Nacimiento",
+                  //icon: Icon(Icons.calendar_today)
+                  helperText: "dia/mes/año"
+                ),
+                textCapitalization: TextCapitalization.sentences,
+                keyboardType: TextInputType.datetime,
+                //enabled: false,
+                validator: (value){return value.isEmpty ? "Por favor ingresa la fecha de nacimiento" : null;},
+              ),),
+              onTap: () => _selectDate(context),
+            )
+          ),
           flexPadded(TextFormField(
               controller: curp,
               maxLength: 18,
+              style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                 labelText: "CURP"
               ),
@@ -231,9 +240,16 @@ class _SolicitudState extends State<Solicitud> {
               },
             )
           ),
+        ]
+      ),
+      Divider(),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
           flexPadded(TextFormField(
               controller: rfc,
               maxLength: 13,
+              style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                 labelText: "RFC"
               ),
@@ -251,7 +267,25 @@ class _SolicitudState extends State<Solicitud> {
                 return null;
               },
             )
-          )
+          ),
+          flexPadded(TextFormField(
+              controller: telefono,
+              maxLength: 10,
+              style: TextStyle(fontWeight: FontWeight.bold),
+              decoration: InputDecoration(
+                labelText: "Teléfono"
+              ),
+              keyboardType: TextInputType.number,
+              validator: (value){
+                if(value.isEmpty){
+                  return "Ingresa un teléfono";
+                }else if(value.length < 10){
+                  return "Complenta el teléfono";
+                }
+                return null;
+              },
+            )
+          ),
         ]
       ),
       Column(
@@ -291,7 +325,7 @@ class _SolicitudState extends State<Solicitud> {
   Widget styleButton(VoidCallback onPressed, String text){
     return RaisedButton(
       onPressed: buttonEnabled ? onPressed : (){},
-      color: Colors.blue,
+      color: widget.colorTema,
       textColor: Colors.white,
       child: Text(text),
     );
@@ -309,7 +343,8 @@ class _SolicitudState extends State<Solicitud> {
         apellidoSegundo: apellidoSegundo.text,
         curp: curp.text,
         rfc: rfc.text,
-        fechaNacimiento: selectedDate
+        fechaNacimiento: selectedDate,
+        telefono: telefono.text
       );
       SolicitudObj solicitudObj;
       solicitudObj = new SolicitudObj(
@@ -319,7 +354,7 @@ class _SolicitudState extends State<Solicitud> {
         userID: "userID"
       );
       _buttonStatus();
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: solicitudObj)));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema,)));
     }else{
       final snackBar = SnackBar(
         content: Text("Error al guardar. Revisa el formulario para más información.", style: TextStyle(fontWeight: FontWeight.bold),),

@@ -6,6 +6,7 @@ class Persona{
   DateTime fechaNacimiento;
   String curp;
   String rfc;
+  String telefono;
 
   Persona({
     this.nombre,
@@ -15,6 +16,7 @@ class Persona{
     this.fechaNacimiento,
     this.nombreSegundo,
     this.rfc,
+    this.telefono
   });
 
   Map<String, dynamic> toJson()=>{
@@ -25,5 +27,6 @@ class Persona{
     'fechaNacimiento': fechaNacimiento,
     'nombreSegundo': nombreSegundo,
     'rfc': rfc,
+    'telefono': telefono
   };
 }

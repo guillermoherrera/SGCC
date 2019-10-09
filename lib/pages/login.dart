@@ -3,9 +3,10 @@ import 'package:sgcartera_app/Models/auth_res.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 
 class Login extends StatefulWidget {
-  Login({this.auth, this.onSingIn});
+  Login({this.auth, this.onSingIn, this.colorTema});
   final AuthFirebase auth;
   final VoidCallback onSingIn;
+  final MaterialColor colorTema;
   @override
   _LoginState createState() => _LoginState();
 }
@@ -35,7 +36,7 @@ class _LoginState extends State<Login> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [Colors.blue[100], Colors.white])
+                  colors: [widget.colorTema[100], Colors.white])
                 ),
               ),
               SingleChildScrollView(
@@ -109,7 +110,7 @@ class _LoginState extends State<Login> {
   Widget styleButton(String text, VoidCallback onPress){
     return new RaisedButton(
       onPressed: buttonEnabled ? onPress : (){},
-      color: Colors.blue,
+      color: widget.colorTema,
       textColor: Colors.white,
       child: Text(text),
     );
@@ -127,7 +128,7 @@ class _LoginState extends State<Login> {
         String mensaje = getMessage(authRes.mensaje);
         final snackBar = SnackBar(
           content: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold),),
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.red,
           duration: Duration(seconds: 3),
         );
         _scaffoldKey.currentState.showSnackBar(snackBar);

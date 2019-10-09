@@ -7,6 +7,7 @@ import 'classes/auth_firebase.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  final colorTema = Colors.green;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,9 +26,9 @@ class MyApp extends StatelessWidget {
           // ... other locales the app supports
       ],
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: colorTema,
       ),
-      home: RootPage(authFirebase: new AuthFirebase()),
+      home: RootPage(authFirebase: new AuthFirebase(), colorTema: colorTema,),
     );
   }
 }

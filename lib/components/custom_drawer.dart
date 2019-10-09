@@ -7,9 +7,10 @@ import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
 
 class CustomDrawer extends StatefulWidget {
-  CustomDrawer({this.authFirebase, this.onSingIn});
+  CustomDrawer({this.authFirebase, this.onSingIn, this.colorTema});
   final AuthFirebase authFirebase;
   final VoidCallback onSingIn;
+  final MaterialColor colorTema;
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
 }
@@ -34,42 +35,42 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [Colors.blue, Colors.white])
+                colors: [widget.colorTema, Colors.white])
             ),
           ),
           InkWell(
-            onTap: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase,)));},
+            onTap: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));},
             child: ListTile(
               title: Text("Inicio"),
-              leading: Icon(Icons.home, color: Colors.blue,),
+              leading: Icon(Icons.home, color: widget.colorTema,),
             ),
           ),
           InkWell(
-            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes() ));},
+            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema) ));},
             child: ListTile(
               title: Text("Nueva Solicitud de Crédito"),
-              leading: Icon(Icons.add_to_photos, color: Colors.blue,),
+              leading: Icon(Icons.add_to_photos, color: widget.colorTema,),
             ),
           ),
           InkWell(
             onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> MisSolicitudes() ));},
             child: ListTile(
               title: Text("Mis Solicitudes"),
-              leading: Icon(Icons.folder_open, color: Colors.blue,),
+              leading: Icon(Icons.folder_open, color: widget.colorTema,),
             ),
           ),
           InkWell(
             onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera() ));},
             child: ListTile(
               title: Text("Mi Cartera"),
-              leading: Icon(Icons.account_balance_wallet, color: Colors.blue,),
+              leading: Icon(Icons.account_balance_wallet, color: widget.colorTema,),
             ),
           ),
           Divider(),
           InkWell(
             onTap: (){
               _logOut();
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase,)));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));
             },
             child: ListTile(
               title: Text("Cerrar Sesión"),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
 
 class NuevasSolicitudes extends StatefulWidget {
+  NuevasSolicitudes({this.colorTema});
+  final MaterialColor colorTema;
   @override
   _NuevasSolicitudesState createState() => _NuevasSolicitudesState();
 }
@@ -22,7 +24,7 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [Colors.blue[100], Colors.white])
+                  colors: [widget.colorTema[100], Colors.white])
                 ),
               ),
               ListView(
@@ -31,7 +33,7 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                   child: Card(
                     child: Container(
                       child: ListTile(
-                      leading: Icon(Icons.person, color: Colors.blue,size: 40.0,),
+                      leading: Icon(Icons.person, color: widget.colorTema,size: 40.0,),
                       title: Text("Nueva Solicitud Individual", style: TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text("Captura de una solicitud de credito individual."),
 
@@ -40,17 +42,17 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                         gradient: LinearGradient(
                         begin: Alignment.topRight,
                         end: Alignment.bottomLeft,
-                        colors: [Colors.blue[400], Colors.white])
+                        colors: [widget.colorTema[400], Colors.white])
                       ),
                     )
                   ),
-                  onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Individual")));},
+                  onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Individual", colorTema: widget.colorTema,)));},
                 ),
                 InkWell(
                   child: Card(
                     child: Container(
                       child: ListTile(
-                      leading: Icon(Icons.group, color: Colors.blue,size: 40.0,),
+                      leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
                       title: Text("Nueva Solicitud Grupal", style: TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text("Captura de una solicitud de credito grupal."),
 
@@ -59,7 +61,7 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                         gradient: LinearGradient(
                         begin: Alignment.topRight,
                         end: Alignment.bottomLeft,
-                        colors: [Colors.blue[400], Colors.white])
+                        colors: [widget.colorTema[400], Colors.white])
                       ),
                     )
                   ),

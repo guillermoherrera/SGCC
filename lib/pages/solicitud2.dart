@@ -11,9 +11,10 @@ import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 
 class SolicitudDocumentos extends StatefulWidget {
-  SolicitudDocumentos({this.title, this.datos});
+  SolicitudDocumentos({this.title, this.datos, this.colorTema});
   final String title;
   final SolicitudObj datos;
+  final MaterialColor colorTema;
   @override
   _SolicitudDocumentosState createState() => _SolicitudDocumentosState();
 }
@@ -49,7 +50,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [Colors.blue[100], Colors.white])
+                colors: [widget.colorTema[100], Colors.white])
               ),
             ),
             SingleChildScrollView(
@@ -83,7 +84,6 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       ),
       Divider(),
       adjuntarId(),
-      Divider(),
       datosPrevios(),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -99,52 +99,44 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
   }
 
   Widget adjuntarId(){
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
+    return Table(
+      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      //border: TableBorder.all(color: Colors.white70),
+      children: [
         itemsFiles("IDENTIFICACIÓN", 1),
-        Divider(),
-        itemsFiles("COMPROBANTE\n DE DOMICILIO", 2),
-        Divider(),
-        itemsFiles("AUTORIZACIÓN\n DE BURÓ", 3),
+        TableRow(children: [Divider(),Divider(),Divider()]),
+        itemsFiles("COMPROBANTE DE DOMICILIO", 2),
+        TableRow(children: [Divider(),Divider(),Divider()]),
+        itemsFiles("AUTORIZACIÓN DE BURÓ", 3),
       ],
     );
   }
 
-  Widget itemsFiles(titulo, tipo){
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center ,
-      children: <Widget>[
+  TableRow itemsFiles(titulo, tipo){
+    return TableRow(
+      children: [
+        Container(child:  Text(titulo), padding: EdgeInsets.all(5),),
+        Column(children: <Widget>[
+          ButtonTheme(
+            minWidth: 50.0,
+            height: 30.0,
+            child:RaisedButton(onPressed: ()=> imageSelectorGallery(1,tipo), child: Icon(Icons.add_photo_alternate),color: widget.colorTema,textColor: Colors.white,)
+          ),
+          ButtonTheme(
+            minWidth: 50.0,
+            height: 30.0,
+            child:RaisedButton(onPressed: ()=> imageSelectorGallery(2,tipo), child: Icon(Icons.add_a_photo),color: widget.colorTema,textColor: Colors.white)
+          ),
+        ],),
         Padding(
-          padding: EdgeInsets.only(left: 10, right: 10),
-          child: Text(titulo),
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 10, right: 10),
-          child: Column(children: <Widget>[
-            ButtonTheme(
-              minWidth: 50.0,
-              height: 30.0,
-              child:RaisedButton(onPressed: ()=> imageSelectorGallery(1,tipo), child: Icon(Icons.add_photo_alternate),color: Colors.blue,textColor: Colors.white,)
-            ),
-            ButtonTheme(
-              minWidth: 50.0,
-              height: 30.0,
-              child:RaisedButton(onPressed: ()=> imageSelectorGallery(2,tipo), child: Icon(Icons.add_a_photo),color: Colors.blue,textColor: Colors.white)
-            ),
-          ],) 
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 10, right: 10),
+          padding: EdgeInsets.only(bottom: 5.0),
           child: SizedBox(
             child: showImage(tipo),
             width: 100,
             height: 100,
           ),
-        )
-      ],
+        ) 
+      ]
     );
   }
 
@@ -211,46 +203,58 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
     return Column(
       children: <Widget>[
         Container(child:Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text("DATOS DEL CLIENTE:", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("DATOS DEL CLIENTE", style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ), margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Text("IMPORTE CAPITAL: "),
-            Text(widget.datos.importe.toStringAsFixed(2)),
+        Table(
+          columnWidths: {0: FractionColumnWidth(.1)},
+          children: [
+            TableRow(
+              children: [
+                Icon(Icons.attach_money, size: 15.0, color: widget.colorTema,),
+                Text("IMPORTE CAPITAL: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(widget.datos.importe.toStringAsFixed(2)),
+              ]
+            ),
+            TableRow(
+              children: [
+                Icon(Icons.person, size: 15.0, color: widget.colorTema,),
+                Text("NOMBRE: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(widget.datos.persona['nombre'] +" "+ widget.datos.persona['nombreSegundo'] +" "+ widget.datos.persona['apellido'] +" "+ widget.datos.persona['apellidoSegundo']),
+              ]
+            ),
+            TableRow(
+              children: [
+                Icon(Icons.calendar_today, size: 15.0, color: widget.colorTema,),
+                Text("FECHA DE NACIMIENTO: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(formatDate(widget.datos.persona['fechaNacimiento'], [dd, '/', mm, '/', yyyy])),
+              ]
+            ),
+            TableRow(
+              children: [
+                Icon(Icons.assignment_ind, size: 15.0, color: widget.colorTema,),
+                Text("CURP: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(widget.datos.persona['curp']),
+              ],
+            ),
+            TableRow(
+              children: [
+                Icon(Icons.assignment_ind, size: 15.0, color: widget.colorTema,),
+                Text("RFC: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(widget.datos.persona['rfc']),
+              ]
+            ),
+            TableRow(
+              children: [
+                Icon(Icons.phone, size: 15.0, color: widget.colorTema,),
+                Text("TELÉFONO: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(widget.datos.persona['telefono']),
+              ]
+            )
           ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Text("NOMBRE: "),
-            Text(widget.datos.persona['nombre'] +" "+ widget.datos.persona['nombreSegundo'] +" "+ widget.datos.persona['apellido'] +" "+ widget.datos.persona['apellidoSegundo']),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Text("FECHA DE NACIMIENTO: "),
-            Text(formatDate(widget.datos.persona['fechaNacimiento'], [dd, '/', mm, '/', yyyy])),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Text("CURP: "),
-            Text(widget.datos.persona['curp']),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Text("RFC: "),
-            Text(widget.datos.persona['rfc']),
-          ],
-        ),
+        )
       ],
     );
   }
@@ -258,15 +262,15 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
   List<Widget> buttonWidget(){
     return [
       styleButton(validaSubmit, buttonEnabled ? "GUARDAR Fbase" : "GUARDANDO ..."),
-      Text(" "),
-      styleButton(validaSubmit2, buttonEnabled ? "GUARDAR Bblaze" : "GUARDANDO ...")
+      /*Text(" "),
+      styleButton(validaSubmit2, buttonEnabled ? "GUARDAR Bblaze" : "GUARDANDO ...")*/
     ];
   }
 
   Widget styleButton(VoidCallback onPressed, String text){
     return RaisedButton(
       onPressed: buttonEnabled ? onPressed : (){},
-      color: Colors.blue,
+      color: widget.colorTema,
       textColor: Colors.white,
       child: Text(text),
     );

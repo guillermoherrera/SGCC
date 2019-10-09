@@ -4,8 +4,9 @@ import 'package:sgcartera_app/components/custom_drawer.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({this.onSingIn});
+  HomePage({this.onSingIn, this.colorTema});
   final VoidCallback onSingIn;
+  final MaterialColor colorTema;
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -15,10 +16,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Sistema Gestión de Cartera"),
+        title: Text("Sistema Originación"),
         centerTitle: true,
       ),
-      drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn),
+      drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema),
       body: Container(
           child: Stack(
             children: <Widget>[
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [Colors.blue[100], Colors.white])
+                  colors: [widget.colorTema[100], Colors.white])
                 ),
               ),
               ListView(
@@ -36,7 +37,7 @@ class _HomePageState extends State<HomePage> {
                   child: Card(
                     child: Container(
                       child: ListTile(
-                      leading: Icon(Icons.person, color: Colors.blue,size: 40.0,),
+                      leading: Icon(Icons.person, color: widget.colorTema,size: 40.0,),
                       title: Text("Nueva Solicitud Individual", style: TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text("Captura de una solicitud de credito individual."),
 
@@ -45,17 +46,17 @@ class _HomePageState extends State<HomePage> {
                         gradient: LinearGradient(
                         begin: Alignment.topRight,
                         end: Alignment.bottomLeft,
-                        colors: [Colors.blue[400], Colors.white])
+                        colors: [widget.colorTema[400], Colors.white])
                       ),
                     )
                   ),
-                  onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Individual")));},
+                  onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Individual", colorTema: widget.colorTema,)));},
                 ),
                 InkWell(
                   child: Card(
                     child: Container(
                       child: ListTile(
-                      leading: Icon(Icons.group, color: Colors.blue,size: 40.0,),
+                      leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
                       title: Text("Nueva Solicitud Grupal", style: TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text("Captura de una solicitud de credito grupal."),
 
@@ -64,7 +65,7 @@ class _HomePageState extends State<HomePage> {
                         gradient: LinearGradient(
                         begin: Alignment.topRight,
                         end: Alignment.bottomLeft,
-                        colors: [Colors.blue[400], Colors.white])
+                        colors: [widget.colorTema[400], Colors.white])
                       ),
                     )
                   ),

@@ -5,8 +5,9 @@ import 'package:sgcartera_app/pages/home.dart';
 import 'login.dart';
 
 class RootPage extends StatefulWidget {
-  RootPage({this.authFirebase});
+  RootPage({this.authFirebase, this.colorTema});
   final AuthFirebase authFirebase;
+  final MaterialColor colorTema;
   @override
   _RootPageState createState() => _RootPageState();
 }
@@ -32,9 +33,9 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     switch(authStatus){
       case AuthStatus.notSignedIn:
-        return Login(auth: widget.authFirebase, onSingIn: ()=>updateAuthSign(AuthStatus.signedIn),);
+        return Login(auth: widget.authFirebase, onSingIn: ()=>updateAuthSign(AuthStatus.signedIn),colorTema: widget.colorTema);
       case AuthStatus.signedIn:
-        return HomePage(onSingIn: ()=>updateAuthSignOut(AuthStatus.notSignedIn));
+        return HomePage(onSingIn: ()=>updateAuthSignOut(AuthStatus.notSignedIn),colorTema: widget.colorTema);
     }
   }
 
