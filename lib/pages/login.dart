@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/Models/auth_res.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
+import 'package:sgcartera_app/sqlite_files/database_creator.dart';
+import 'package:sgcartera_app/sqlite_files/models/cat_documento.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catDocumento.dart';
 
 class Login extends StatefulWidget {
   Login({this.auth, this.onSingIn, this.colorTema});
@@ -17,6 +21,8 @@ class _LoginState extends State<Login> {
   var pass = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool buttonEnabled = true;
+  Firestore _firestore = Firestore.instance;
+  DocumentSnapshot _datosCatalogo;
   
   @override
   Widget build(BuildContext context) {
@@ -123,6 +129,7 @@ class _LoginState extends State<Login> {
       AuthRes authRes;
       authRes = await widget.auth.signIn(email.text, pass.text);
       if(authRes.result){
+        await getCatalogos();
         widget.onSingIn();
       }else{
         String mensaje = getMessage(authRes.mensaje);
@@ -152,6 +159,20 @@ class _LoginState extends State<Login> {
       return "ATENCIÓN: Has intentado iniciar sesión demasiadas veces, intentalo de nuevo mas tarde o ponte en contacto con soporte.";
     }else{
       return "Correo y/o contraseña incorrectos.";
+    }
+  }
+
+  Future<void> getCatalogos() async{
+    QuerySnapshot querySnapshot;
+    Query q;
+
+    //catDocumentos
+    await RepositoryServiceCatDocumento.deleteAll();
+    q = _firestore.collection("catDocumentos").where('activo', isEqualTo: true);
+    querySnapshot = await q.getDocuments();
+    for (DocumentSnapshot value in querySnapshot.documents) {
+      final catDocumento = CatDocumento(tipo: value.data['tipo'], descDocumento: value.data['descDocumento'] );
+      await RepositoryServiceCatDocumento.addCatDocumento(catDocumento);
     }
   }
 }

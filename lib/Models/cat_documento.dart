@@ -1,4 +1,4 @@
-class CatDocumento{
+/*class CatDocumento{
   int tipo;
   String descDocumento;
 
@@ -6,4 +6,4 @@ class CatDocumento{
     this.descDocumento,
     this.tipo
   });
-}
+}*/
