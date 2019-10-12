@@ -9,6 +9,8 @@ import 'package:sgcartera_app/classes/backblaze.dart';
 import 'package:sgcartera_app/models/backBlaze_request.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
+import 'package:sgcartera_app/sqlite_files/models/cat_documento.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catDocumento.dart';
 
 class SolicitudDocumentos extends StatefulWidget {
   SolicitudDocumentos({this.title, this.datos, this.colorTema});
@@ -20,17 +22,20 @@ class SolicitudDocumentos extends StatefulWidget {
 }
 
 class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
-  File identificacionFile;
+  /*File identificacionFile;
   File domicilioFile;
-  File buroFile;
+  File buroFile;*/
   bool buttonEnabled = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   Firestore _firestore = Firestore.instance;
   var SolicitudID;
+  List<CatDocumento> catDocumentos = List();
+  List<DocumentoArchivo> docArchivos = List();
 
   @override
   void initState() {
     // TODO: implement initState
+    getCatDocumentos();
     super.initState();
   }
 
@@ -99,17 +104,27 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
   }
 
   Widget adjuntarId(){
+    //
+    List<TableRow> tablesRows = List();
+    for(CatDocumento catDoc in catDocumentos){
+      tablesRows.add(itemsFiles(catDoc.descDocumento,catDoc.tipo));
+      tablesRows.add(TableRow(children: [Divider(),Divider(),Divider()]));
+
+      if(docArchivos.length != catDocumentos.length){
+        DocumentoArchivo documentoArchivo = new DocumentoArchivo(tipo: catDoc.tipo, archivo: null);
+        docArchivos.add(documentoArchivo);
+      }
+    }
+    
     return Table(
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-      //border: TableBorder.all(color: Colors.white70),
-      children: [
-        itemsFiles("IDENTIFICACIÓN", 1),
-        TableRow(children: [Divider(),Divider(),Divider()]),
-        itemsFiles("COMPROBANTE DE DOMICILIO", 2),
-        TableRow(children: [Divider(),Divider(),Divider()]),
-        itemsFiles("AUTORIZACIÓN DE BURÓ", 3),
-      ],
+      children: tablesRows,
     );
+  }
+
+  Future<void> getCatDocumentos() async{
+    catDocumentos = await RepositoryServiceCatDocumento.getAllCatDocumentos();
+    setState(() {});
   }
 
   TableRow itemsFiles(titulo, tipo){
@@ -159,7 +174,9 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
     }catch(e){
 
     }
-    switch (tipo){
+    var objetoArchivo = docArchivos.firstWhere((archivo) => archivo.tipo == tipo);
+    objetoArchivo.archivo = auxFile;
+    /*switch (tipo){
       case 1:
         identificacionFile = auxFile;
         break;
@@ -169,13 +186,15 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       case 3:
         buroFile = auxFile;
         break;
-    }
+    }*/
     setState(() {});
   }
 
   showImage(tipo){
     File auxFile;
-    switch (tipo){
+    
+    if(catDocumentos.length == docArchivos.length) auxFile = docArchivos.singleWhere((archivo) => archivo.tipo == tipo).archivo;
+    /*switch (tipo){
       case 1:
         auxFile = identificacionFile;
         break;
@@ -185,7 +204,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       case 3:
         auxFile = buroFile;
         break;
-    }
+    }*/
     if(auxFile != null)
       //return Image.file(auxFile);
       return Hero(
@@ -276,7 +295,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
     );
   }
 
-  void validaSubmit2() async{
+  /*void validaSubmit2() async{
     if(identificacionFile != null && domicilioFile != null && buroFile != null){
       _buttonStatus();
       
@@ -321,19 +340,25 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       doc['documento'] = backBlazeRequest.documentId;
     }
     return listaDocs;
-  }  
+  }*/  
 
   void validaSubmit() async{
-    if(identificacionFile != null && domicilioFile != null && buroFile != null){
+    var objetosArchivos = docArchivos.where((archivo) => archivo.archivo == null);
+    //if(identificacionFile != null && domicilioFile != null && buroFile != null){
+    if(objetosArchivos.length == 0){
       _buttonStatus();
       
       List<Map> documentos = [];
-      Documento documento1 = new Documento(tipo:1, documento: "ruta1");
+      for(DocumentoArchivo docArchivo in docArchivos){
+        Documento documento = new Documento(tipo:docArchivo.tipo, documento: "");
+        documentos.add(documento.toJson());
+      }
+      /*Documento documento1 = new Documento(tipo:1, documento: "ruta1");
       documentos.add(documento1.toJson());
       Documento documento2 = new Documento(tipo:2, documento: "ruta2");
       documentos.add(documento2.toJson());
       Documento documento3 = new Documento(tipo:3, documento: "ruta3");
-      documentos.add(documento3.toJson());
+      documentos.add(documento3.toJson());*/
       //widget.datos.documentos = documentos;
 
       await saveFireStore(documentos).then((lista) async{
@@ -365,7 +390,8 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
     FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
     for(var doc in listaDocs){
       StorageReference reference = _firebaseStorage.ref().child('Documentos').child(DateTime.now().toString()+"_"+doc['tipo'].toString());
-      StorageUploadTask uploadTask = reference.putFile(doc['tipo']==1?identificacionFile:doc['tipo']==2?domicilioFile:buroFile);
+      //StorageUploadTask uploadTask = reference.putFile(doc['tipo']==1?identificacionFile:doc['tipo']==2?domicilioFile:buroFile);
+      StorageUploadTask uploadTask = reference.putFile(docArchivos.firstWhere((archivo) => archivo.tipo == doc['tipo']).archivo);
       StorageTaskSnapshot downloadUrl = await uploadTask.onComplete;
       doc['documento'] = await downloadUrl.ref.getDownloadURL();
     }
