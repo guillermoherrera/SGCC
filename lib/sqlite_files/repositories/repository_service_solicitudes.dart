@@ -44,7 +44,7 @@ class ServiceRepositorySolicitudes{
       "${solicitud.telefono}",
       ${solicitud.idGrupo},
       "${solicitud.nombreGrupo}",
-      ${solicitud.userID},
+      "${solicitud.userID}",
       ${solicitud.status}
     )
     ''';
@@ -53,8 +53,8 @@ class ServiceRepositorySolicitudes{
     DataBaseCreator.dataBaseLog("agregar Solcitud", sql, null, result);
   }
 
-  static Future<int> solicitudesCount(String userID) async{
-    final data = await db.rawQuery('''SELECT COUNT(*) FROM ${DataBaseCreator.solicitudesTable} WHERE ${DataBaseCreator.userID} == "$userID"''');
+  static Future<int> solicitudesCount() async{
+    final data = await db.rawQuery('''SELECT COUNT(*) FROM ${DataBaseCreator.solicitudesTable}''');
     int count = data[0].values.elementAt(0);
     return count;
   }

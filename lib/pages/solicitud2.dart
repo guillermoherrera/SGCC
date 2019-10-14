@@ -5,13 +5,16 @@ import 'package:date_format/date_format.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/classes/backblaze.dart';
 import 'package:sgcartera_app/models/backBlaze_request.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/cat_documento.dart';
+import 'package:sgcartera_app/sqlite_files/models/documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catDocumento.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -32,6 +35,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
   var SolicitudID;
   List<CatDocumento> catDocumentos = List();
   List<DocumentoArchivo> docArchivos = List();
+  AuthFirebase authFirebase = new AuthFirebase();
 
   @override
   void initState() {
@@ -292,7 +296,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
         SolicitudID = result.documentID;
       });*/
 
-      if(await saveSqfliteSolcitud()){
+      if(await saveSqfliteSolcitud(documentos)){
         
         final snackBar = SnackBar(
           content: Text("OK.", style: TextStyle(fontWeight: FontWeight.bold),),
@@ -322,10 +326,11 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
     }
   }
 
-  Future<bool> saveSqfliteSolcitud() async{
+  Future<bool> saveSqfliteSolcitud(listaDocs) async{
     bool result;
     try{
-      final int _id = await ServiceRepositorySolicitudes.solicitudesCount("1");
+      final int _id = await ServiceRepositorySolicitudes.solicitudesCount();
+      final String userID = await authFirebase.currrentUser();
       final Solicitud solicitud = new Solicitud(
         idSolicitud: _id + 1,
         importe: widget.datos.importe,
@@ -337,10 +342,23 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
         curp: widget.datos.persona['curp'],
         rfc: widget.datos.persona['rfc'],
         telefono:  widget.datos.persona['telefono'],
-        userID: "1",
-        status: 1
+        userID: userID,
+        status: 0
       );
-      await ServiceRepositorySolicitudes.addSolicitud(solicitud);
+
+      await ServiceRepositorySolicitudes.addSolicitud(solicitud).then((_) async{
+        for(var doc in listaDocs){
+          final int _idD = await ServiceRepositoryDocumentosSolicitud.documentosSolicitudCount();
+          final DocumentoSolicitud documentoSolicitud = new DocumentoSolicitud(
+            idDocumentoSolicitud: _idD + 1,
+            idSolicitud: solicitud.idSolicitud,
+            tipo: doc['tipo'],
+            documento: docArchivos.firstWhere((archivo) => archivo.tipo == doc['tipo']).archivo.path 
+          );
+          await ServiceRepositoryDocumentosSolicitud.addDocumentoSolicitud(documentoSolicitud);
+        }
+      });
+
       result = true;
     }catch(e){
       result = false;
