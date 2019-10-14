@@ -10,7 +10,10 @@ import 'package:sgcartera_app/models/backBlaze_request.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/cat_documento.dart';
+import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catDocumento.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
+import 'package:sqflite/sqflite.dart';
 
 class SolicitudDocumentos extends StatefulWidget {
   SolicitudDocumentos({this.title, this.datos, this.colorTema});
@@ -22,9 +25,7 @@ class SolicitudDocumentos extends StatefulWidget {
 }
 
 class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
-  /*File identificacionFile;
-  File domicilioFile;
-  File buroFile;*/
+  
   bool buttonEnabled = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   Firestore _firestore = Firestore.instance;
@@ -171,22 +172,13 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
           maxWidth: 700.0
         );
       }
+      print(auxFile.path);
     }catch(e){
 
     }
     var objetoArchivo = docArchivos.firstWhere((archivo) => archivo.tipo == tipo);
     objetoArchivo.archivo = auxFile;
-    /*switch (tipo){
-      case 1:
-        identificacionFile = auxFile;
-        break;
-      case 2:
-        domicilioFile = auxFile;
-        break;
-      case 3:
-        buroFile = auxFile;
-        break;
-    }*/
+    
     setState(() {});
   }
 
@@ -194,19 +186,8 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
     File auxFile;
     
     if(catDocumentos.length == docArchivos.length) auxFile = docArchivos.singleWhere((archivo) => archivo.tipo == tipo).archivo;
-    /*switch (tipo){
-      case 1:
-        auxFile = identificacionFile;
-        break;
-      case 2:
-        auxFile = domicilioFile;
-        break;
-      case 3:
-        auxFile = buroFile;
-        break;
-    }*/
+    
     if(auxFile != null)
-      //return Image.file(auxFile);
       return Hero(
         tag: "image"+tipo.toString(),
         child: GestureDetector(
@@ -281,8 +262,6 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
   List<Widget> buttonWidget(){
     return [
       styleButton(validaSubmit, buttonEnabled ? "GUARDAR Fbase" : "GUARDANDO ..."),
-      /*Text(" "),
-      styleButton(validaSubmit2, buttonEnabled ? "GUARDAR Bblaze" : "GUARDANDO ...")*/
     ];
   }
 
@@ -295,33 +274,43 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
     );
   }
 
-  /*void validaSubmit2() async{
-    if(identificacionFile != null && domicilioFile != null && buroFile != null){
+  void validaSubmit() async{
+    var objetosArchivos = docArchivos.where((archivo) => archivo.archivo == null);
+    if(objetosArchivos.length == 0){
       _buttonStatus();
       
       List<Map> documentos = [];
-      Documento documento1 = new Documento(tipo:1, documento: "Id1");
-      documentos.add(documento1.toJson());
-      Documento documento2 = new Documento(tipo:2, documento: "Id2");
-      documentos.add(documento2.toJson());
-      Documento documento3 = new Documento(tipo:3, documento: "Id3");
-      documentos.add(documento3.toJson());
-      //widget.datos.documentos = documentos;
+      for(DocumentoArchivo docArchivo in docArchivos){
+        Documento documento = new Documento(tipo:docArchivo.tipo, documento: "");
+        documentos.add(documento.toJson());
+      }
 
-      await saveBackBlaze(documentos).then((lista) async{
+      /*await saveFireStore(documentos).then((lista) async{
         widget.datos.documentos = lista;   
         widget.datos.fechaCaputra = DateTime.now();
         var result = await _firestore.collection("Solicitudes").add(widget.datos.toJson());
         SolicitudID = result.documentID;
-      });
+      });*/
 
+      if(await saveSqfliteSolcitud()){
+        
+        final snackBar = SnackBar(
+          content: Text("OK.", style: TextStyle(fontWeight: FontWeight.bold),),
+          backgroundColor: Colors.green[300],
+          duration: Duration(seconds: 3),
+        );
+        _scaffoldKey.currentState.showSnackBar(snackBar);
       
-      final snackBar = SnackBar(
-        content: Text("OK.", style: TextStyle(fontWeight: FontWeight.bold),),
-        backgroundColor: Colors.green[300],
-        duration: Duration(seconds: 3),
-      );
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      }else{
+        
+        final snackBar = SnackBar(
+          content: Text("Error al guardar. Revise que la toda la información este correcta.", style: TextStyle(fontWeight: FontWeight.bold),),
+          backgroundColor: Colors.red[300],
+          duration: Duration(seconds: 3),
+        );
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+      
+      }
       _buttonStatus();
     }else{
       final snackBar = SnackBar(
@@ -333,57 +322,31 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
     }
   }
 
-  Future<List<Map>> saveBackBlaze(listaDocs) async{
-    BackBlaze backBlaze = new BackBlaze(); 
-    for(var doc in listaDocs){
-      BackBlazeRequest backBlazeRequest = await backBlaze.b2UploadFile(doc['tipo']==1?identificacionFile:doc['tipo']==2?domicilioFile:buroFile);
-      doc['documento'] = backBlazeRequest.documentId;
-    }
-    return listaDocs;
-  }*/  
-
-  void validaSubmit() async{
-    var objetosArchivos = docArchivos.where((archivo) => archivo.archivo == null);
-    //if(identificacionFile != null && domicilioFile != null && buroFile != null){
-    if(objetosArchivos.length == 0){
-      _buttonStatus();
-      
-      List<Map> documentos = [];
-      for(DocumentoArchivo docArchivo in docArchivos){
-        Documento documento = new Documento(tipo:docArchivo.tipo, documento: "");
-        documentos.add(documento.toJson());
-      }
-      /*Documento documento1 = new Documento(tipo:1, documento: "ruta1");
-      documentos.add(documento1.toJson());
-      Documento documento2 = new Documento(tipo:2, documento: "ruta2");
-      documentos.add(documento2.toJson());
-      Documento documento3 = new Documento(tipo:3, documento: "ruta3");
-      documentos.add(documento3.toJson());*/
-      //widget.datos.documentos = documentos;
-
-      await saveFireStore(documentos).then((lista) async{
-        widget.datos.documentos = lista;   
-        widget.datos.fechaCaputra = DateTime.now();
-        var result = await _firestore.collection("Solicitudes").add(widget.datos.toJson());
-        SolicitudID = result.documentID;
-      });
-
-      
-      final snackBar = SnackBar(
-        content: Text("OK.", style: TextStyle(fontWeight: FontWeight.bold),),
-        backgroundColor: Colors.green[300],
-        duration: Duration(seconds: 3),
+  Future<bool> saveSqfliteSolcitud() async{
+    bool result;
+    try{
+      final int _id = await ServiceRepositorySolicitudes.solicitudesCount("1");
+      final Solicitud solicitud = new Solicitud(
+        idSolicitud: _id + 1,
+        importe: widget.datos.importe,
+        nombrePrimero: widget.datos.persona['nombre'],
+        nombreSegundo: widget.datos.persona['nombreSegundo'],
+        apellidoPrimero: widget.datos.persona['apellido'],
+        apellidoSegundo: widget.datos.persona['apellidoSegundo'],
+        fechaNacimiento: widget.datos.persona['fechaNacimiento'].millisecondsSinceEpoch,
+        curp: widget.datos.persona['curp'],
+        rfc: widget.datos.persona['rfc'],
+        telefono:  widget.datos.persona['telefono'],
+        userID: "1",
+        status: 1
       );
-      _scaffoldKey.currentState.showSnackBar(snackBar);
-      _buttonStatus();
-    }else{
-      final snackBar = SnackBar(
-        content: Text("Error al guardar. Agrega todos los documentos para poder guardar la solicitud.", style: TextStyle(fontWeight: FontWeight.bold),),
-        backgroundColor: Colors.red[300],
-        duration: Duration(seconds: 3),
-      );
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      await ServiceRepositorySolicitudes.addSolicitud(solicitud);
+      result = true;
+    }catch(e){
+      result = false;
     }
+    
+    return result;
   }
 
   Future<List<Map>> saveFireStore(listaDocs) async{
