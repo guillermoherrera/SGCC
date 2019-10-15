@@ -15,6 +15,7 @@ class Solicitud{
   String nombreGrupo;
   String userID;
   int status;
+  int tipoContrato;
 
   Solicitud({
     this.apellidoPrimero,
@@ -30,7 +31,8 @@ class Solicitud{
     this.telefono,
     this.nombreGrupo,
     this.userID,
-    this.status
+    this.status,
+    this.tipoContrato
   });
 
   Solicitud.fromJson(Map<String, dynamic>json){
@@ -48,5 +50,6 @@ class Solicitud{
     this.nombreGrupo = json[DataBaseCreator.nombre_Grupo];
     this.userID = json[DataBaseCreator.userID];
     this.status = json[DataBaseCreator.status];
+    this.tipoContrato = json[DataBaseCreator.tipoContrato];
   }
 }

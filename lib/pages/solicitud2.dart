@@ -18,6 +18,8 @@ import 'package:sgcartera_app/sqlite_files/repositories/repository_service_docum
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:sqflite/sqflite.dart';
 
+import 'lista_solicitudes.dart';
+
 class SolicitudDocumentos extends StatefulWidget {
   SolicitudDocumentos({this.title, this.datos, this.colorTema});
   final String title;
@@ -298,12 +300,13 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
 
       if(await saveSqfliteSolcitud(documentos)){
         
-        final snackBar = SnackBar(
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "En Espera (no sincronizadas)", status: 0, colorTema: widget.colorTema,) ));
+        /*final snackBar = SnackBar(
           content: Text("OK.", style: TextStyle(fontWeight: FontWeight.bold),),
           backgroundColor: Colors.green[300],
           duration: Duration(seconds: 3),
         );
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState.showSnackBar(snackBar);*/
       
       }else{
         
@@ -343,7 +346,8 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
         rfc: widget.datos.persona['rfc'],
         telefono:  widget.datos.persona['telefono'],
         userID: userID,
-        status: 0
+        status: 0,
+        tipoContrato: widget.datos.tipoContrato
       );
 
       await ServiceRepositorySolicitudes.addSolicitud(solicitud).then((_) async{

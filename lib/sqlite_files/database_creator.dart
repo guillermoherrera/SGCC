@@ -24,6 +24,7 @@ class DataBaseCreator{
   static const curp = 'curp';
   static const rfc = 'rfc';
   static const telefono = 'telefono';
+  static const tipoContrato = 'tipoContrato';
 
   static const documentoSolicitudesTable = 'documentosSolicitudes';
   static const idDocumentoSolicitudes = 'idDocumentoSolicitud';
@@ -72,6 +73,7 @@ class DataBaseCreator{
       $rfc TEXT,
       $telefono TEXT,
       $status INTEGER,
+      $tipoContrato INTEGER,
       $userID TEXT
     )''';
     

@@ -53,7 +53,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           InkWell(
-            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> MisSolicitudes() ));},
+            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> MisSolicitudes(colorTema: widget.colorTema,) ));},
             child: ListTile(
               title: Text("Mis Solicitudes"),
               leading: Icon(Icons.folder_open, color: widget.colorTema,),
