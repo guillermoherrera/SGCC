@@ -7,6 +7,9 @@ class SolicitudObj{
   List<Map> documentos;
   int status;
 
+  String grupoNombre;
+  int grupoId;
+
   SolicitudObj({
     this.persona,
     this.importe,
@@ -14,7 +17,9 @@ class SolicitudObj{
     this.tipoContrato,
     this.userID,
     this.documentos,
-    this.status
+    this.status,
+    this.grupoId,
+    this.grupoNombre
   });
 
   Map<String, dynamic> toJson()=>{
@@ -24,6 +29,8 @@ class SolicitudObj{
     'tipoContrato': tipoContrato,
     'userID': userID,
     'documentos': documentos,
-    'status': status
+    'status': status,
+    'grupoId': grupoId,
+    'grupoNombre': grupoNombre
   };
 }

@@ -6,9 +6,11 @@ import 'package:sgcartera_app/pages/solicitud2.dart';
 //import 'package:intl/intl.dart';
 
 class Solicitud extends StatefulWidget {
-  Solicitud({this.title, this.colorTema});
+  Solicitud({this.title, this.colorTema, this.grupoId, this.grupoNombre});
   final String title;
   final MaterialColor colorTema;
+  final int grupoId;
+  final String grupoNombre;
   @override
   _SolicitudState createState() => _SolicitudState();
 }
@@ -351,7 +353,9 @@ class _SolicitudState extends State<Solicitud> {
         persona: persona.toJson(),
         importe: double.parse(importe.text),
         tipoContrato: 1,
-        userID: "userID"
+        userID: "userID",
+        grupoId: widget.grupoId,
+        grupoNombre: widget.grupoNombre
       );
       _buttonStatus();
       Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema,)));

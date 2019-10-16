@@ -9,6 +9,7 @@ import 'package:sgcartera_app/models/auth_res.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
+import 'package:sgcartera_app/pages/grupos.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart' as solicitudModel;
@@ -123,7 +124,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       )
                     ),
-                    onTap: (){},
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Group(colorTema: widget.colorTema,)));},
                   )
                 ],
               )
@@ -258,7 +259,9 @@ class _HomePageState extends State<HomePage> {
         importe: solicitud.importe,
         tipoContrato: solicitud.tipoContrato,
         userID: solicitud.userID,
-        status: 1
+        status: 1,
+        grupoId: solicitud.idGrupo,
+        grupoNombre: solicitud.idGrupo == null ? null : solicitud.nombreGrupo 
       );
       
       documentos = [];

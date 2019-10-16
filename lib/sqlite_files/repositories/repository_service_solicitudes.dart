@@ -17,6 +17,20 @@ class ServiceRepositorySolicitudes{
     return solicitudes;
   }
 
+  static Future<List<Solicitud>> getAllSolicitudesGrupo(String userID, String nombreGrupo) async{
+    final sql = '''SELECT * FROM ${DataBaseCreator.solicitudesTable}
+      WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.nombre_Grupo} = "$nombreGrupo"''';
+    
+    final data = await db.rawQuery(sql);
+    List<Solicitud> solicitudes = List();
+
+    for(final node in data){
+      final solicitud = Solicitud.fromJson(node);
+      solicitudes.add(solicitud); 
+    }
+    return solicitudes;
+  }
+
   static Future<void> addSolicitud(Solicitud solicitud) async{
     final sql = '''INSERT INTO ${DataBaseCreator.solicitudesTable}(
       ${DataBaseCreator.importe},

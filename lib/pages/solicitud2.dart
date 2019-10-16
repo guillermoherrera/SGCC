@@ -363,7 +363,9 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
         telefono:  widget.datos.persona['telefono'],
         userID: userID,
         status: 0,
-        tipoContrato: widget.datos.tipoContrato
+        tipoContrato: widget.datos.tipoContrato,
+        idGrupo: widget.datos.grupoId,
+        nombreGrupo: widget.datos.grupoNombre
       );
 
       await ServiceRepositorySolicitudes.addSolicitud(solicitud).then((_) async{

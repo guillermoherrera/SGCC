@@ -95,8 +95,7 @@ class DataBaseCreator{
     final solicitudesSql = '''CREATE TABLE $gruposTable (
       $idGrupo INTEGER PRIMARY KEY,
       $nombreGrupo TEXT,
-      $tipoDocumento INTEGER,
-      $status INTEGER
+      $status INTEGER,
       $userID TEXT
     )''';
     
