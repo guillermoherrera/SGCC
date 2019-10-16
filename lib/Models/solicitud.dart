@@ -5,6 +5,7 @@ class SolicitudObj{
   int tipoContrato; 
   String userID;
   List<Map> documentos;
+  int status;
 
   SolicitudObj({
     this.persona,
@@ -12,7 +13,8 @@ class SolicitudObj{
     this.fechaCaputra,
     this.tipoContrato,
     this.userID,
-    this.documentos
+    this.documentos,
+    this.status
   });
 
   Map<String, dynamic> toJson()=>{
@@ -21,6 +23,7 @@ class SolicitudObj{
     'fechaCaputra': fechaCaputra,
     'tipoContrato': tipoContrato,
     'userID': userID,
-    'documentos': documentos
+    'documentos': documentos,
+    'status': status
   };
 }

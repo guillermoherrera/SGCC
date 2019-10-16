@@ -5,7 +5,7 @@ import '../database_creator.dart';
 class ServiceRepositorySolicitudes{
   static Future<List<Solicitud>> getAllSolicitudes(String userID) async{
     final sql = ''' SELECT * FROM ${DataBaseCreator.solicitudesTable}
-      WHERE ${DataBaseCreator.userID} = "$userID"''';
+      WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.status} = 0''';
 
     final data = await db.rawQuery(sql);
     List<Solicitud> solicitudes = List();
@@ -31,7 +31,8 @@ class ServiceRepositorySolicitudes{
       ${DataBaseCreator.id_grupo},
       ${DataBaseCreator.nombre_Grupo},
       ${DataBaseCreator.userID},
-      ${DataBaseCreator.status}
+      ${DataBaseCreator.status},
+      ${DataBaseCreator.tipoContrato}
     )values(
       ${solicitud.importe},
       "${solicitud.nombrePrimero}",
@@ -45,12 +46,22 @@ class ServiceRepositorySolicitudes{
       ${solicitud.idGrupo},
       "${solicitud.nombreGrupo}",
       "${solicitud.userID}",
-      ${solicitud.status}
+      ${solicitud.status},
+      ${solicitud.tipoContrato}
     )
     ''';
 
     final result = await db.rawInsert(sql);
     DataBaseCreator.dataBaseLog("agregar Solcitud", sql, null, result);
+  }
+
+  static Future<void> updateSolicitudStatus(int status, int solicitudID) async{
+    final sql = '''UPDATE ${DataBaseCreator.solicitudesTable}
+      SET ${DataBaseCreator.status} = $status
+      WHERE ${DataBaseCreator.idSolicitud} = $solicitudID ''';
+
+    final result = await db.rawUpdate(sql);
+    DataBaseCreator.dataBaseLog("actualizar Solcitud", sql, null, result);
   }
 
   static Future<int> solicitudesCount() async{

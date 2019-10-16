@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/components/custom_drawer.dart';
+import 'package:sgcartera_app/models/auth_res.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
@@ -13,6 +14,7 @@ import 'package:sgcartera_app/pages/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart' as solicitudModel;
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({this.onSingIn, this.colorTema});
@@ -33,6 +35,8 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
+  void _moveToSignInScreen(BuildContext context) =>
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: widget.onSingIn,) ));
 
   @override
   void initState() {
@@ -40,89 +44,93 @@ class _HomePageState extends State<HomePage> {
     // TODO: implement initState
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Sistema Originación"),
-        centerTitle: true,
-      ),
-      drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema),
-      body: Container(
-          child: Stack(
-            children: <Widget>[
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                  colors: [widget.colorTema[100], Colors.white])
-                ),
-              ),
-              ListView(
+    return WillPopScope(
+      onWillPop: (){return new Future(() => false);},
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Sistema Originación"),
+          centerTitle: true,
+        ),
+        drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema),
+        body: Container(
+            child: Stack(
               children: <Widget>[
-                InkWell(
-                  child: Card(
-                    child: Container(
-                      child: ListTile(
-                      leading: getIcono(),
-                      title: Text(getMensaje(), style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: getLeyenda(),
-                      trailing: getAcciones(),
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                        colors: [widget.colorTema[400], Colors.white])
-                      ),
-                    )
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [widget.colorTema[100], Colors.white])
                   ),
-                  onTap: (){},
                 ),
-                InkWell(
-                  child: Card(
-                    child: Container(
-                      child: ListTile(
-                      leading: Icon(Icons.person, color: widget.colorTema,size: 40.0,),
-                      title: Text("Nueva Solicitud Individual", style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text("Captura de una solicitud de credito individual."),
-
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                        colors: [widget.colorTema[400], Colors.white])
-                      ),
-                    )
+                ListView(
+                children: <Widget>[
+                  InkWell(
+                    child: Card(
+                      child: Container(
+                        child: ListTile(
+                        leading: getIcono(),
+                        title: Text(getMensaje(), style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: getLeyenda(),
+                        trailing: getAcciones(),
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: [widget.colorTema[400], Colors.white])
+                        ),
+                      )
+                    ),
+                    onTap: (){},
                   ),
-                  onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Individual", colorTema: widget.colorTema,)));},
-                ),
-                InkWell(
-                  child: Card(
-                    child: Container(
-                      child: ListTile(
-                      leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
-                      title: Text("Nueva Solicitud Grupal", style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text("Captura de una solicitud de credito grupal."),
+                  InkWell(
+                    child: Card(
+                      child: Container(
+                        child: ListTile(
+                        leading: Icon(Icons.person, color: widget.colorTema,size: 40.0,),
+                        title: Text("Nueva Solicitud Individual", style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("Captura de una solicitud de credito individual."),
 
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                        colors: [widget.colorTema[400], Colors.white])
-                      ),
-                    )
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: [widget.colorTema[400], Colors.white])
+                        ),
+                      )
+                    ),
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Individual", colorTema: widget.colorTema,)));},
                   ),
-                  onTap: (){},
-                )
-              ],
-            )
-          ]
+                  InkWell(
+                    child: Card(
+                      child: Container(
+                        child: ListTile(
+                        leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
+                        title: Text("Nueva Solicitud Grupal", style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("Captura de una solicitud de credito grupal."),
+
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: [widget.colorTema[400], Colors.white])
+                        ),
+                      )
+                    ),
+                    onTap: (){},
+                  )
+                ],
+              )
+            ]
+          )
         )
-      )
+      ),
     );
   }
 
@@ -154,7 +162,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget getAcciones(){
-    return new PopupMenuButton(
+    return solicitudes.length > 0 ? PopupMenuButton(
       itemBuilder: (_) => <PopupMenuItem<int>>[
         new PopupMenuItem<int>(
             child: Row(children: <Widget>[Icon(Icons.cached, color: Colors.green,),Text(" Sincronizar")],), value: 1),
@@ -169,33 +177,63 @@ class _HomePageState extends State<HomePage> {
           Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudes(colorTema: widget.colorTema,title: "En Espera (no sincronizadas)",status: 0,)));
         }
       }
-    );
+    ) : Text("");
   }
 
   showDialogo() async{
+    final pref = await SharedPreferences.getInstance();
+    var _email = pref.getString("email");
+    var _pass = pref.getString("pass");
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        mostrarShowDialog(true);
+        var authRes = await authFirebase.signIn(_email, _pass);//poner aqui datos reales cuenta
+        print('connected');
+        if(authRes.result){
+          await sincronizarDatos().then((_){
+            Navigator.pop(context);
+          });
+        }else{
+          Navigator.pop(context);
+          mostrarShowDialog(false);
+        }
+      }
+    } on SocketException catch (_) {
+      print('not connected');
+      mostrarShowDialog(false);
+    }
+    /*new Future.delayed(new Duration(seconds: 3), () {
+      Navigator.pop(context); //pop dialog
+    });*/
+  }
+
+  mostrarShowDialog(bool conectado){
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircularProgressIndicator(),
-              Text("\nSINCRONIZANDO ..."),
+        return WillPopScope(
+          onWillPop: (){},
+          child: AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                conectado ? CircularProgressIndicator() : Icon(Icons.error, color: Colors.red, size: 100.0,),
+                conectado ? Text("\nSINCRONIZANDO ...") : Text("\nSIN CONEXIÓN"),
+              ],
+            ),
+            actions: <Widget>[
+              !conectado ?
+              new FlatButton(
+                child: const Text("CERRAR"),
+                onPressed: (){Navigator.pop(context);}
+              ) : null
             ],
           )
         );
       },
     );
-
-    await sincronizarDatos().then((_){
-      Navigator.pop(context);
-    });
-
-    /*new Future.delayed(new Duration(seconds: 3), () {
-      Navigator.pop(context); //pop dialog
-    });*/
   }
 
   sincronizarDatos() async{
@@ -218,8 +256,9 @@ class _HomePageState extends State<HomePage> {
       SolicitudObj solicitudObj = new SolicitudObj(
         persona: persona.toJson(),
         importe: solicitud.importe,
-        tipoContrato: 1,////////////////////////////////AGREGAR A LA TABLA SQFLITE
+        tipoContrato: solicitud.tipoContrato,
         userID: solicitud.userID,
+        status: 1
       );
       
       documentos = [];
@@ -234,7 +273,9 @@ class _HomePageState extends State<HomePage> {
         solicitudObj.documentos = lista;   
         solicitudObj.fechaCaputra = DateTime.now();
         var result = await _firestore.collection("Solicitudes").add(solicitudObj.toJson());
+        //await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
         print(result);
+        getListDocumentos();
       });
     } 
   }

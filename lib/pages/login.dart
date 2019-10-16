@@ -5,6 +5,7 @@ import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/sqlite_files/database_creator.dart';
 import 'package:sgcartera_app/sqlite_files/models/cat_documento.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catDocumento.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   Login({this.auth, this.onSingIn, this.colorTema});
@@ -129,6 +130,9 @@ class _LoginState extends State<Login> {
       AuthRes authRes;
       authRes = await widget.auth.signIn(email.text, pass.text);
       if(authRes.result){
+        final pref = await SharedPreferences.getInstance();
+        await pref.setString("email", email.text);
+        await pref.setString("pass", pass.text);
         await getCatalogos();
         widget.onSingIn();
       }else{

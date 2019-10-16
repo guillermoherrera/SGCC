@@ -10,6 +10,7 @@ import 'package:sgcartera_app/classes/backblaze.dart';
 import 'package:sgcartera_app/models/backBlaze_request.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
+import 'package:sgcartera_app/pages/home.dart';
 import 'package:sgcartera_app/sqlite_files/models/cat_documento.dart';
 import 'package:sgcartera_app/sqlite_files/models/documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
@@ -281,6 +282,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
   }
 
   void validaSubmit() async{
+    
     var objetosArchivos = docArchivos.where((archivo) => archivo.archivo == null);
     if(objetosArchivos.length == 0){
       _buttonStatus();
@@ -291,23 +293,36 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
         documentos.add(documento.toJson());
       }
 
-      /*await saveFireStore(documentos).then((lista) async{
-        widget.datos.documentos = lista;   
-        widget.datos.fechaCaputra = DateTime.now();
-        var result = await _firestore.collection("Solicitudes").add(widget.datos.toJson());
-        SolicitudID = result.documentID;
-      });*/
-
       if(await saveSqfliteSolcitud(documentos)){
         
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "En Espera (no sincronizadas)", status: 0, colorTema: widget.colorTema,) ));
-        /*final snackBar = SnackBar(
-          content: Text("OK.", style: TextStyle(fontWeight: FontWeight.bold),),
-          backgroundColor: Colors.green[300],
-          duration: Duration(seconds: 3),
+        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "En Espera (no sincronizadas)", status: 0, colorTema: widget.colorTema,) ));
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return WillPopScope(
+              onWillPop: (){},
+              child: 
+              AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.check_circle_outline, color: Colors.green, size: 100.0,),
+                    Text("\nSOLICITUD GARDARDA"),
+                  ],
+                ),
+                actions: <Widget>[
+                  new FlatButton(
+                    child: const Text("CONTINUAR"),
+                    onPressed: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: (){},) ));}
+                  ),
+                ],
+              )
+            );
+          },
         );
-        _scaffoldKey.currentState.showSnackBar(snackBar);*/
-      
+
       }else{
         
         final snackBar = SnackBar(
@@ -327,6 +342,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       );
       _scaffoldKey.currentState.showSnackBar(snackBar);
     }
+
   }
 
   Future<bool> saveSqfliteSolcitud(listaDocs) async{
