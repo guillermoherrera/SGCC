@@ -17,6 +17,15 @@ class ServiceRepositoryGrupos{
 
     return grupos;
   }
+
+  static Future<Grupo> getOneGrupo(int idGrupo) async{
+    final sql = '''SELECT * FROM ${DataBaseCreator.gruposTable}
+      WHERE ${DataBaseCreator.idGrupo} = $idGrupo''';
+    
+    final data = await db.rawQuery(sql);
+
+    return Grupo.fromjson(data[0]);
+  }
   
   static Future<void> addGrupo(Grupo grupo) async{
     final sql = '''INSERT INTO ${DataBaseCreator.gruposTable}(
@@ -33,6 +42,23 @@ class ServiceRepositoryGrupos{
 
     final result = await db.rawInsert(sql);
     DataBaseCreator.dataBaseLog("agregar Grupo", sql, null, result);
+  }
+
+  static Future<void> updateGrupoStatus(int status, int grupoID)async{
+    final sql = '''UPDATE ${DataBaseCreator.gruposTable}
+      SET ${DataBaseCreator.status} = $status
+      WHERE ${DataBaseCreator.idGrupo} = $grupoID''';
+    
+    final result = await db.rawUpdate(sql);
+    DataBaseCreator.dataBaseLog("actualizar Grupo Status", sql, null, result);
+  }
+
+  static Future<void> deleteGrupo(idGrupo)async{
+    final sql = ''' DELETE FROM ${DataBaseCreator.gruposTable}
+      WHERE ${DataBaseCreator.idGrupo} = $idGrupo''';
+    
+    final result = await db.rawDelete(sql);
+    DataBaseCreator.dataBaseLog('eliminar Grupo', sql, null, result);
   }
 
   static Future<int> gruposCount()async{
