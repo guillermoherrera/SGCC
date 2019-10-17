@@ -109,6 +109,18 @@ class ServiceRepositorySolicitudes{
     DataBaseCreator.dataBaseLog("actualizar Solcitud Status", sql, null, result);
   }
 
+  static Future<void> deleteSolicitudCompleta(Solicitud solicitud) async{
+    final sql = '''DELETE FROM ${DataBaseCreator.solicitudesTable}
+      WHERE ${DataBaseCreator.idSolicitud} = ${solicitud.idSolicitud}''';
+    final result = await db.rawDelete(sql);
+    DataBaseCreator.dataBaseLog('eliminar Solicitud', sql, null, result);
+
+    final sql2 = '''DELETE FROM ${DataBaseCreator.documentoSolicitudesTable}
+      WHERE ${DataBaseCreator.id_Solicitud} = ${solicitud.idSolicitud}''';
+    final result2 = await db.rawDelete(sql2);
+    DataBaseCreator.dataBaseLog('eliminar SolicitudDocumento', sql2, null, result2); 
+  }
+
   static Future<int> solicitudesCount() async{
     final data = await db.rawQuery('''SELECT COUNT(*) FROM ${DataBaseCreator.solicitudesTable}''');
     int count = data[0].values.elementAt(0);

@@ -7,10 +7,11 @@ import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
 
 class CustomDrawer extends StatefulWidget {
-  CustomDrawer({this.authFirebase, this.onSingIn, this.colorTema});
+  CustomDrawer({this.authFirebase, this.onSingIn, this.colorTema, this.actualizaHome});
   final AuthFirebase authFirebase;
   final VoidCallback onSingIn;
   final MaterialColor colorTema;
+  final VoidCallback actualizaHome;
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
 }
@@ -53,7 +54,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           InkWell(
-            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> MisSolicitudes(colorTema: widget.colorTema,) ));},
+            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> MisSolicitudes(colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));},
             child: ListTile(
               title: Text("Mis Solicitudes"),
               leading: Icon(Icons.folder_open, color: widget.colorTema,),

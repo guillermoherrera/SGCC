@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
           title: Text("Sistema Originación"),
           centerTitle: true,
         ),
-        drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema),
+        drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo() ),
         body: Container(
             child: Stack(
               children: <Widget>[
@@ -175,7 +175,7 @@ class _HomePageState extends State<HomePage> {
           showDialogo();
         }
         else if(value == 2){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudes(colorTema: widget.colorTema,title: "En Espera (no sincronizadas)",status: 0,)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudes(colorTema: widget.colorTema,title: "En Espera (no sincronizadas)",status: 0,actualizaHome: ()=>actualizaInfo() )));
         }
       }
     ) : Text("");
@@ -292,5 +292,9 @@ class _HomePageState extends State<HomePage> {
       doc['documento'] = await downloadUrl.ref.getDownloadURL();
     }
     return listaDocs;
-  }  
+  }
+
+  void actualizaInfo(){
+    getListDocumentos();
+  }
 }

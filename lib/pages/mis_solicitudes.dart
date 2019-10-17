@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes.dart';
 
 class MisSolicitudes extends StatefulWidget {
-  MisSolicitudes({this.colorTema});
+  MisSolicitudes({this.colorTema, this.actualizaHome});
   MaterialColor colorTema;
+  final VoidCallback actualizaHome;
   @override
   _MisSolicitudesState createState() => _MisSolicitudesState();
 }
@@ -112,19 +113,19 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   void _accionItem(i){
     switch(i){
       case 0:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "En Espera (no sincronizadas)", status: 0, colorTema: widget.colorTema,) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "En Espera (no sincronizadas)", status: 0, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome,) ));
         break;
       case 1:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Por autorizar", status: 1, colorTema: widget.colorTema,) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Por autorizar", status: 1, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
       case 2:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Aprobadas", status: 2, colorTema: widget.colorTema,) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Aprobadas", status: 2, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
       case 3:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Denegadas", status: 3, colorTema: widget.colorTema,) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Denegadas", status: 3, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
       default:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "x_x", status: 0, colorTema: widget.colorTema,) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "x_x", status: 0, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
     }
   }

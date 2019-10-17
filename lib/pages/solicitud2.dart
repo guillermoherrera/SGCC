@@ -268,7 +268,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
 
   List<Widget> buttonWidget(){
     return [
-      styleButton(validaSubmit, buttonEnabled ? "GUARDAR Fbase" : "GUARDANDO ..."),
+      styleButton(validaSubmit, buttonEnabled ? "GUARDAR" : "GUARDANDO ..."),
     ];
   }
 

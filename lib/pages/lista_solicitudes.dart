@@ -6,10 +6,11 @@ import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 
 class ListaSolicitudes extends StatefulWidget {
-  ListaSolicitudes({this.title, this.status, this.colorTema});
+  ListaSolicitudes({this.title, this.status, this.colorTema, this.actualizaHome});
   final MaterialColor colorTema;
   final String title;
   final int status;
+  final VoidCallback actualizaHome;
   @override
   _ListaSolicitudesState createState() => _ListaSolicitudesState();
 }
@@ -125,19 +126,53 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
             new PopupMenuItem<int>(
               child: Row(children: <Widget>[Icon(Icons.mode_edit, color: Colors.green,),Text(" Ver/Editar Solicitud")],), value: 1),
             new PopupMenuItem<int>(
-              child: Row(children: <Widget>[Icon(Icons.delete, color: Colors.red),Text(" Eliminar Solicitud")],), value: 4),
+              child: Row(children: <Widget>[Icon(Icons.delete, color: Colors.red),Text(" Eliminar Solicitud")],), value: 2),
           ],
           onSelected: (value){
             if(value == 1){
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SolicitudEditar(title: "Solicitud Editar:", colorTema: widget.colorTema, idSolicitud: solicitud.idSolicitud )));
             }
             else if(value == 2){
+              eliminarSolicitud(solicitud);
               //Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo,)));
             }
           }
         )
       ],
     );
+  }
+
+  eliminarSolicitud(Solicitud solicitud) async{
+    showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Center(child: Text("Elminar Solicitud")),
+        content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.error, color: Colors.yellow, size: 100.0,),
+                Text("\n¿Desea elminar la solicitud a nombre de "+getNombre(solicitud)+"?"),
+              ],
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: const Text("No"),
+                onPressed: (){Navigator.pop(context);}
+              ),
+              new FlatButton(
+                child: const Text("Sí, eliminar."),
+                onPressed: ()async{
+                  Navigator.pop(context);
+                  await ServiceRepositorySolicitudes.deleteSolicitudCompleta(solicitud);
+                  grupos.clear();
+                  widget.actualizaHome();
+                  getListDocumentos();
+                }
+              )
+            ],
+      );
+    });
   }
 
   Widget getIcono2(){
