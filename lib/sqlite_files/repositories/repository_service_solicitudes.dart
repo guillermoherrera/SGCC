@@ -17,6 +17,15 @@ class ServiceRepositorySolicitudes{
     return solicitudes;
   }
 
+  static Future<Solicitud> getOneSolicitud(int idSolicitud) async{
+    final sql = ''' SELECT * FROM ${DataBaseCreator.solicitudesTable}
+      WHERE ${DataBaseCreator.idSolicitud} = $idSolicitud''';
+
+    final data = await db.rawQuery(sql);
+    
+    return Solicitud.fromJson(data[0]);
+  }
+
   static Future<List<Solicitud>> getAllSolicitudesGrupo(String userID, String nombreGrupo) async{
     final sql = '''SELECT * FROM ${DataBaseCreator.solicitudesTable}
       WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.nombre_Grupo} = "$nombreGrupo"''';
@@ -69,13 +78,35 @@ class ServiceRepositorySolicitudes{
     DataBaseCreator.dataBaseLog("agregar Solcitud", sql, null, result);
   }
 
+  static Future<void> updateSolicitud(Solicitud solicitud) async{
+    final sql = '''UPDATE ${DataBaseCreator.solicitudesTable}
+      SET ${DataBaseCreator.importe} = ${solicitud.importe},
+      ${DataBaseCreator.nombrePrimero} = "${solicitud.nombrePrimero}",
+      ${DataBaseCreator.nombreSegundo} = "${solicitud.nombreSegundo}",
+      ${DataBaseCreator.apellidoPrimero} = "${solicitud.apellidoPrimero}",
+      ${DataBaseCreator.apellidoSegundo} = "${solicitud.apellidoSegundo}",
+      ${DataBaseCreator.fechaNacimiento} = ${solicitud.fechaNacimiento},
+      ${DataBaseCreator.curp} = "${solicitud.curp}",
+      ${DataBaseCreator.rfc} = "${solicitud.rfc}",
+      ${DataBaseCreator.telefono} = "${solicitud.telefono}",
+      ${DataBaseCreator.id_grupo} = ${solicitud.idGrupo},
+      ${DataBaseCreator.nombre_Grupo} = "${solicitud.nombreGrupo}",
+      ${DataBaseCreator.userID} = "${solicitud.userID}",
+      ${DataBaseCreator.status} = ${solicitud.status},
+      ${DataBaseCreator.tipoContrato} = ${solicitud.tipoContrato}
+      WHERE ${DataBaseCreator.idSolicitud} = ${solicitud.idSolicitud} ''';
+    
+    final result = await db.rawUpdate(sql);
+    DataBaseCreator.dataBaseLog("actualizar Solcitud Completa", sql, null, result);
+  }
+  
   static Future<void> updateSolicitudStatus(int status, int solicitudID) async{
     final sql = '''UPDATE ${DataBaseCreator.solicitudesTable}
       SET ${DataBaseCreator.status} = $status
       WHERE ${DataBaseCreator.idSolicitud} = $solicitudID ''';
 
     final result = await db.rawUpdate(sql);
-    DataBaseCreator.dataBaseLog("actualizar Solcitud", sql, null, result);
+    DataBaseCreator.dataBaseLog("actualizar Solcitud Status", sql, null, result);
   }
 
   static Future<int> solicitudesCount() async{

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
+import 'package:sgcartera_app/pages/solicitud_editar.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 
@@ -28,12 +29,14 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     }
     setState(() {});
   }
+
   @override
   void initState() {
     getListDocumentos();
     // TODO: implement initState
     super.initState();
   }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,7 +81,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 title: Text(getNombre(solicitudes[index]), style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(getImporte(solicitudes[index])),
                 isThreeLine: true,
-                trailing: getIcono(),
+                trailing: getIcono(solicitudes[index]),
               ) : 
               ListTile(
                 leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
@@ -111,7 +114,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     return "TELÉFONO: "+solicitud.telefono+"\nIMPORTE: "+importe.toStringAsFixed(2);
   }
 
-  Widget getIcono(){
+  Widget getIcono(Solicitud solicitud){
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: 
@@ -126,7 +129,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           ],
           onSelected: (value){
             if(value == 1){
-              //Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Grupal: "+grupo.nombreGrupo, colorTema: widget.colorTema, grupoId: grupo.idGrupo, grupoNombre: grupo.nombreGrupo,)));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SolicitudEditar(title: "Solicitud Editar:", colorTema: widget.colorTema, idSolicitud: solicitud.idSolicitud )));
             }
             else if(value == 2){
               //Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo,)));

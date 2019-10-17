@@ -19,6 +19,16 @@ class ServiceRepositoryDocumentosSolicitud{
     return documentos;
   }
 
+  static Future<void> updateDocumentoSolicitud(DocumentoSolicitud documentoSolicitud) async{
+    final sql = '''UPDATE ${DataBaseCreator.documentoSolicitudesTable} 
+      SET ${DataBaseCreator.documento} = "${documentoSolicitud.documento}"
+      WHERE ${DataBaseCreator.tipoDocumento} = ${documentoSolicitud.tipo} 
+      AND ${DataBaseCreator.idDocumentoSolicitudes} = ${documentoSolicitud.idSolicitud} ''';
+    
+    final result = await db.rawUpdate(sql);
+    DataBaseCreator.dataBaseLog("actualizar DocumentoSolcitud Archivo", sql, null, result);
+  }
+
   static Future<void> addDocumentoSolicitud(DocumentoSolicitud documentoSolicitud) async{
     final sql = '''INSERT INTO ${DataBaseCreator.documentoSolicitudesTable}(
       ${DataBaseCreator.idDocumentoSolicitudes},
