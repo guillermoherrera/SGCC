@@ -124,7 +124,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       )
                     ),
-                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Group(colorTema: widget.colorTema,)));},
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Group(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo())));},
                   )
                 ],
               )

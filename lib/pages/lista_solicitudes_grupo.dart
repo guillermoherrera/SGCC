@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
+import 'package:sgcartera_app/pages/solicitud_editar.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 
 class ListaSolicitudesGrupo extends StatefulWidget {
-  ListaSolicitudesGrupo({this.title, this.colorTema});
+  ListaSolicitudesGrupo({this.title, this.colorTema, this.actualizaHome});
   final MaterialColor colorTema;
   final String title;
+  final VoidCallback actualizaHome;
   @override
   _ListaSolicitudesGrupoState createState() => _ListaSolicitudesGrupoState();
 }
@@ -65,7 +67,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                 title: Text(getNombre(solicitudes[index]), style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(getImporte(solicitudes[index])),
                 isThreeLine: true,
-                trailing: getIcono(),
+                trailing: getIcono(solicitudes[index]),
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -90,7 +92,63 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
     return "TELÉFONO: "+solicitud.telefono+"\nIMPORTE: "+importe.toStringAsFixed(2);
   }
 
-  Icon getIcono(){
-    return Icon(Icons.access_time,color: Colors.yellow[700],);
+  Widget getIcono(Solicitud solicitud){
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: 
+      <Widget>[
+        Icon(Icons.access_time,color: Colors.yellow[700],),
+        PopupMenuButton(
+          itemBuilder: (_) => <PopupMenuItem<int>>[
+            new PopupMenuItem<int>(
+              child: Row(children: <Widget>[Icon(Icons.mode_edit, color: Colors.green,),Text(" Ver/Editar Solicitud")],), value: 1),
+            new PopupMenuItem<int>(
+              child: Row(children: <Widget>[Icon(Icons.delete, color: Colors.red),Text(" Eliminar Solicitud")],), value: 2),
+          ],
+          onSelected: (value){
+            if(value == 1){
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SolicitudEditar(title: "Solicitud Editar:", colorTema: widget.colorTema, idSolicitud: solicitud.idSolicitud )));
+            }
+            else if(value == 2){
+              eliminarSolicitud(solicitud);
+              //Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo,)));
+            }
+          }
+        )
+      ],
+    );
+  }
+
+  eliminarSolicitud(Solicitud solicitud) async{
+    showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Center(child: Text("Elminar Solicitud")),
+        content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.error, color: Colors.yellow, size: 100.0,),
+                Text("\n¿Desea elminar la solicitud a nombre de "+getNombre(solicitud)+"?"),
+              ],
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: const Text("No"),
+                onPressed: (){Navigator.pop(context);}
+              ),
+              new FlatButton(
+                child: const Text("Sí, eliminar."),
+                onPressed: ()async{
+                  Navigator.pop(context);
+                  await ServiceRepositorySolicitudes.deleteSolicitudCompleta(solicitud);
+                  solicitudes.clear();
+                  widget.actualizaHome();
+                  getListDocumentos();
+                }
+              )
+            ],
+      );
+    });
   }
 }

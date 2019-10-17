@@ -47,7 +47,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           InkWell(
-            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema) ));},
+            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome) ));},
             child: ListTile(
               title: Text("Nueva Solicitud de Crédito"),
               leading: Icon(Icons.add_to_photos, color: widget.colorTema,),

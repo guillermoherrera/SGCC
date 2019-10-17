@@ -213,7 +213,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 onPressed: (){Navigator.pop(context);}
               ),
               new FlatButton(
-                child: const Text("Sí, eliminar."),
+                child: const Text("Sí, cerrar."),
                 onPressed: ()async{
                   Navigator.pop(context);
                   await ServiceRepositoryGrupos.updateGrupoStatus(1, grupoId);
@@ -287,7 +287,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
             if(value == 1){
               accion ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SolicitudPage.Solicitud(title: "Solicitud Grupal: "+grupoNombre, colorTema: widget.colorTema, grupoId: grupoId, grupoNombre: grupoNombre,))) : null;
             }else if(value == 2){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupoNombre,)));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupoNombre, actualizaHome: widget.actualizaHome)));
             }else if(value == 3){
               if(accion){
                 cerrarGrupo(grupoId, grupoNombre);

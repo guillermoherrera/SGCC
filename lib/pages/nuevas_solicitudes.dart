@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:sgcartera_app/pages/grupos.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
 
 class NuevasSolicitudes extends StatefulWidget {
-  NuevasSolicitudes({this.colorTema});
+  NuevasSolicitudes({this.colorTema, this.actualizaHome});
   final MaterialColor colorTema;
+  final VoidCallback actualizaHome;
   @override
   _NuevasSolicitudesState createState() => _NuevasSolicitudesState();
 }
@@ -65,7 +67,7 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                       ),
                     )
                   ),
-                  onTap: (){},
+                  onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Group(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome )));},
                 )
               ],
             )
