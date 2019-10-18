@@ -35,9 +35,9 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                   child: Card(
                     child: Container(
                       child: ListTile(
-                      leading: Icon(Icons.person, color: widget.colorTema,size: 40.0,),
+                      leading: Icon(Icons.person_add, color: widget.colorTema,size: 40.0,),
                       title: Text("Nueva Solicitud Individual", style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text("Captura de una solicitud de credito individual."),
+                      subtitle: Text("Captura solicitudes de credito individual."),
 
                       ),
                       decoration: BoxDecoration(
@@ -55,8 +55,8 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                     child: Container(
                       child: ListTile(
                       leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
-                      title: Text("Nueva Solicitud Grupal", style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text("Captura de una solicitud de credito grupal."),
+                      title: Text("Grupos", style: TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text("Captura y revisa tus solicitudes de Credito Grupal."),
 
                       ),
                       decoration: BoxDecoration(

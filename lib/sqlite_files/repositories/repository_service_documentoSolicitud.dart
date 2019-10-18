@@ -23,7 +23,7 @@ class ServiceRepositoryDocumentosSolicitud{
     final sql = '''UPDATE ${DataBaseCreator.documentoSolicitudesTable} 
       SET ${DataBaseCreator.documento} = "${documentoSolicitud.documento}"
       WHERE ${DataBaseCreator.tipoDocumento} = ${documentoSolicitud.tipo} 
-      AND ${DataBaseCreator.idDocumentoSolicitudes} = ${documentoSolicitud.idSolicitud} ''';
+      AND ${DataBaseCreator.id_Solicitud} = ${documentoSolicitud.idSolicitud} ''';
     
     final result = await db.rawUpdate(sql);
     DataBaseCreator.dataBaseLog("actualizar DocumentoSolcitud Archivo", sql, null, result);

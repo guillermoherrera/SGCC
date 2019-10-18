@@ -7,6 +7,7 @@ import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud.dart' as SolicitudPage;
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart'; 
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'lista_solicitudes_grupo.dart';
 
@@ -27,7 +28,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   List<String> grupos = List();
   
   Future<void> getListDocumentos() async{
-    String userID = await authFirebase.currrentUser();
+    final pref = await SharedPreferences.getInstance();
+    String userID = pref.getString("uid");
     switch (widget.status) {
       case 0:
         solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);  
@@ -249,7 +251,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 onPressed: ()async{
                   Navigator.pop(context);
                   List<Solicitud> solicitudes = List();
-                  String userID = await authFirebase.currrentUser();
+                  final pref = await SharedPreferences.getInstance();
+                  String userID = pref.getString("uid");
                   solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, grupoNombre);   
                   for(final solicitud in solicitudes){
                     await ServiceRepositorySolicitudes.deleteSolicitudCompleta(solicitud);
@@ -275,7 +278,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         PopupMenuButton(
           itemBuilder: (_) => <PopupMenuItem<int>>[
             new PopupMenuItem<int>(
-              child: Row(children: <Widget>[Icon(Icons.person_add, color: accion ? Colors.green : Colors.grey,),Text(" Agregar Solicitud", style: TextStyle(color: accion ? Colors.green : Colors.grey),)],), value: 1),
+              child: Row(children: <Widget>[Icon(Icons.group_add, color: accion ? Colors.green : Colors.grey,),Text(" Agregar Solicitud", style: TextStyle(color: accion ? Colors.green : Colors.grey),)],), value: 1),
             new PopupMenuItem<int>(
               child: Row(children: <Widget>[Icon(Icons.list, color: Colors.blue),Text(" Ver Solicitudes", style: TextStyle(color: Colors.blue),)],), value: 2),
             new PopupMenuItem<int>(
@@ -285,7 +288,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           ],
           onSelected: (value)async{
             if(value == 1){
-              accion ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SolicitudPage.Solicitud(title: "Solicitud Grupal: "+grupoNombre, colorTema: widget.colorTema, grupoId: grupoId, grupoNombre: grupoNombre,))) : null;
+              accion ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SolicitudPage.Solicitud(title: "Solicitud Grupal: "+grupoNombre, colorTema: widget.colorTema, grupoId: grupoId, grupoNombre: grupoNombre, actualizaHome: widget.actualizaHome))) : null;
             }else if(value == 2){
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupoNombre, actualizaHome: widget.actualizaHome)));
             }else if(value == 3){

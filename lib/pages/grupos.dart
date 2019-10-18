@@ -7,6 +7,7 @@ import 'package:sgcartera_app/sqlite_files/models/solicitud.dart' as SolicitudMo
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class Group extends StatefulWidget {
@@ -25,7 +26,8 @@ class _GroupState extends State<Group> {
   AuthFirebase authFirebase = new AuthFirebase();
 
   Future<void> getListGrupos() async{
-    userID = await authFirebase.currrentUser();
+    final pref = await SharedPreferences.getInstance();
+    userID = pref.getString("uid");
     grupos = await ServiceRepositoryGrupos.getAllGrupos(userID);    
     setState(() {});
   }
@@ -41,7 +43,7 @@ class _GroupState extends State<Group> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mis Grupos"),
+        title: Text("Grupos"),
         centerTitle: true,
         actions: <Widget>[
           IconButton(icon: Icon(Icons.group_add), onPressed: () {showFormGrupo();},)
@@ -58,7 +60,7 @@ class _GroupState extends State<Group> {
                 colors: [widget.colorTema[100], Colors.white])
               ),
             ),
-            grupos.length > 0 ? listaGrupos() : Center(child: Text("Sin Información"),) 
+            grupos.length > 0 ? listaGrupos() : Center(child: Text("Sin grupos"),) 
           ]
         )
       ),
@@ -122,6 +124,8 @@ class _GroupState extends State<Group> {
         new PopupMenuItem<int>(
           child: Row(children: <Widget>[Icon(Icons.person_add, color: grupo.status == 0 ? Colors.green : Colors.grey,),Text(" Agregar Solicitud", style: TextStyle(color: grupo.status == 0 ? Colors.green : Colors.grey),)],), value: 1),
         new PopupMenuItem<int>(
+          child: Row(children: <Widget>[Icon(Icons.edit, color: grupo.status == 0 ? Colors.purple : Colors.grey,),Text(" Cambiar Nombre", style: TextStyle(color: grupo.status == 0 ? Colors.purple : Colors.grey),)],), value: 5),
+        new PopupMenuItem<int>(
           child: Row(children: <Widget>[Icon(Icons.list, color: Colors.blue),Text(" Ver Solicitudes", style: TextStyle(color: Colors.blue),)],), value: 2),
         new PopupMenuItem<int>(
           child: Row(children: <Widget>[Icon(Icons.lock, color: grupo.status == 0 ? Colors.blueGrey : Colors.grey),Text(" Cerrar Grupo", style: TextStyle(color: grupo.status == 0 ? Colors.blueGrey : Colors.grey),)],), value: 3),
@@ -130,7 +134,9 @@ class _GroupState extends State<Group> {
       ],
       onSelected: (value){
         if(value == 1){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Grupal: "+grupo.nombreGrupo, colorTema: widget.colorTema, grupoId: grupo.idGrupo, grupoNombre: grupo.nombreGrupo)));
+          if(grupo.status == 0){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Grupal: "+grupo.nombreGrupo, colorTema: widget.colorTema, grupoId: grupo.idGrupo, grupoNombre: grupo.nombreGrupo, actualizaHome: widget.actualizaHome)));
+          }
         }
         else if(value == 2){
           Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo, actualizaHome: widget.actualizaHome)));
@@ -141,11 +147,17 @@ class _GroupState extends State<Group> {
         }else if(value == 4){
           eliminarGrupo(grupo.idGrupo, grupo.nombreGrupo);
         }
+        else if(value == 5){
+          if(grupo.status == 0){
+            showEditarGrupo(grupo);
+          }
+        }
       }
     );
   }
 
   showFormGrupo(){
+    _nombre.text = "";
     showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -187,6 +199,49 @@ class _GroupState extends State<Group> {
     });
   }
 
+  showEditarGrupo(Grupo grupo){
+    _nombre.text = grupo.nombreGrupo;
+    showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Center(child: Text("Cambiar Nombre del Grupo")),
+        content: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              padded(
+                TextFormField(
+                  controller: _nombre,
+                  maxLength: 25,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  decoration: InputDecoration(
+                    labelText: "Nombre del Grupo",
+                    prefixIcon: Icon(Icons.group)
+                  ),
+                  onChanged: (value) {
+                    if (_nombre.text != value.toUpperCase())
+                      _nombre.value = _nombre.value.copyWith(text: value.toUpperCase());
+                  },
+                  validator: (value){return value.isEmpty ? "Ingresa el nombre" : null;},
+                ),
+              ),
+              RaisedButton(
+                onPressed: (){
+                  editarGrupo(grupo);
+                },
+                color: widget.colorTema,
+                textColor: Colors.white,
+                child: Text("Actualizar Grupo"),
+              )
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
   Widget padded(Widget childs){
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -209,6 +264,25 @@ class _GroupState extends State<Group> {
       _nombre.text = "";
 
       ServiceRepositoryGrupos.addGrupo(grupo);
+      getListGrupos();
+    }
+  }
+
+  editarGrupo(Grupo grupoAux) async{
+    FocusScope.of(context).requestFocus(FocusNode());
+    if(_formKey.currentState.validate()){
+      Navigator.pop(context);
+      
+      final Grupo grupo = new Grupo(
+        idGrupo: grupoAux.idGrupo ,
+        nombreGrupo: _nombre.text,
+        status: grupoAux.status,
+        userID: grupoAux.userID
+      );
+      _nombre.text = "";
+
+      ServiceRepositoryGrupos.updateGrupoNombre(grupo);
+      ServiceRepositorySolicitudes.updateSolicitudGrupo(grupo);
       getListGrupos();
     }
   }
@@ -280,7 +354,8 @@ class _GroupState extends State<Group> {
                 onPressed: ()async{
                   Navigator.pop(context);
                   List<SolicitudModel.Solicitud> solicitudes = List();
-                  String userID = await authFirebase.currrentUser();
+                  final pref = await SharedPreferences.getInstance();
+                  userID = pref.getString("uid");
                   solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, grupoNombre);   
                   for(final solicitud in solicitudes){
                     await ServiceRepositorySolicitudes.deleteSolicitudCompleta(solicitud);

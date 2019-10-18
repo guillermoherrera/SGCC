@@ -1,3 +1,4 @@
+import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 
 import '../database_creator.dart';
@@ -105,6 +106,15 @@ class ServiceRepositorySolicitudes{
       SET ${DataBaseCreator.status} = $status
       WHERE ${DataBaseCreator.idSolicitud} = $solicitudID ''';
 
+    final result = await db.rawUpdate(sql);
+    DataBaseCreator.dataBaseLog("actualizar Solcitud Status", sql, null, result);
+  }
+
+  static Future<void> updateSolicitudGrupo(Grupo grupo)async{
+    final sql = '''UPDATE ${DataBaseCreator.solicitudesTable}
+      SET ${DataBaseCreator.nombre_Grupo} = "${grupo.nombreGrupo}"
+      WHERE ${DataBaseCreator.id_grupo} = ${grupo.idGrupo}''';
+    
     final result = await db.rawUpdate(sql);
     DataBaseCreator.dataBaseLog("actualizar Solcitud Status", sql, null, result);
   }

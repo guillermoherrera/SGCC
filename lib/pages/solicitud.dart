@@ -1,16 +1,19 @@
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
+import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud2.dart';
 //import 'package:intl/intl.dart';
 
 class Solicitud extends StatefulWidget {
-  Solicitud({this.title, this.colorTema, this.grupoId, this.grupoNombre});
+  Solicitud({this.title, this.colorTema, this.grupoId, this.grupoNombre, this.actualizaHome});
   final String title;
   final MaterialColor colorTema;
   final int grupoId;
   final String grupoNombre;
+  final VoidCallback actualizaHome;
   @override
   _SolicitudState createState() => _SolicitudState();
 }
@@ -28,6 +31,7 @@ class _SolicitudState extends State<Solicitud> {
   var importe = TextEditingController();
   var telefono = TextEditingController();
   bool buttonEnabled = true;
+  AuthFirebase authFirebase = new AuthFirebase();
 
   DateTime selectedDate = DateTime(2000, 1);
   //var formatter = new DateFormat('dd / MM / yyyy');
@@ -41,7 +45,7 @@ class _SolicitudState extends State<Solicitud> {
       locale: const Locale('es'),
       firstDate: DateTime(1950, 1),
       lastDate: DateTime(2019));
-    if (picked != null && picked != selectedDate)
+    if (picked != null)// && picked != selectedDate)
       setState(() {
         selectedDate = picked;
         //formatted = formatter.format(selectedDate);
@@ -61,44 +65,47 @@ class _SolicitudState extends State<Solicitud> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
-      ),
-      body: Form(
-        key: formKey,
-        child: Container(
-          child: Stack(
-            children: <Widget>[
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                  colors: [widget.colorTema[100], Colors.white])
+    return WillPopScope(
+      onWillPop: ()=> Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: authFirebase, colorTema: widget.colorTema,))),
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text(widget.title),
+          centerTitle: true,
+        ),
+        body: Form(
+          key: formKey,
+          child: Container(
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [widget.colorTema[100], Colors.white])
+                  ),
                 ),
-              ),
-              SingleChildScrollView(
-                child: Container(
-                  child: Card(
-                    color: Colors.white70,
-                    margin: EdgeInsets.all(10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    elevation: 8.0,
-                    child: Padding(
-                      padding: EdgeInsets.all(15),
-                      child: Column(
-                        children: formSolicitud(),
+                SingleChildScrollView(
+                  child: Container(
+                    child: Card(
+                      color: Colors.white70,
+                      margin: EdgeInsets.all(10),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      elevation: 8.0,
+                      child: Padding(
+                        padding: EdgeInsets.all(15),
+                        child: Column(
+                          children: formSolicitud(),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
-        ),
+        )
       )
     );
   }
@@ -358,7 +365,7 @@ class _SolicitudState extends State<Solicitud> {
         grupoNombre: widget.grupoNombre
       );
       _buttonStatus();
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema,)));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome)));
     }else{
       final snackBar = SnackBar(
         content: Text("Error al guardar. Revisa el formulario para más información.", style: TextStyle(fontWeight: FontWeight.bold),),

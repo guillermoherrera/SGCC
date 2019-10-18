@@ -5,6 +5,7 @@ import 'package:sgcartera_app/pages/mis_solicitudes.dart';
 import 'package:sgcartera_app/pages/nuevas_solicitudes.dart';
 import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomDrawer extends StatefulWidget {
   CustomDrawer({this.authFirebase, this.onSingIn, this.colorTema, this.actualizaHome});
@@ -17,7 +18,21 @@ class CustomDrawer extends StatefulWidget {
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
-  String email = "correo@dominio.com", name = "Usuario";
+  String email = "correo@dominio.com", name = "";
+
+  Future<void> getDatos() async{
+    final pref = await SharedPreferences.getInstance();
+    email = pref.getString("email");
+    setState(() {});
+  }
+  
+  @override
+  void initState() {
+    getDatos();
+    // TODO: implement initState
+    super.initState();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -40,7 +55,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           InkWell(
-            onTap: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));},
+            onTap: (){Navigator.popUntil(context, ModalRoute.withName('/'));},//Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));},
             child: ListTile(
               title: Text("Inicio"),
               leading: Icon(Icons.home, color: widget.colorTema,),

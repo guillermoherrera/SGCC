@@ -44,6 +44,15 @@ class ServiceRepositoryGrupos{
     DataBaseCreator.dataBaseLog("agregar Grupo", sql, null, result);
   }
 
+  static Future<void> updateGrupoNombre(Grupo grupo)async{
+    final sql = '''UPDATE ${DataBaseCreator.gruposTable}
+      SET ${DataBaseCreator.nombreGrupo} = "${grupo.nombreGrupo}"
+      WHERE ${DataBaseCreator.idGrupo} = ${grupo.idGrupo}''';
+    
+    final result = await db.rawUpdate(sql);
+    DataBaseCreator.dataBaseLog("actualiza Grupo Nombre", sql, null, result);
+  }
+
   static Future<void> updateGrupoStatus(int status, int grupoID)async{
     final sql = '''UPDATE ${DataBaseCreator.gruposTable}
       SET ${DataBaseCreator.status} = $status

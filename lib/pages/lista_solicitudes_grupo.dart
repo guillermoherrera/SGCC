@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
+import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud_editar.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ListaSolicitudesGrupo extends StatefulWidget {
   ListaSolicitudesGrupo({this.title, this.colorTema, this.actualizaHome});
@@ -18,7 +20,8 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
   AuthFirebase authFirebase = new AuthFirebase();
   
   Future<void> getListDocumentos() async{
-    String userID = await authFirebase.currrentUser();
+    final pref = await SharedPreferences.getInstance();
+    String userID = pref.getString("uid");
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, widget.title);   
     setState(() {});
   }
@@ -32,26 +35,29 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
-      ),
-      body: Container(
-        child: Stack(
-          children: <Widget>[
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: [widget.colorTema[100], Colors.white])
+    return WillPopScope(
+      onWillPop: ()=> Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: authFirebase, colorTema: widget.colorTema,))),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          centerTitle: true,
+        ),
+        body: Container(
+          child: Stack(
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  colors: [widget.colorTema[100], Colors.white])
+                ),
               ),
-            ),
-            solicitudes.length > 0 ? listaSolicitudes() : Center(child: Text("Sin Información"),) 
-          ]
-        )
-      ),
+              solicitudes.length > 0 ? listaSolicitudes() : Center(child: Text("Sin solicitudes para este Grupo"),) 
+            ]
+          )
+        ),
+      )
     );
   }
 

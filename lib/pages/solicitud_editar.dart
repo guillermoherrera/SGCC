@@ -48,7 +48,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
       locale: const Locale('es'),
       firstDate: DateTime(1950, 1),
       lastDate: DateTime(2019));
-    if (picked != null && picked != selectedDate)
+    if (picked != null)// && picked != selectedDate)
       setState(() {
         selectedDate = picked;
         //formatted = formatter.format(selectedDate);
@@ -64,7 +64,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
     nombreAdicional.text = solicitudEditar.nombreSegundo;
     apellidoPrimero.text = solicitudEditar.apellidoPrimero;
     apellidoSegundo.text = solicitudEditar.apellidoSegundo;
-    selectedDate = DateTime.fromMicrosecondsSinceEpoch(solicitudEditar.fechaNacimiento);
+    selectedDate = DateTime.fromMillisecondsSinceEpoch(solicitudEditar.fechaNacimiento);
     fechaNacimiento.text = formatDate(selectedDate, [dd, '/', mm, '/', yyyy]);
     curp.text = solicitudEditar.curp;
     rfc.text = solicitudEditar.rfc;

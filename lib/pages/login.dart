@@ -133,6 +133,7 @@ class _LoginState extends State<Login> {
         final pref = await SharedPreferences.getInstance();
         await pref.setString("email", email.text);
         await pref.setString("pass", pass.text);
+        await pref.setString("uid", authRes.uid);
         await getCatalogos();
         widget.onSingIn();
       }else{
@@ -161,6 +162,8 @@ class _LoginState extends State<Login> {
       return "Es necesario llenar los campos de correo y contraseña para iniciar sesión.";
     }else if(word.contains("ERROR_TOO_MANY_REQUESTS")){
       return "ATENCIÓN: Has intentado iniciar sesión demasiadas veces, intentalo de nuevo mas tarde o ponte en contacto con soporte.";
+    }else if(word.contains("An internal error has occurred. [ 7: ]")){
+      return "Error interno, revisa tu conexión a internet.";
     }else{
       return "Correo y/o contraseña incorrectos.";
     }

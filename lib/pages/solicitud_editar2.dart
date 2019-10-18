@@ -11,6 +11,7 @@ import 'package:sgcartera_app/models/backBlaze_request.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/home.dart';
+import 'package:sgcartera_app/pages/lista_solicitudes_grupo.dart';
 import 'package:sgcartera_app/sqlite_files/models/cat_documento.dart';
 import 'package:sgcartera_app/sqlite_files/models/documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
@@ -329,7 +330,17 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
                 actions: <Widget>[
                   new FlatButton(
                     child: const Text("CONTINUAR"),
-                    onPressed: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: (){},) ));}
+                    onPressed: (){
+                      //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: (){},) ));
+                      if(widget.datos.grupoId == null){
+                        Navigator.pop(context);
+                        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: (){},) ));
+                        Navigator.popUntil(context, ModalRoute.withName('/'));
+                      }else{
+                        Navigator.pop(context);
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: widget.datos.grupoNombre, actualizaHome: (){} )));
+                      }
+                    }
                   ),
                 ],
               )
@@ -362,38 +373,6 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
   Future<bool> saveSqfliteSolcitud(listaDocs) async{
     bool result;
     try{
-      /*final int _id = await ServiceRepositorySolicitudes.solicitudesCount();
-      final String userID = await authFirebase.currrentUser();
-      final Solicitud solicitud = new Solicitud(
-        idSolicitud: _id + 1,
-        importe: widget.datos.importe,
-        nombrePrimero: widget.datos.persona['nombre'],
-        nombreSegundo: widget.datos.persona['nombreSegundo'],
-        apellidoPrimero: widget.datos.persona['apellido'],
-        apellidoSegundo: widget.datos.persona['apellidoSegundo'],
-        fechaNacimiento: widget.datos.persona['fechaNacimiento'].millisecondsSinceEpoch,
-        curp: widget.datos.persona['curp'],
-        rfc: widget.datos.persona['rfc'],
-        telefono:  widget.datos.persona['telefono'],
-        userID: userID,
-        status: 0,
-        tipoContrato: widget.datos.tipoContrato,
-        idGrupo: widget.datos.grupoId,
-        nombreGrupo: widget.datos.grupoNombre
-      );
-
-      await ServiceRepositorySolicitudes.addSolicitud(solicitud).then((_) async{
-        for(var doc in listaDocs){
-          final int _idD = await ServiceRepositoryDocumentosSolicitud.documentosSolicitudCount();
-          final DocumentoSolicitud documentoSolicitud = new DocumentoSolicitud(
-            idDocumentoSolicitud: _idD + 1,
-            idSolicitud: solicitud.idSolicitud,
-            tipo: doc['tipo'],
-            documento: docArchivos.firstWhere((archivo) => archivo.tipo == doc['tipo']).archivo.path 
-          );
-          await ServiceRepositoryDocumentosSolicitud.addDocumentoSolicitud(documentoSolicitud);
-        }
-      });*/
       for(var doc in listaDocs){
         final DocumentoSolicitud documentoSolicitud = new DocumentoSolicitud(
           idDocumentoSolicitud: null,

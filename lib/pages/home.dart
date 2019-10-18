@@ -31,7 +31,8 @@ class _HomePageState extends State<HomePage> {
   Firestore _firestore = Firestore.instance;
   
   Future<void> getListDocumentos() async{
-    String userID = await authFirebase.currrentUser();
+    final pref = await SharedPreferences.getInstance();
+    String userID = pref.getString("uid");
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);    
     setState(() {});
   }
@@ -88,13 +89,14 @@ class _HomePageState extends State<HomePage> {
                     ),
                     onTap: (){},
                   ),
+                  Divider(),
                   InkWell(
                     child: Card(
                       child: Container(
                         child: ListTile(
-                        leading: Icon(Icons.person, color: widget.colorTema,size: 40.0,),
+                        leading: Icon(Icons.person_add, color: widget.colorTema,size: 40.0,),
                         title: Text("Nueva Solicitud Individual", style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("Captura de una solicitud de credito individual."),
+                        subtitle: Text("Captura solicitudes de credito individual."),
 
                         ),
                         decoration: BoxDecoration(
@@ -105,15 +107,15 @@ class _HomePageState extends State<HomePage> {
                         ),
                       )
                     ),
-                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Individual", colorTema: widget.colorTema,)));},
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Individual", colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo(),)));},
                   ),
                   InkWell(
                     child: Card(
                       child: Container(
                         child: ListTile(
                         leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
-                        title: Text("Nueva Solicitud Grupal", style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("Captura de una solicitud de credito grupal."),
+                        title: Text("Grupos", style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("Captura y revisa tus solicitudes de Credito Grupal."),
 
                         ),
                         decoration: BoxDecoration(
@@ -136,11 +138,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   String getMensaje(){
-    String mensaje;
-    if(solicitudes.length > 0)
-      mensaje = "Tienes "+solicitudes.length.toString()+" solicitud(es) por sincronizar";
-    else
+    String mensaje = "";
+    if(solicitudes.length > 0){
+      List<String> solicitudesGrupos = List();
+      List<String> solicitudesIndividuales = List();
+      for(final solicitud in solicitudes){
+        if(!solicitudesGrupos.contains(solicitud.nombreGrupo)){
+          if(solicitud.idGrupo != null){
+            solicitudesGrupos.add(solicitud.nombreGrupo);
+          }else{
+            solicitudesIndividuales.add(solicitud.nombreGrupo);
+          }
+        }
+      }
+      mensaje = "Tienes "+(solicitudesGrupos.length+solicitudesIndividuales.length).toString()+" solicitud(es) por sincronizar";
+    }else{
       mensaje = "Sin solicitudes por sincronizar.";
+    }
     return mensaje;
   }
 

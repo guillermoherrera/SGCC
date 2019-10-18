@@ -17,15 +17,18 @@ import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catDocumento.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
-
+import 'package:sgcartera_app/pages/solicitud.dart' as PageSolicitud;
 import 'lista_solicitudes.dart';
+import 'lista_solicitudes_grupo.dart';
 
 class SolicitudDocumentos extends StatefulWidget {
-  SolicitudDocumentos({this.title, this.datos, this.colorTema});
+  SolicitudDocumentos({this.title, this.datos, this.colorTema, this.actualizaHome});
   final String title;
   final SolicitudObj datos;
   final MaterialColor colorTema;
+  final VoidCallback actualizaHome;
   @override
   _SolicitudDocumentosState createState() => _SolicitudDocumentosState();
 }
@@ -315,8 +318,27 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
                 actions: <Widget>[
                   new FlatButton(
                     child: const Text("CONTINUAR"),
-                    onPressed: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: (){},) ));}
+                    onPressed: (){
+                      if(widget.datos.grupoId == null){
+                        widget.actualizaHome();
+                        Navigator.pop(context);
+                        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: (){},) ));
+                        Navigator.popUntil(context, ModalRoute.withName('/'));
+                      }else{
+                        widget.actualizaHome();
+                        Navigator.pop(context);
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: widget.datos.grupoNombre, actualizaHome: widget.actualizaHome)));
+                      }
+                    }
                   ),
+                  widget.datos.grupoId != null ? new FlatButton(
+                    child: Text("AGREGAR OTRA"),
+                    onPressed: (){
+                        widget.actualizaHome();
+                        Navigator.pop(context);
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PageSolicitud.Solicitud(title: "Solicitud Grupal: "+widget.datos.grupoNombre, colorTema: widget.colorTema, grupoId: widget.datos.grupoId , grupoNombre: widget.datos.grupoNombre , actualizaHome: widget.actualizaHome)));
+                      }
+                  ) : null,
                 ],
               )
             );
@@ -349,7 +371,8 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
     bool result;
     try{
       final int _id = await ServiceRepositorySolicitudes.solicitudesCount();
-      final String userID = await authFirebase.currrentUser();
+      final pref = await SharedPreferences.getInstance();
+      final String userID = pref.getString("uid");
       final Solicitud solicitud = new Solicitud(
         idSolicitud: _id + 1,
         importe: widget.datos.importe,
