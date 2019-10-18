@@ -322,8 +322,8 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
                       if(widget.datos.grupoId == null){
                         widget.actualizaHome();
                         Navigator.pop(context);
-                        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: (){},) ));
-                        Navigator.popUntil(context, ModalRoute.withName('/'));
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: (){},) ));
+                        //Navigator.popUntil(context, ModalRoute.withName('/'));
                       }else{
                         widget.actualizaHome();
                         Navigator.pop(context);

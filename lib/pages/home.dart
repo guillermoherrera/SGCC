@@ -287,24 +287,53 @@ class _HomePageState extends State<HomePage> {
       });
 
       await saveFireStore(documentos).then((lista) async{
-        solicitudObj.documentos = lista;   
-        solicitudObj.fechaCaputra = DateTime.now();
-        var result = await _firestore.collection("Solicitudes").add(solicitudObj.toJson());
-        //await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
-        print(result);
-        getListDocumentos();
+        if(lista.length > 0){
+          solicitudObj.documentos = lista;   
+          solicitudObj.fechaCaputra = DateTime.now();
+          var result = await _firestore.collection("Solicitudes").add(solicitudObj.toJson());
+          await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
+          print(result);
+          getListDocumentos();
+        }{
+          Navigator.pop(context);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.error, color: Colors.red, size: 100.0,),
+                    Text("\nSIN CONEXIÓN"),
+                  ],
+                ),
+                actions: <Widget>[
+                  new FlatButton(
+                    child: const Text("CERRAR"),
+                    onPressed: (){Navigator.pop(context);}
+                  )
+                ],
+              );
+            },
+          );
+        }
       });
     } 
   }
 
   Future<List<Map>> saveFireStore(listaDocs) async{
     FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
-    for(var doc in listaDocs){
-      StorageReference reference = _firebaseStorage.ref().child('Documentos').child(DateTime.now().toString()+"_"+doc['tipo'].toString());
-      StorageUploadTask uploadTask = reference.putFile(File(doc['documento']));
-      StorageTaskSnapshot downloadUrl = await uploadTask.onComplete;
-      doc['documento'] = await downloadUrl.ref.getDownloadURL();
+    try{
+      for(var doc in listaDocs){
+        StorageReference reference = _firebaseStorage.ref().child('Documentos').child(DateTime.now().toString()+"_"+doc['tipo'].toString());
+        StorageUploadTask uploadTask = reference.putFile(File(doc['documento']));
+        StorageTaskSnapshot downloadUrl = await uploadTask.onComplete.timeout(Duration(seconds: 10));
+        doc['documento'] = await downloadUrl.ref.getDownloadURL();
+      }
+    }catch(e){
+      listaDocs = [];
     }
+    
     return listaDocs;
   }
 

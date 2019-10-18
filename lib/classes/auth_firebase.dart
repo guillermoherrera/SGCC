@@ -7,7 +7,7 @@ class AuthFirebase{
   Future<AuthRes> signIn(String email, String pass)async{
     AuthRes authRes = new AuthRes();
     try{
-      AuthResult authResult = await firebaseAuth.signInWithEmailAndPassword(email: email, password: pass);
+      AuthResult authResult = await firebaseAuth.signInWithEmailAndPassword(email: email, password: pass).timeout(Duration(seconds:10));
       authRes = AuthRes(email: authResult.user.email, result: true, uid: authResult.user.uid, mensaje: "Session iniciada con exito");
     }catch(e){
       authRes = AuthRes(email: null, result: false, uid: null, mensaje: e.toString());

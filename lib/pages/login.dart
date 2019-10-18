@@ -164,6 +164,8 @@ class _LoginState extends State<Login> {
       return "ATENCIÓN: Has intentado iniciar sesión demasiadas veces, intentalo de nuevo mas tarde o ponte en contacto con soporte.";
     }else if(word.contains("An internal error has occurred. [ 7: ]")){
       return "Error interno, revisa tu conexión a internet.";
+    }else if(word.contains("TimeoutException")){
+      return "Error interno, revisa tu conexión a internet.";
     }else{
       return "Correo y/o contraseña incorrectos.";
     }

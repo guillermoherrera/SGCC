@@ -1,10 +1,18 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
+import 'package:sgcartera_app/models/documento.dart';
+import 'package:sgcartera_app/models/persona.dart';
+import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud_editar.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud.dart' as SolicitudPage;
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart'; 
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,6 +34,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   List<Grupo> gruposGuardados = List();  
   AuthFirebase authFirebase = new AuthFirebase();
   List<String> grupos = List();
+  Firestore _firestore = Firestore.instance;
   
   Future<void> getListDocumentos() async{
     final pref = await SharedPreferences.getInstance();
@@ -54,7 +63,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         title: Text(widget.title),
         centerTitle: true,
         actions: <Widget>[
-          widget.status == 0 ? IconButton(icon: Icon(Icons.cached), color: Colors.white, onPressed: () {},) : Text("")
+          widget.status == 0 ? IconButton(icon: Icon(Icons.cached), color: Colors.white, onPressed: () {showDialogo();},) : Text("")
         ],
       ),
       body: Container(
@@ -302,5 +311,147 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         )
       ],
     );
+  }
+
+  showDialogo() async{
+    final pref = await SharedPreferences.getInstance();
+    var _email = pref.getString("email");
+    var _pass = pref.getString("pass");
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        mostrarShowDialog(true);
+        var authRes = await authFirebase.signIn(_email, _pass);//poner aqui datos reales cuenta
+        print('connected');
+        if(authRes.result){
+          await sincronizarDatos().then((_){
+            Navigator.pop(context);
+            widget.actualizaHome();
+          });
+        }else{
+          Navigator.pop(context);
+          mostrarShowDialog(false);
+        }
+      }
+    } on SocketException catch (_) {
+      print('not connected');
+      mostrarShowDialog(false);
+    }
+    /*new Future.delayed(new Duration(seconds: 3), () {
+      Navigator.pop(context); //pop dialog
+    });*/
+  }
+
+  mostrarShowDialog(bool conectado){
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: (){},
+          child: AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                conectado ? CircularProgressIndicator() : Icon(Icons.error, color: Colors.red, size: 100.0,),
+                conectado ? Text("\nSINCRONIZANDO ...") : Text("\nSIN CONEXIÓN"),
+              ],
+            ),
+            actions: <Widget>[
+              !conectado ?
+              new FlatButton(
+                child: const Text("CERRAR"),
+                onPressed: (){Navigator.pop(context);}
+              ) : null
+            ],
+          )
+        );
+      },
+    );
+  }
+
+  sincronizarDatos() async{
+    //List<File> documentos;
+    List<Map> documentos;
+    Persona persona;
+    for(final solicitud in solicitudes){
+
+      persona = new Persona(
+        nombre: solicitud.nombrePrimero,
+        nombreSegundo: solicitud.nombreSegundo,
+        apellido: solicitud.apellidoPrimero,
+        apellidoSegundo: solicitud.apellidoSegundo,
+        curp: solicitud.curp,
+        rfc: solicitud.rfc,
+        fechaNacimiento: DateTime.fromMicrosecondsSinceEpoch(solicitud.fechaNacimiento),
+        telefono: solicitud.telefono
+      );
+
+      SolicitudObj solicitudObj = new SolicitudObj(
+        persona: persona.toJson(),
+        importe: solicitud.importe,
+        tipoContrato: solicitud.tipoContrato,
+        userID: solicitud.userID,
+        status: 1,
+        grupoId: solicitud.idGrupo,
+        grupoNombre: solicitud.idGrupo == null ? null : solicitud.nombreGrupo 
+      );
+      
+      documentos = [];
+      await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(solicitud.idSolicitud).then((listaDocs){
+        for(final doc in listaDocs){
+          Documento documento = new Documento(tipo: doc.tipo, documento: doc.documento);
+          documentos.add(documento.toJson());
+        }
+      });
+
+      await saveFireStore(documentos).then((lista) async{
+        if(lista.length > 0){
+          solicitudObj.documentos = lista;   
+          solicitudObj.fechaCaputra = DateTime.now();
+          var result = await _firestore.collection("Solicitudes").add(solicitudObj.toJson());
+          await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
+          print(result);
+          getListDocumentos();
+        }{
+          Navigator.pop(context);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.error, color: Colors.red, size: 100.0,),
+                    Text("\nSIN CONEXIÓN"),
+                  ],
+                ),
+                actions: <Widget>[
+                  new FlatButton(
+                    child: const Text("CERRAR"),
+                    onPressed: (){Navigator.pop(context);}
+                  )
+                ],
+              );
+            },
+          );
+        }
+      });
+    } 
+  }
+
+  Future<List<Map>> saveFireStore(listaDocs) async{
+    FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+    try{
+      for(var doc in listaDocs){
+        StorageReference reference = _firebaseStorage.ref().child('Documentos').child(DateTime.now().toString()+"_"+doc['tipo'].toString());
+        StorageUploadTask uploadTask = reference.putFile(File(doc['documento']));
+        StorageTaskSnapshot downloadUrl = await uploadTask.onComplete.timeout(Duration(seconds: 10));
+        doc['documento'] = await downloadUrl.ref.getDownloadURL();
+      }
+    }catch(e){
+      listaDocs = [];
+    }
+    return listaDocs;
   }
 }
