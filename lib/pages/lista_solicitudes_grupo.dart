@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud_editar.dart';
+import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListaSolicitudesGrupo extends StatefulWidget {
-  ListaSolicitudesGrupo({this.title, this.colorTema, this.actualizaHome});
+  ListaSolicitudesGrupo({this.title, this.colorTema, this.actualizaHome, this.grupo});
   final MaterialColor colorTema;
   final String title;
   final VoidCallback actualizaHome;
+  final Grupo grupo;
+  
   @override
   _ListaSolicitudesGrupoState createState() => _ListaSolicitudesGrupoState();
 }
@@ -18,8 +22,10 @@ class ListaSolicitudesGrupo extends StatefulWidget {
 class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
   List<Solicitud> solicitudes = List();  
   AuthFirebase authFirebase = new AuthFirebase();
-  
+  bool status;
+
   Future<void> getListDocumentos() async{
+    status = widget.grupo.status == 0 ? true : false;
     final pref = await SharedPreferences.getInstance();
     String userID = pref.getString("uid");
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, widget.title);   
@@ -41,6 +47,11 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
         appBar: AppBar(
           title: Text(widget.title),
           centerTitle: true,
+          actions: status ? <Widget>[
+            IconButton(icon: Icon(Icons.lock), onPressed: () {
+              cerrarGrupo(widget.grupo);
+            },)
+          ] : null,
         ),
         body: Container(
           child: Stack(
@@ -55,6 +66,23 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
               ),
               solicitudes.length > 0 ? listaSolicitudes() : Center(child: Text("Sin solicitudes para este Grupo"),) 
             ]
+          )
+        ),
+        bottomNavigationBar: InkWell(
+          child: Card(
+            child: Container(
+              child: ListTile(
+                leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
+                title: Row(children: <Widget>[Icon(Icons.error, color: status ? Colors.yellow : Colors.green,),Text(" Este grupo esta en status "+(status ? "Abierto" : "Cerrado") )],),
+                subtitle: status ? Row(children: <Widget>[Text("Da click en "), Icon(Icons.lock, color: Colors.white,), Text(" para cerrar el grupo")],) : Text(""),
+              ),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [widget.colorTema[400], Colors.blueGrey[100]])
+              ),
+            ),
           )
         ),
       )
@@ -73,7 +101,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                 title: Text(getNombre(solicitudes[index]), style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(getImporte(solicitudes[index])),
                 isThreeLine: true,
-                trailing: getIcono(solicitudes[index]),
+                trailing: solicitudes[index].status != 0 ? Icon(Icons.verified_user) : getIcono(solicitudes[index]),
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -151,6 +179,46 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                   solicitudes.clear();
                   widget.actualizaHome();
                   getListDocumentos();
+                }
+              )
+            ],
+      );
+    });
+  }
+
+  cerrarGrupo(Grupo grupo){
+    showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Center(child: Text("Cerrar Grupo")),
+        content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.error, color: Colors.yellow, size: 100.0,),
+                Text("\nAl cerrar el grupo no podrá agregarle mas solicitudes y estará listo para sincronizarse.\n\n¿Desea cerrar el grupo "+grupo.nombreGrupo+"?"),
+              ],
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: const Text("No"),
+                onPressed: (){Navigator.pop(context);}
+              ),
+              new FlatButton(
+                child: const Text("Sí, cerrar."),
+                onPressed: ()async{
+                  Navigator.pop(context);
+                  await ServiceRepositoryGrupos.updateGrupoStatus(1, grupo.idGrupo);
+                  for(final solicitud in solicitudes){
+                    if(solicitud.idGrupo == grupo.idGrupo) await ServiceRepositorySolicitudes.updateSolicitudStatus(0, solicitud.idSolicitud);
+                  }
+                  //grupos.clear();
+                  widget.actualizaHome();
+                  setState(() {
+                   status = false; 
+                  });
+                  //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo, actualizaHome: widget.actualizaHome, grupo: grupo)));
+                  //getListDocumentos();
                 }
               )
             ],

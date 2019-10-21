@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
       onWillPop: (){return new Future(() => false);},
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Sistema Originación"),
+          title: Text("App Originación"),
           centerTitle: true,
         ),
         drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo() ),
@@ -114,8 +114,8 @@ class _HomePageState extends State<HomePage> {
                       child: Container(
                         child: ListTile(
                         leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
-                        title: Text("Grupos", style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("Captura y revisa tus solicitudes de Credito Grupal."),
+                        title: Row(children: <Widget>[Text("Grupos", style: TextStyle(fontWeight: FontWeight.bold)), Text("(nuevos)")],) ,
+                        subtitle: Text("Captura tus solicitudes de Credito Grupal."),
 
                         ),
                         decoration: BoxDecoration(
@@ -294,7 +294,7 @@ class _HomePageState extends State<HomePage> {
           await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
           print(result);
           getListDocumentos();
-        }{
+        }else{
           Navigator.pop(context);
           showDialog(
             context: context,

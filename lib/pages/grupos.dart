@@ -139,7 +139,7 @@ class _GroupState extends State<Group> {
           }
         }
         else if(value == 2){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo, actualizaHome: widget.actualizaHome)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo, actualizaHome: widget.actualizaHome, grupo: grupo)));
         }else if(value == 3){
           if(grupo.status == 0){
             cerrarGrupo(grupo.idGrupo, grupo.nombreGrupo);
@@ -290,7 +290,7 @@ class _GroupState extends State<Group> {
   Widget getLeyendaGrupo(Grupo grupo){
     bool accion = grupo.status == 0;
     String texto;
-    texto = accion ? "Grupo Abierto.\nCierralo para sincronizar." : "Grupo Cerrado.\nListo para sincronizar.";
+    texto = accion ? "Grupo Abierto.\nCierralo para sincronizar." : "Grupo Cerrado.";
     return Row(children: <Widget>[
       Icon(accion ? Icons.lock_open : Icons.lock, size: 20,),
       Text(texto)
@@ -309,7 +309,7 @@ class _GroupState extends State<Group> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.error, color: Colors.yellow, size: 100.0,),
-                Text("\nAl cerrar el grupo no podrá agregarle mas solicitudes y estara listo para sincronizarse.\n\n¿Desea cerrar el grupo "+grupoNombre+"?"),
+                Text("\nAl cerrar el grupo no podrá agregarle mas solicitudes y estará listo para sincronizarse.\n\n¿Desea cerrar el grupo "+grupoNombre+"?"),
               ],
             ),
             actions: <Widget>[
@@ -322,7 +322,15 @@ class _GroupState extends State<Group> {
                 onPressed: ()async{
                   Navigator.pop(context);
                   await ServiceRepositoryGrupos.updateGrupoStatus(1, grupoId);
+                  final pref = await SharedPreferences.getInstance();
+                  userID = pref.getString("uid");
+                  List<SolicitudModel.Solicitud> solicitudes =  List();
+                  solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, grupoNombre);
+                  for(final solicitud in solicitudes){
+                    if(solicitud.idGrupo == grupoId) ServiceRepositorySolicitudes.updateSolicitudStatus(0, solicitud.idSolicitud);
+                  }
                   grupos.clear();
+                  widget.actualizaHome();
                   getListGrupos();
                 }
               )

@@ -35,6 +35,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   AuthFirebase authFirebase = new AuthFirebase();
   List<String> grupos = List();
   Firestore _firestore = Firestore.instance;
+  String mensaje = "Cargando ...";
   
   Future<void> getListDocumentos() async{
     final pref = await SharedPreferences.getInstance();
@@ -42,11 +43,64 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     switch (widget.status) {
       case 0:
         solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);  
-        gruposGuardados = await ServiceRepositoryGrupos.getAllGrupos(userID);  
+        gruposGuardados = await ServiceRepositoryGrupos.getAllGrupos(userID);
+        mensaje = "Sin solicitudes en espera";
+        break;
+      case 1:
+        mensaje = "Sin solicitudes por autorizar";
+        await getSolcitudesespera();
         break;
       default:
     }
     setState(() {});
+  }
+
+  getSolcitudesespera() async{
+    try{
+      Query q = _firestore.collection("Solicitudes").where('status', isEqualTo: 1);
+      QuerySnapshot querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
+      for(DocumentSnapshot dato in querySnapshot.documents){
+        Solicitud solicitud = new Solicitud(
+          apellidoPrimero: dato.data['persona']['apellido'],
+          apellidoSegundo: dato.data['persona']['apellidoSegundo'],
+          curp: dato.data['persona']['curp'],
+          fechaNacimiento: dato.data['persona']['fechaNacimiento'].millisecondsSinceEpoch,
+          idGrupo: dato.data['grupoId'],
+          idSolicitud: null,
+          importe: dato.data['importe'],
+          nombrePrimero: dato.data['persona']['nombre'],
+          nombreSegundo: dato.data['persona']['nombreSegundo'],
+          rfc: dato.data['persona']['rfc'],
+          telefono: dato.data['persona']['telefono'],
+          nombreGrupo: dato.data['grupoNombre'],
+          userID: dato.data['userID'],
+          status: dato.data['status'],
+          tipoContrato: dato.data['tipoContrato']
+        );
+        solicitudes.add(solicitud);
+      }
+    }catch(e){
+      /*Solicitud solicitud = new Solicitud(
+          apellidoPrimero: "",
+          apellidoSegundo: "",
+          curp: "Sin REd",
+          fechaNacimiento: 0,
+          idGrupo: null,
+          idSolicitud: null,
+          importe: 0,
+          nombrePrimero: "Sin acceso a internet, revisa tu conexión",
+          nombreSegundo: "",
+          rfc: "Sin REd",
+          telefono: "0000000000",
+          nombreGrupo: "Sin REd",
+          userID: "Sin REd",
+          status: 1,
+          tipoContrato: 0
+
+        );
+        solicitudes.add(solicitud);*/
+      mensaje = "Error interno. Revisa tu conexión a internet";
+    }
   }
 
   @override
@@ -77,7 +131,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 colors: [widget.colorTema[100], Colors.white])
               ),
             ),
-            solicitudes.length > 0 ? listaSolicitudes() : Center(child: Text("Sin Información"),) 
+            solicitudes.length > 0 ? listaSolicitudes() : Center(child: Text(mensaje),) 
           ]
         )
       ),
@@ -100,14 +154,14 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 title: Text(getNombre(solicitudes[index]), style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(getImporte(solicitudes[index])),
                 isThreeLine: true,
-                trailing: getIcono(solicitudes[index]),
+                trailing: solicitudes[index].status == 0 ? getIcono(solicitudes[index]) : Icon(Icons.done_all),
               ) : 
               ListTile(
                 leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
                 title: Text(solicitudes[index].nombreGrupo, style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: getLeyendaGrupo(solicitudes[index].idGrupo),
-                isThreeLine: true,
-                trailing: getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo),
+                //isThreeLine: true,
+                trailing: gruposGuardados.length > 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : Icon(Icons.done_all),
               ),
               
               decoration: BoxDecoration(
@@ -134,6 +188,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   }
 
   Widget getLeyendaGrupo(int idGrupo){
+    if(gruposGuardados.length == 0) return null;
     bool accion = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == idGrupo).status == 0;
     String texto;
     texto = accion ? "Grupo Abierto.\nCierralo para sincronizar." : "Grupo Cerrado.\nListo para sincronizar.";
@@ -215,7 +270,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.error, color: Colors.yellow, size: 100.0,),
-                Text("\nAl cerrar el grupo no podrá agregarle mas solicitudes y estara listo para sincronizarse.\n\n¿Desea cerrar el grupo "+grupoNombre+"?"),
+                Text("\nAl cerrar el grupo no podrá agregarle mas solicitudes y estará listo para sincronizarse.\n\n¿Desea cerrar el grupo "+grupoNombre+"?"),
               ],
             ),
             actions: <Widget>[
@@ -228,7 +283,11 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 onPressed: ()async{
                   Navigator.pop(context);
                   await ServiceRepositoryGrupos.updateGrupoStatus(1, grupoId);
+                  for(final solicitud in solicitudes){
+                    if(solicitud.idGrupo == grupoId) ServiceRepositorySolicitudes.updateSolicitudStatus(0, solicitud.idSolicitud);
+                  }
                   grupos.clear();
+                  widget.actualizaHome();
                   getListDocumentos();
                 }
               )
@@ -277,7 +336,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     });
   }
 
-  Widget getIcono2(grupoId, grupoNombre){
+  Widget getIcono2(grupoId, grupoNombre) {
     bool accion = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == grupoId).status == 0;
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -299,7 +358,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
             if(value == 1){
               accion ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SolicitudPage.Solicitud(title: "Solicitud Grupal: "+grupoNombre, colorTema: widget.colorTema, grupoId: grupoId, grupoNombre: grupoNombre, actualizaHome: widget.actualizaHome))) : null;
             }else if(value == 2){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupoNombre, actualizaHome: widget.actualizaHome)));
+              Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(grupoId); 
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupoNombre, actualizaHome: widget.actualizaHome, grupo: grupo)));
             }else if(value == 3){
               if(accion){
                 cerrarGrupo(grupoId, grupoNombre);
@@ -413,7 +473,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
           print(result);
           getListDocumentos();
-        }{
+        }else{
           Navigator.pop(context);
           showDialog(
             context: context,

@@ -79,7 +79,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         return Icon(Icons.done_all, size: 50, color: Colors.grey);
         break;
       case 2:
-        return Icon(Icons.done_all, size: 50,color: Colors.blue,);
+        return Icon(Icons.done_all, size: 50,color: Colors.green,);
         break;
       case 3:
         return Icon(Icons.block, size: 50, color: Colors.red);

@@ -334,8 +334,8 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
                       //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: (){},) ));
                       if(widget.datos.grupoId == null){
                         Navigator.pop(context);
-                        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: (){},) ));
-                        Navigator.popUntil(context, ModalRoute.withName('/'));
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: (){},) ));
+                        //Navigator.popUntil(context, ModalRoute.withName('/'));
                       }else{
                         Navigator.pop(context);
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: widget.datos.grupoNombre, actualizaHome: (){} )));

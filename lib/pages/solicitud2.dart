@@ -13,9 +13,11 @@ import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/home.dart';
 import 'package:sgcartera_app/sqlite_files/models/cat_documento.dart';
 import 'package:sgcartera_app/sqlite_files/models/documentoSolicitud.dart';
+import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catDocumento.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_documentoSolicitud.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
@@ -318,16 +320,18 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
                 actions: <Widget>[
                   new FlatButton(
                     child: const Text("CONTINUAR"),
-                    onPressed: (){
+                    onPressed: () async {
                       if(widget.datos.grupoId == null){
-                        widget.actualizaHome();
+                        if(widget.actualizaHome != null) widget.actualizaHome();
                         Navigator.pop(context);
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: (){},) ));
                         //Navigator.popUntil(context, ModalRoute.withName('/'));
                       }else{
                         widget.actualizaHome();
                         Navigator.pop(context);
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: widget.datos.grupoNombre, actualizaHome: widget.actualizaHome)));
+                        Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(widget.datos.grupoId); 
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo, actualizaHome: widget.actualizaHome, grupo: grupo)));
+                        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: widget.datos.grupoNombre, actualizaHome: widget.actualizaHome)));
                       }
                     }
                   ),
@@ -385,7 +389,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
         rfc: widget.datos.persona['rfc'],
         telefono:  widget.datos.persona['telefono'],
         userID: userID,
-        status: 0,
+        status: widget.datos.grupoId == null ? 0 : 6 ,
         tipoContrato: widget.datos.tipoContrato,
         idGrupo: widget.datos.grupoId,
         nombreGrupo: widget.datos.grupoNombre
