@@ -471,6 +471,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           solicitudObj.fechaCaputra = DateTime.now();
           var result = await _firestore.collection("Solicitudes").add(solicitudObj.toJson());
           await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
+          if(solicitudObj.grupoId != null) ServiceRepositoryGrupos.updateGrupoStatus(2, solicitudObj.grupoId);
           print(result);
           getListDocumentos();
         }else{

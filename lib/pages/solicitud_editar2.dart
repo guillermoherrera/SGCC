@@ -14,9 +14,11 @@ import 'package:sgcartera_app/pages/home.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes_grupo.dart';
 import 'package:sgcartera_app/sqlite_files/models/cat_documento.dart';
 import 'package:sgcartera_app/sqlite_files/models/documentoSolicitud.dart';
+import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catDocumento.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_documentoSolicitud.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -49,7 +51,7 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
       DocumentoArchivo documentoArchivo = new DocumentoArchivo(tipo: doc.tipo, archivo: File(doc.documento));
       docArchivos.add(documentoArchivo);
     }
-    //setState(() {});
+    setState(() {});
   }
 
   @override
@@ -131,12 +133,12 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
       tablesRows.add(itemsFiles(catDoc.descDocumento,catDoc.tipo));
       tablesRows.add(TableRow(children: [Divider(),Divider(),Divider()]));
 
-      if(docArchivos.length < catDocumentos.length){
+      /*if(docArchivos.length < catDocumentos.length){
         if (docArchivos.where((archivo) => archivo.tipo == catDoc.tipo).length == 0){
           DocumentoArchivo documentoArchivo = new DocumentoArchivo(tipo: catDoc.tipo, archivo: null);
           docArchivos.add(documentoArchivo);
         }
-      }
+      }*/
     }
     
     return Table(
@@ -330,7 +332,7 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
                 actions: <Widget>[
                   new FlatButton(
                     child: const Text("CONTINUAR"),
-                    onPressed: (){
+                    onPressed: () async {
                       //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> HomePage(colorTema: widget.colorTema, onSingIn: (){},) ));
                       if(widget.datos.grupoId == null){
                         Navigator.pop(context);
@@ -338,7 +340,9 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
                         //Navigator.popUntil(context, ModalRoute.withName('/'));
                       }else{
                         Navigator.pop(context);
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: widget.datos.grupoNombre, actualizaHome: (){} )));
+                        Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(widget.datos.grupoId);
+                        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: widget.datos.grupoNombre, actualizaHome: (){} )));
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo, actualizaHome: (){}, grupo: grupo)));  
                       }
                     }
                   ),

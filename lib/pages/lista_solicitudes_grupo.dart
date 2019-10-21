@@ -69,21 +69,15 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
           )
         ),
         bottomNavigationBar: InkWell(
-          child: Card(
-            child: Container(
+          child:  Container(
               child: ListTile(
-                leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
+                leading: Icon(Icons.group, color: Colors.white,size: 40.0,),
                 title: Row(children: <Widget>[Icon(Icons.error, color: status ? Colors.yellow : Colors.green,),Text(" Este grupo esta en status "+(status ? "Abierto" : "Cerrado") )],),
                 subtitle: status ? Row(children: <Widget>[Text("Da click en "), Icon(Icons.lock, color: Colors.white,), Text(" para cerrar el grupo")],) : Text(""),
               ),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: [widget.colorTema[400], Colors.blueGrey[100]])
-              ),
+              color: widget.colorTema
             ),
-          )
+          
         ),
       )
     );
@@ -101,7 +95,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                 title: Text(getNombre(solicitudes[index]), style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(getImporte(solicitudes[index])),
                 isThreeLine: true,
-                trailing: solicitudes[index].status != 0 ? Icon(Icons.verified_user) : getIcono(solicitudes[index]),
+                trailing: solicitudes[index].status != 0 && solicitudes[index].status != 6 ? Icon(Icons.verified_user) : getIcono(solicitudes[index]),
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(

@@ -5,7 +5,7 @@ import '../database_creator.dart';
 class ServiceRepositoryGrupos{
   static Future<List<Grupo>> getAllGrupos(String userID) async{
     final sql = '''SELECT * FROM ${DataBaseCreator.gruposTable}
-      WHERE ${DataBaseCreator.userID} = "$userID"''';
+      WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.status} != 2''';
     
     final data = await db.rawQuery(sql);
     List<Grupo> grupos = List();

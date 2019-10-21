@@ -73,19 +73,19 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   Icon iconoItem(i){
     switch(i){
       case 0:
-        return Icon(Icons.access_time, size: 50,color: Colors.yellow[700],);
+        return Icon(Icons.access_time, size: 90,color: Colors.yellow[700],);
         break;
       case 1:
-        return Icon(Icons.done_all, size: 50, color: Colors.grey);
+        return Icon(Icons.done_all, size: 90, color: Colors.grey);
         break;
       case 2:
-        return Icon(Icons.done_all, size: 50,color: Colors.green,);
+        return Icon(Icons.done_all, size: 90,color: Colors.green,);
         break;
       case 3:
-        return Icon(Icons.block, size: 50, color: Colors.red);
+        return Icon(Icons.block, size: 90, color: Colors.red);
         break;
       default:
-        return Icon(Icons.add_call, size: 50);
+        return Icon(Icons.add_call, size: 90);
         break;
     }
   }

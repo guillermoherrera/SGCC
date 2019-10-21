@@ -14,6 +14,7 @@ import 'package:sgcartera_app/pages/lista_solicitudes.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart' as solicitudModel;
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_documentoSolicitud.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -292,6 +293,7 @@ class _HomePageState extends State<HomePage> {
           solicitudObj.fechaCaputra = DateTime.now();
           var result = await _firestore.collection("Solicitudes").add(solicitudObj.toJson());
           await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
+          if(solicitudObj.grupoId != null) ServiceRepositoryGrupos.updateGrupoStatus(2, solicitudObj.grupoId);
           print(result);
           getListDocumentos();
         }else{

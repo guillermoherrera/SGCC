@@ -290,7 +290,7 @@ class _GroupState extends State<Group> {
   Widget getLeyendaGrupo(Grupo grupo){
     bool accion = grupo.status == 0;
     String texto;
-    texto = accion ? "Grupo Abierto.\nCierralo para sincronizar." : "Grupo Cerrado.";
+    texto = accion ? "Grupo Abierto.\nCierralo para sincronizar." : "Grupo Cerrado.\nListo para sincronizar";
     return Row(children: <Widget>[
       Icon(accion ? Icons.lock_open : Icons.lock, size: 20,),
       Text(texto)
