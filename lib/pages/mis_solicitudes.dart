@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sgcartera_app/pages/grupos.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes.dart';
 
 class MisSolicitudes extends StatefulWidget {
@@ -29,7 +30,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
               ),
             ),
             GridView.builder(
-              itemCount: 4,
+              itemCount: 5,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
               itemBuilder: (context, index){
                 return Padding(
@@ -73,15 +74,18 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   Icon iconoItem(i){
     switch(i){
       case 0:
-        return Icon(Icons.access_time, size: 90,color: Colors.yellow[700],);
+        return Icon(Icons.group, size: 90,color: Colors.yellow[700],);
         break;
       case 1:
-        return Icon(Icons.done_all, size: 90, color: Colors.grey);
+        return Icon(Icons.access_time, size: 90,color: Colors.yellow[700],);
         break;
       case 2:
-        return Icon(Icons.done_all, size: 90,color: Colors.green,);
+        return Icon(Icons.done_all, size: 90, color: Colors.grey);
         break;
       case 3:
+        return Icon(Icons.done_all, size: 90,color: Colors.green,);
+        break;
+      case 4:
         return Icon(Icons.block, size: 90, color: Colors.red);
         break;
       default:
@@ -93,15 +97,18 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   Widget textoItem(i){
     switch(i){
       case 0:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("En Espera (no\nsincronizadas)", style: TextStyle(fontWeight: FontWeight.bold),)),);
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Grupos Capturados\n", style: TextStyle(fontWeight: FontWeight.bold),)),);
         break;
       case 1:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Por autorizar\n", style: TextStyle(fontWeight: FontWeight.bold))));
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("En Espera (no\nsincronizadas)", style: TextStyle(fontWeight: FontWeight.bold),)),);
         break;
       case 2:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Aprobadas\n", style: TextStyle(fontWeight: FontWeight.bold))));
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Por autorizar\n", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       case 3:
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Aprobadas\n", style: TextStyle(fontWeight: FontWeight.bold))));
+        break;
+      case 4:
         return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Denegadas\n", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       default:
@@ -113,15 +120,18 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   void _accionItem(i){
     switch(i){
       case 0:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "En Espera (no sincronizadas)", status: 0, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome,) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Group(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome )));
         break;
       case 1:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Por autorizar", status: 1, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "En Espera (no sincronizadas)", status: 0, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome,) ));
         break;
       case 2:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Aprobadas", status: 2, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Por autorizar", status: 1, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
       case 3:
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Aprobadas", status: 2, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
+        break;
+      case 4:
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Denegadas", status: 3, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
       default:

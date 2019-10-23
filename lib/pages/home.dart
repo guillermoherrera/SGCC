@@ -114,9 +114,9 @@ class _HomePageState extends State<HomePage> {
                     child: Card(
                       child: Container(
                         child: ListTile(
-                        leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
-                        title: Row(children: <Widget>[Text("Grupos", style: TextStyle(fontWeight: FontWeight.bold)), Text("(nuevos)")],) ,
-                        subtitle: Text("Captura tus solicitudes de Credito Grupal."),
+                        leading: Icon(Icons.group_add, color: widget.colorTema,size: 40.0,),
+                        title: Text("Nueva solicitud de credito Grupal", style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("Captura solicitudes de Credito Grupal."),
 
                         ),
                         decoration: BoxDecoration(

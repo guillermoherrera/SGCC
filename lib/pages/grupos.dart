@@ -19,6 +19,7 @@ class Group extends StatefulWidget {
 }
 
 class _GroupState extends State<Group> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String userID;
   List<Grupo> grupos = List();  
   final _formKey = new GlobalKey<FormState>();
@@ -42,6 +43,7 @@ class _GroupState extends State<Group> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Grupos"),
         centerTitle: true,
@@ -60,7 +62,7 @@ class _GroupState extends State<Group> {
                 colors: [widget.colorTema[100], Colors.white])
               ),
             ),
-            grupos.length > 0 ? listaGrupos() : Center(child: Text("Sin grupos"),) 
+            grupos.length > 0 ? listaGrupos() : Center(child: Text("Sin grupos en captura."),) 
           ]
         )
       ),
@@ -321,17 +323,23 @@ class _GroupState extends State<Group> {
                 child: const Text("Sí, cerrar."),
                 onPressed: ()async{
                   Navigator.pop(context);
-                  await ServiceRepositoryGrupos.updateGrupoStatus(1, grupoId);
-                  final pref = await SharedPreferences.getInstance();
-                  userID = pref.getString("uid");
                   List<SolicitudModel.Solicitud> solicitudes =  List();
                   solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, grupoNombre);
-                  for(final solicitud in solicitudes){
-                    if(solicitud.idGrupo == grupoId) ServiceRepositorySolicitudes.updateSolicitudStatus(0, solicitud.idSolicitud);
+                  int cantidad = 7;//////PONER NUMERO DE CATALOGO
+                  if(solicitudes.length >= cantidad){
+                    await ServiceRepositoryGrupos.updateGrupoStatus(1, grupoId);
+                    final pref = await SharedPreferences.getInstance();
+                    userID = pref.getString("uid");
+                    for(final solicitud in solicitudes){
+                      if(solicitud.idGrupo == grupoId) ServiceRepositorySolicitudes.updateSolicitudStatus(0, solicitud.idSolicitud);
+                    }
+                    grupos.clear();
+                    widget.actualizaHome();
+                    showSnackBar("Grupo "+grupoNombre+" cerrado. Ahora esta en espera para ser Sincronizado", Colors.green);
+                    getListGrupos();
+                  }else{
+                    showSnackBar("El grupo "+grupoNombre+" no pudo ser cerrado. Debe tener al menos "+cantidad.toString()+" solicitudes", Colors.red);
                   }
-                  grupos.clear();
-                  widget.actualizaHome();
-                  getListGrupos();
                 }
               )
             ],
@@ -377,5 +385,14 @@ class _GroupState extends State<Group> {
             ],
       );
     });
+  }
+
+  showSnackBar(String texto, MaterialColor color){
+    final snackBar = SnackBar(
+      content: Text(texto, style: TextStyle(fontWeight: FontWeight.bold),),
+      backgroundColor: color[300],
+      duration: Duration(seconds: 3),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 }

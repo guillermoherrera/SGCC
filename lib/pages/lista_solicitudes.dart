@@ -189,7 +189,12 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
 
   Widget getLeyendaGrupo(int idGrupo){
     if(gruposGuardados.length == 0) return null;
-    bool accion = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == idGrupo).status == 0;
+    bool accion;
+    try{
+      accion = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == idGrupo).status == 0;
+    }catch(e){
+      return null;
+    }
     String texto;
     texto = accion ? "Grupo Abierto.\nCierralo para sincronizar." : "Grupo Cerrado.\nListo para sincronizar.";
     return Row(children: <Widget>[
@@ -337,7 +342,12 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   }
 
   Widget getIcono2(grupoId, grupoNombre) {
-    bool accion = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == grupoId).status == 0;
+    bool accion;
+    try{
+      accion = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == grupoId).status == 0;
+    }catch(e){
+      return null;
+    }
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: 

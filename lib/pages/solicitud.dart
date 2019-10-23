@@ -33,26 +33,30 @@ class _SolicitudState extends State<Solicitud> {
   bool buttonEnabled = true;
   AuthFirebase authFirebase = new AuthFirebase();
 
-  DateTime selectedDate = DateTime(2000, 1);
+  DateTime now = new DateTime.now();
+  DateTime selectedDate;
   //var formatter = new DateFormat('dd / MM / yyyy');
   
   String formatted;
 
   Future<Null> _selectDate(BuildContext context) async {
+    selectedDate = DateTime(now.year - 18, now.month, now.day);
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: selectedDate,
       locale: const Locale('es'),
       firstDate: DateTime(1950, 1),
       lastDate: DateTime(2019));
-    if (picked != null)// && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-        //formatted = formatter.format(selectedDate);
-        //fechaNacimiento.text = formatted;
-        fechaNacimiento.text = formatDate(selectedDate, [dd, '/', mm, '/', yyyy]);
-        getCurpRfc();
-      });
+    if (picked != null)
+      if(selectedDate.difference(picked).inDays >= 0){
+        setState(() {
+          selectedDate = picked;
+          fechaNacimiento.text = formatDate(selectedDate, [dd, '/', mm, '/', yyyy]);
+          getCurpRfc();
+        });
+      }else{
+        fechaNacimiento.text = "No válido";
+      }
   }
 
   @override
@@ -129,7 +133,19 @@ class _SolicitudState extends State<Solicitud> {
           ),
           keyboardType: TextInputType.number,
           //enabled: false,
-          validator: (value){return value.isEmpty ? "Ingresa el importe" : null;},
+          validator: (value){
+            //return value.isEmpty ? "Ingresa el importe" : null;},
+            if(value.isEmpty){
+              return "Ingresa el importe";
+            }else{
+              double cant = double.parse(value);
+              if(cant <= 0 || cant%500 > 0 ){
+                return "El importe debe ser multiplo de 500 (ej. 500, 1000, 1500 ...)";
+              }else{
+                return null;
+              }
+            }
+          }
         ),
       ),
       Row(
@@ -212,7 +228,7 @@ class _SolicitudState extends State<Solicitud> {
           flexPadded(InkWell(
               child: AbsorbPointer(child:TextFormField(
                 controller: fechaNacimiento,
-                maxLength: 14,
+                maxLength: 10,
                 style: TextStyle(fontWeight: FontWeight.bold),
                 decoration: InputDecoration(
                   labelText: "Fecha de Nacimiento",
@@ -222,7 +238,14 @@ class _SolicitudState extends State<Solicitud> {
                 textCapitalization: TextCapitalization.sentences,
                 keyboardType: TextInputType.datetime,
                 //enabled: false,
-                validator: (value){return value.isEmpty ? "Por favor ingresa la fecha de nacimiento" : null;},
+                validator: (value){
+                  //return value.isEmpty ? "Por favor ingresa la fecha de nacimiento" : null;
+                  if(value.isEmpty){
+                    return "Por favor ingresa la fecha de nacimiento";
+                  }else if(value.length < 10){
+                    return "Debe ser mayor de edad";
+                  }
+                },
               ),),
               onTap: () => _selectDate(context),
             )
