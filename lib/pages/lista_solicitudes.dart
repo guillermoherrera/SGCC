@@ -42,8 +42,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     String userID = pref.getString("uid");
     switch (widget.status) {
       case 0:
+        gruposGuardados = await ServiceRepositoryGrupos.getAllGruposEspera(userID);
         solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);  
-        gruposGuardados = await ServiceRepositoryGrupos.getAllGrupos(userID);
         mensaje = "Sin solicitudes en espera";
         break;
       case 1:
@@ -160,8 +160,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
                 title: Text(solicitudes[index].nombreGrupo, style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: getLeyendaGrupo(solicitudes[index].idGrupo),
-                //isThreeLine: true,
-                trailing: gruposGuardados.length > 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : Icon(Icons.done_all),
+                isThreeLine: true,
+                trailing: getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo)//gruposGuardados.length > 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : Icon(Icons.done_all),
               ),
               
               decoration: BoxDecoration(
@@ -188,15 +188,18 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   }
 
   Widget getLeyendaGrupo(int idGrupo){
-    if(gruposGuardados.length == 0) return null;
-    bool accion;
+    //if(gruposGuardados.length == 0) return null;
+    //bool accion;
+    bool accion = false;
     try{
-      accion = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == idGrupo).status == 0;
+      //accion = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == idGrupo).status == 0;
     }catch(e){
       return null;
     }
+    Grupo grupo = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == idGrupo);
     String texto;
-    texto = accion ? "Grupo Abierto.\nCierralo para sincronizar." : "Grupo Cerrado.\nListo para sincronizar.";
+    texto = "Integrantes: "+grupo.cantidad.toString()+"\nImporte: "+grupo.importe.toString();
+    //texto = accion ? "Grupo Abierto.\nCierralo para sincronizar." : "Grupo Cerrado.\nListo para sincronizar.";
     return Row(children: <Widget>[
       Icon(accion ? Icons.lock_open : Icons.lock, size: 20,),
       Text(texto)
@@ -342,9 +345,9 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   }
 
   Widget getIcono2(grupoId, grupoNombre) {
-    bool accion;
+    bool accion = false;
     try{
-      accion = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == grupoId).status == 0;
+      //accion = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == grupoId).status == 0;
     }catch(e){
       return null;
     }

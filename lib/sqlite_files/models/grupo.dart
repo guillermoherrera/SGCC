@@ -5,12 +5,16 @@ class Grupo{
   String nombreGrupo;
   int status;
   String userID;
+  double importe;
+  int cantidad;
 
   Grupo({
     this.idGrupo,
     this.nombreGrupo,
     this.status,
-    this.userID
+    this.userID,
+    this.cantidad,
+    this.importe
   }); 
 
   Grupo.fromjson(Map<String, dynamic> json){
@@ -18,5 +22,7 @@ class Grupo{
     this.nombreGrupo = json[DataBaseCreator.nombreGrupo];
     this.status = json[DataBaseCreator.status];
     this.userID = json[DataBaseCreator.userID];
+    this.cantidad = json[DataBaseCreator.cantidad];
+    this.importe = json[DataBaseCreator.importe_grupo];
   }
 }

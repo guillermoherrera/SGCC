@@ -35,6 +35,8 @@ class DataBaseCreator{
   static const gruposTable = 'grupos';
   static const idGrupo = 'idGrupo';
   static const nombreGrupo = 'nombreGrupo';
+  static const importe_grupo = 'importeTotal';
+  static const cantidad = 'cantidadSolicitudes';
   
   static const userID = 'userID';
   static const status = 'status';
@@ -96,7 +98,9 @@ class DataBaseCreator{
       $idGrupo INTEGER PRIMARY KEY,
       $nombreGrupo TEXT,
       $status INTEGER,
-      $userID TEXT
+      $userID TEXT,
+      $importe_grupo DOUBLE,
+      $cantidad INTEGER
     )''';
     
     await db.execute(solicitudesSql);

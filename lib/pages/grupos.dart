@@ -45,7 +45,7 @@ class _GroupState extends State<Group> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Grupos"),
+        title: Text("Captura de Grupos"),
         centerTitle: true,
         actions: <Widget>[
           IconButton(icon: Icon(Icons.group_add), onPressed: () {showFormGrupo();},)
@@ -265,8 +265,13 @@ class _GroupState extends State<Group> {
       );
       _nombre.text = "";
 
-      ServiceRepositoryGrupos.addGrupo(grupo);
-      getListGrupos();
+      if(await ServiceRepositoryGrupos.validaGrupo(grupo)){
+        await ServiceRepositoryGrupos.addGrupo(grupo);
+        getListGrupos();
+      }else{
+        showSnackBar("Ya tienes un grupo con el nombre "+grupo.nombreGrupo+" en tu lista de grupos", Colors.red);
+      }
+      
     }
   }
 
@@ -283,16 +288,21 @@ class _GroupState extends State<Group> {
       );
       _nombre.text = "";
 
-      ServiceRepositoryGrupos.updateGrupoNombre(grupo);
-      ServiceRepositorySolicitudes.updateSolicitudGrupo(grupo);
-      getListGrupos();
+      if(await ServiceRepositoryGrupos.validaGrupo(grupo)){
+        ServiceRepositoryGrupos.updateGrupoNombre(grupo);
+        ServiceRepositorySolicitudes.updateSolicitudGrupo(grupo);
+        getListGrupos();
+      }else{
+        showSnackBar("Ya tienes un grupo con el nombre "+grupo.nombreGrupo+" en tu lista de grupos", Colors.red);
+      }
     }
   }
 
   Widget getLeyendaGrupo(Grupo grupo){
     bool accion = grupo.status == 0;
     String texto;
-    texto = accion ? "Grupo Abierto.\nCierralo para sincronizar." : "Grupo Cerrado.\nListo para sincronizar";
+    //texto = accion ? "Grupo Abierto.\nCierralo para sincronizar." : "Grupo Cerrado.\nListo para sincronizar";
+    texto = "Integrantes: "+grupo.cantidad.toString()+"\nImporte: "+grupo.importe.toString();
     return Row(children: <Widget>[
       Icon(accion ? Icons.lock_open : Icons.lock, size: 20,),
       Text(texto)
@@ -325,7 +335,7 @@ class _GroupState extends State<Group> {
                   Navigator.pop(context);
                   List<SolicitudModel.Solicitud> solicitudes =  List();
                   solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, grupoNombre);
-                  int cantidad = 7;//////PONER NUMERO DE CATALOGO
+                  int cantidad = 2;//////PONER NUMERO DE CATALOGO
                   if(solicitudes.length >= cantidad){
                     await ServiceRepositoryGrupos.updateGrupoStatus(1, grupoId);
                     final pref = await SharedPreferences.getInstance();
@@ -338,7 +348,7 @@ class _GroupState extends State<Group> {
                     showSnackBar("Grupo "+grupoNombre+" cerrado. Ahora esta en espera para ser Sincronizado", Colors.green);
                     getListGrupos();
                   }else{
-                    showSnackBar("El grupo "+grupoNombre+" no pudo ser cerrado. Debe tener al menos "+cantidad.toString()+" solicitudes", Colors.red);
+                    showSnackBar("El grupo "+grupoNombre+" no pudo ser cerrado. Debe tener al menos "+cantidad.toString()+" integrantes", Colors.red);
                   }
                 }
               )

@@ -170,6 +170,9 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                 onPressed: ()async{
                   Navigator.pop(context);
                   await ServiceRepositorySolicitudes.deleteSolicitudCompleta(solicitud);
+                  Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitud.idGrupo);
+                  Grupo grupoAux = new Grupo(idGrupo: grupo.idGrupo, cantidad: grupo.cantidad - 1, importe: grupo.importe - solicitud.importe);
+                  await ServiceRepositoryGrupos.updateGrupoImpCant(grupoAux);
                   solicitudes.clear();
                   widget.actualizaHome();
                   getListDocumentos();

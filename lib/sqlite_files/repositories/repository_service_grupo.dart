@@ -18,6 +18,21 @@ class ServiceRepositoryGrupos{
     return grupos;
   }
 
+  static Future<List<Grupo>> getAllGruposEspera(String userID) async{
+    final sql = '''SELECT * FROM ${DataBaseCreator.gruposTable}
+      WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.status} = 1''';
+    
+    final data = await db.rawQuery(sql);
+    List<Grupo> grupos = List();
+    
+    for(final node in data){
+      final grupo = Grupo.fromjson(node);
+      grupos.add(grupo);
+    }
+
+    return grupos;
+  }
+
   static Future<Grupo> getOneGrupo(int idGrupo) async{
     final sql = '''SELECT * FROM ${DataBaseCreator.gruposTable}
       WHERE ${DataBaseCreator.idGrupo} = $idGrupo''';
@@ -26,18 +41,33 @@ class ServiceRepositoryGrupos{
 
     return Grupo.fromjson(data[0]);
   }
+
+  static Future<bool> validaGrupo(Grupo grupo) async{
+    final sql = '''SELECT * FROM ${DataBaseCreator.gruposTable}
+      WHERE ${DataBaseCreator.nombreGrupo} = "${grupo.nombreGrupo}"
+      AND ${DataBaseCreator.userID} = "${grupo.userID}"''';
+    
+    final data = await db.rawQuery(sql);
+
+    bool result = data.length == 0 ? true : false;
+    return result;
+  }
   
   static Future<void> addGrupo(Grupo grupo) async{
     final sql = '''INSERT INTO ${DataBaseCreator.gruposTable}(
       ${DataBaseCreator.idGrupo},
       ${DataBaseCreator.nombreGrupo},
       ${DataBaseCreator.status},
-      ${DataBaseCreator.userID}
+      ${DataBaseCreator.userID},
+      ${DataBaseCreator.importe_grupo},
+      ${DataBaseCreator.cantidad}
     )values(
       ${grupo.idGrupo},
       "${grupo.nombreGrupo}",
       ${grupo.status},
-      "${grupo.userID}"
+      "${grupo.userID}",
+      0,
+      0
     )''';
 
     final result = await db.rawInsert(sql);
@@ -51,6 +81,15 @@ class ServiceRepositoryGrupos{
     
     final result = await db.rawUpdate(sql);
     DataBaseCreator.dataBaseLog("actualiza Grupo Nombre", sql, null, result);
+  }
+
+  static Future<void> updateGrupoImpCant(Grupo grupo) async{
+    final sql = '''UPDATE ${DataBaseCreator.gruposTable}
+      SET ${DataBaseCreator.importe_grupo} = ${grupo.importe}, ${DataBaseCreator.cantidad} = ${grupo.cantidad}
+      WHERE ${DataBaseCreator.idGrupo} = ${grupo.idGrupo}''';
+    
+    final result = await db.rawUpdate(sql);
+    DataBaseCreator.dataBaseLog("actualiza cantidad e importe", sql, null, result);
   }
 
   static Future<void> updateGrupoStatus(int status, int grupoID)async{

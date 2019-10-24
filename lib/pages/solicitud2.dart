@@ -396,6 +396,12 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       );
 
       await ServiceRepositorySolicitudes.addSolicitud(solicitud).then((_) async{
+
+        if(widget.datos.grupoId != null){
+          Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(widget.datos.grupoId);
+          Grupo grupoAux = new Grupo(idGrupo: grupo.idGrupo, cantidad: grupo.cantidad + 1, importe: grupo.importe + widget.datos.importe);
+          await ServiceRepositoryGrupos.updateGrupoImpCant(grupoAux);
+        }
         for(var doc in listaDocs){
           final int _idD = await ServiceRepositoryDocumentosSolicitud.documentosSolicitudCount();
           final DocumentoSolicitud documentoSolicitud = new DocumentoSolicitud(

@@ -4,7 +4,9 @@ import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud2.dart';
 import 'package:sgcartera_app/pages/solicitud_editar2.dart';
+import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 
 class SolicitudEditar extends StatefulWidget {
@@ -35,6 +37,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
   int tipoContrato;
   int idGrupo;
   String nombreGrupo;
+  double importeOriginal;
 
   DateTime now = new DateTime.now();
   DateTime selectedDate;
@@ -74,6 +77,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
     curp.text = solicitudEditar.curp;
     rfc.text = solicitudEditar.rfc;
     importe.text = solicitudEditar.importe.toString();
+    importeOriginal = solicitudEditar.importe;
     telefono.text = solicitudEditar.telefono;
 
     userID = solicitudEditar.userID;
@@ -399,7 +403,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
         rfc: rfc.text,
         telefono:  telefono.text,
         userID: userID,
-        status: 0,
+        status: idGrupo == null ? 0 : 6 ,
         tipoContrato: tipoContrato,
         idGrupo: idGrupo,
         nombreGrupo: nombreGrupo
@@ -427,6 +431,12 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
         );
 
       await ServiceRepositorySolicitudes.updateSolicitud(solicitud).then((_) async{
+        if(idGrupo != null){
+          Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(idGrupo);
+          double diferenciaIporte =  double.parse(importe.text) - importeOriginal;
+          Grupo grupoAux = new Grupo(idGrupo: grupo.idGrupo, cantidad: grupo.cantidad + 0, importe: grupo.importe + diferenciaIporte);
+          await ServiceRepositoryGrupos.updateGrupoImpCant(grupoAux);
+        }
         _buttonStatus();
       });
       Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentosEditar(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, solicitudId: idSolicitud)));
