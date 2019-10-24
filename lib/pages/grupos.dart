@@ -5,6 +5,7 @@ import 'package:sgcartera_app/pages/solicitud.dart';
 
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart' as SolicitudModel;
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catIntegrantes.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -335,7 +336,8 @@ class _GroupState extends State<Group> {
                   Navigator.pop(context);
                   List<SolicitudModel.Solicitud> solicitudes =  List();
                   solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, grupoNombre);
-                  int cantidad = 2;//////PONER NUMERO DE CATALOGO
+                  var result = await RepositoryServiceCatIntegrantes.getAllCatIntegrantes();
+                  int cantidad = result[0].cantidad;
                   if(solicitudes.length >= cantidad){
                     await ServiceRepositoryGrupos.updateGrupoStatus(1, grupoId);
                     final pref = await SharedPreferences.getInstance();

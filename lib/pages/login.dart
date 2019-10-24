@@ -4,7 +4,9 @@ import 'package:sgcartera_app/Models/auth_res.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/sqlite_files/database_creator.dart';
 import 'package:sgcartera_app/sqlite_files/models/cat_documento.dart';
+import 'package:sgcartera_app/sqlite_files/models/cat_integrantes.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catDocumento.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catIntegrantes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -183,5 +185,12 @@ class _LoginState extends State<Login> {
       final catDocumento = CatDocumento(tipo: value.data['tipo'], descDocumento: value.data['descDocumento'] );
       await RepositoryServiceCatDocumento.addCatDocumento(catDocumento);
     }
+
+    //catIntegrantes
+    await RepositoryServiceCatIntegrantes.deleteAll();
+    q = _firestore.collection("catIntegrantesGrupo").where('activo', isEqualTo: true);
+    querySnapshot = await q.getDocuments();
+    final catIntegrante = CatIntegrante(cantidad: querySnapshot.documents[0].data['cantidad']);
+    await RepositoryServiceCatIntegrantes.addCatIntegrante(catIntegrante);
   }
 }
