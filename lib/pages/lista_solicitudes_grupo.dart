@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud_editar.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catIntegrantes.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,11 +25,14 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
   List<Solicitud> solicitudes = List();  
   AuthFirebase authFirebase = new AuthFirebase();
   bool status;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  List<Grupo> gruposAbiertos = List();  
 
   Future<void> getListDocumentos() async{
     status = widget.grupo.status == 0 ? true : false;
     final pref = await SharedPreferences.getInstance();
     String userID = pref.getString("uid");
+    gruposAbiertos = await ServiceRepositoryGrupos.getAllGrupos(userID);
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, widget.title);   
     setState(() {});
   }
@@ -44,6 +49,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
     return WillPopScope(
       onWillPop: ()=> Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: authFirebase, colorTema: widget.colorTema,))),
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text(widget.title),
           centerTitle: true,
@@ -131,15 +137,23 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
             new PopupMenuItem<int>(
               child: Row(children: <Widget>[Icon(Icons.mode_edit, color: Colors.green,),Text(" Ver/Editar Solicitud")],), value: 1),
             new PopupMenuItem<int>(
+              child: Row(children: <Widget>[Icon(Icons.person_pin, color: status ? Colors.blue : Colors.grey),Text(" Mover a Individual")],), value: 3),
+            new PopupMenuItem<int>(
+              child: Row(children: <Widget>[Icon(Icons.group_work, color: status ? Colors.blue : Colors.grey),Text(" Mover a otro Grupo")],), value: 4),
+            new PopupMenuItem<int>(
               child: Row(children: <Widget>[Icon(Icons.delete, color: Colors.red),Text(" Eliminar Solicitud")],), value: 2),
-          ],
+                      ],
           onSelected: (value){
             if(value == 1){
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SolicitudEditar(title: "Solicitud Editar:", colorTema: widget.colorTema, idSolicitud: solicitud.idSolicitud )));
             }
             else if(value == 2){
-              eliminarSolicitud(solicitud);
+              if(status) eliminarSolicitud(solicitud);
               //Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo,)));
+            }else if(value == 3){
+              if(status) moverAIndividual(solicitud);
+            }else if(value == 4){
+              if(status) mostrarActionSheet(context, solicitud);
             }
           }
         )
@@ -205,21 +219,115 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                 child: const Text("Sí, cerrar."),
                 onPressed: ()async{
                   Navigator.pop(context);
-                  await ServiceRepositoryGrupos.updateGrupoStatus(1, grupo.idGrupo);
-                  for(final solicitud in solicitudes){
-                    if(solicitud.idGrupo == grupo.idGrupo) await ServiceRepositorySolicitudes.updateSolicitudStatus(0, solicitud.idSolicitud);
+                  var result = await RepositoryServiceCatIntegrantes.getAllCatIntegrantes();
+                  int cantidad = result[0].cantidad;
+                  if(solicitudes.length >= cantidad){
+                    await ServiceRepositoryGrupos.updateGrupoStatus(1, grupo.idGrupo);
+                    for(final solicitud in solicitudes){
+                      if(solicitud.idGrupo == grupo.idGrupo) await ServiceRepositorySolicitudes.updateSolicitudStatus(0, solicitud.idSolicitud);
+                    }
+                    widget.actualizaHome();
+                    setState(() {
+                    status = false; 
+                    });
+                  }else{
+                    showSnackBar("El grupo no pudo ser cerrado. Debe tener al menos "+cantidad.toString()+" integrantes", Colors.red);
                   }
-                  //grupos.clear();
-                  widget.actualizaHome();
-                  setState(() {
-                   status = false; 
-                  });
-                  //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo, actualizaHome: widget.actualizaHome, grupo: grupo)));
-                  //getListDocumentos();
                 }
               )
             ],
       );
     });
   }
+
+  moverAIndividual(Solicitud solicitudAux)async{
+    
+    showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Center(child: Text("Mover a individual")),
+        content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.error, color: Colors.yellow, size: 100.0,),
+                Text("\n¿Desea mover esta solicitud a Individual?"),
+              ],
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: const Text("No"),
+                onPressed: (){Navigator.pop(context);}
+              ),
+              new FlatButton(
+                child: const Text("Sí, mover."),
+                onPressed: ()async{
+                  Navigator.pop(context);
+                  Solicitud solicitud = new Solicitud(idSolicitud: solicitudAux.idSolicitud, idGrupo: null, nombreGrupo: null, status: 0);
+                  await ServiceRepositorySolicitudes.updateMoverSolicitud(solicitud);
+                  Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitudAux.idGrupo);
+                  Grupo grupoAux = new Grupo(idGrupo: grupo.idGrupo, cantidad: grupo.cantidad - 1, importe: grupo.importe - solicitudAux.importe);
+                  await ServiceRepositoryGrupos.updateGrupoImpCant(grupoAux);
+                  widget.actualizaHome();
+                  getListDocumentos();
+                }
+              )
+            ],
+      );
+    });
+  }
+
+  showSnackBar(String texto, MaterialColor color){
+    final snackBar = SnackBar(
+      content: Text(texto, style: TextStyle(fontWeight: FontWeight.bold),),
+      backgroundColor: color[300],
+      duration: Duration(seconds: 3),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  mostrarActionSheet(BuildContext context, Solicitud solicitud){
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context){
+        return CupertinoActionSheet(
+          title: Text("Confirma el grupo"),
+          message: Text(gruposAbiertos.length > 0 ? "Selecciona el grupo al que se agregará la solicitud" : "No tienes grupos abiertos"),
+          cancelButton: CupertinoActionSheetAction(
+            child: Text("Cancelar"),
+            onPressed: (){Navigator.of(context).pop();},
+          ),
+          actions: getGrupos(solicitud),
+        );
+      }
+    );
+  }
+
+ List<Widget> getGrupos(Solicitud solicitud){
+   List<Widget> listaGrupos = List();
+   for(Grupo grupo in gruposAbiertos){
+     listaGrupos.add(
+       CupertinoActionSheetAction(
+        child: Text(grupo.nombreGrupo),
+        onPressed: () => moverGrupo(solicitud, grupo),
+       )
+     );
+   }
+   return listaGrupos;
+ }
+
+  moverGrupo(Solicitud solicitudAux, Grupo group)async{
+    if(solicitudAux.idGrupo != group.idGrupo){
+      Solicitud solicitud = new Solicitud(idSolicitud: solicitudAux.idSolicitud, idGrupo: group.idGrupo, nombreGrupo: group.nombreGrupo, status: 6);
+      await ServiceRepositorySolicitudes.updateMoverSolicitud(solicitud);
+      Grupo grupoAux = new Grupo(idGrupo: group.idGrupo, cantidad: group.cantidad + 1, importe: group.importe + solicitudAux.importe);
+      await ServiceRepositoryGrupos.updateGrupoImpCant(grupoAux);
+      Grupo grupoviejo = await ServiceRepositoryGrupos.getOneGrupo(solicitudAux.idGrupo);
+      Grupo grupoAux2 = new Grupo(idGrupo: solicitudAux.idGrupo, cantidad: grupoviejo.cantidad - 1, importe: grupoviejo.importe - solicitudAux.importe);
+      await ServiceRepositoryGrupos.updateGrupoImpCant(grupoAux2);
+      widget.actualizaHome();
+      getListDocumentos();
+    }
+    Navigator.of(context).pop();
+ }
 }

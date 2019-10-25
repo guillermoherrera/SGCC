@@ -31,7 +31,8 @@ class ListaSolicitudes extends StatefulWidget {
 
 class _ListaSolicitudesState extends State<ListaSolicitudes> {
   List<Solicitud> solicitudes = List();  
-  List<Grupo> gruposGuardados = List();  
+  List<Grupo> gruposGuardados = List(); 
+  List<Grupo> gruposAbiertos = List();  
   AuthFirebase authFirebase = new AuthFirebase();
   List<String> grupos = List();
   Firestore _firestore = Firestore.instance;
@@ -43,6 +44,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     switch (widget.status) {
       case 0:
         gruposGuardados = await ServiceRepositoryGrupos.getAllGruposEspera(userID);
+        gruposAbiertos = await ServiceRepositoryGrupos.getAllGrupos(userID);
         solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);  
         mensaje = "Sin solicitudes en espera";
         break;
@@ -80,25 +82,6 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         solicitudes.add(solicitud);
       }
     }catch(e){
-      /*Solicitud solicitud = new Solicitud(
-          apellidoPrimero: "",
-          apellidoSegundo: "",
-          curp: "Sin REd",
-          fechaNacimiento: 0,
-          idGrupo: null,
-          idSolicitud: null,
-          importe: 0,
-          nombrePrimero: "Sin acceso a internet, revisa tu conexión",
-          nombreSegundo: "",
-          rfc: "Sin REd",
-          telefono: "0000000000",
-          nombreGrupo: "Sin REd",
-          userID: "Sin REd",
-          status: 1,
-          tipoContrato: 0
-
-        );
-        solicitudes.add(solicitud);*/
       mensaje = "Error interno. Revisa tu conexión a internet";
     }
   }
@@ -219,6 +202,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
             new PopupMenuItem<int>(
               child: Row(children: <Widget>[Icon(Icons.mode_edit, color: Colors.green,),Text(" Ver/Editar Solicitud")],), value: 1),
             new PopupMenuItem<int>(
+              child: Row(children: <Widget>[Icon(Icons.group_work, color: Colors.blue,),Text(" Mover a Grupal")],), value: 3),
+            new PopupMenuItem<int>(
               child: Row(children: <Widget>[Icon(Icons.delete, color: Colors.red),Text(" Eliminar Solicitud")],), value: 2),
           ],
           onSelected: (value){
@@ -228,6 +213,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
             else if(value == 2){
               eliminarSolicitud(solicitud);
               //Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo,)));
+            }else if(value == 3){
+              mostrarActionSheet(context, solicitud);
             }
           }
         )
@@ -528,4 +515,45 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     }
     return listaDocs;
   }
+
+  mostrarActionSheet(BuildContext context, Solicitud solicitud){
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context){
+        return CupertinoActionSheet(
+          title: Text("Confirma el grupo "),
+          message: Text(gruposAbiertos.length > 0 ? "Selecciona el grupo al que se agregará la solicitud" : "No tienes grupos abiertos"),
+          cancelButton: CupertinoActionSheetAction(
+            child: Text("Cancelar"),
+            onPressed: (){Navigator.of(context).pop();},
+          ),
+          actions: getGrupos(solicitud),
+        );
+      }
+    );
+  }
+
+ List<Widget> getGrupos(Solicitud solicitud){
+   List<Widget> listaGrupos = List();
+   for(Grupo grupo in gruposAbiertos){
+     listaGrupos.add(
+       CupertinoActionSheetAction(
+        child: Text(grupo.nombreGrupo),
+        onPressed: () => moverGrupo(solicitud, grupo),
+       )
+     );
+   }
+   return listaGrupos;
+ }
+
+  moverGrupo(Solicitud solicitudAux, Grupo group)async{
+    Solicitud solicitud = new Solicitud(idSolicitud: solicitudAux.idSolicitud, idGrupo: group.idGrupo, nombreGrupo: group.nombreGrupo, status: 6);
+    await ServiceRepositorySolicitudes.updateMoverSolicitud(solicitud);
+    Grupo grupoAux = new Grupo(idGrupo: group.idGrupo, cantidad: group.cantidad + 1, importe: group.importe + solicitudAux.importe);
+    await ServiceRepositoryGrupos.updateGrupoImpCant(grupoAux);
+    widget.actualizaHome();
+    getListDocumentos();
+    Navigator.of(context).pop();
+ }
+
 }

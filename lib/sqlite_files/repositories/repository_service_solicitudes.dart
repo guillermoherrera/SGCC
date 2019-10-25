@@ -119,6 +119,16 @@ class ServiceRepositorySolicitudes{
     DataBaseCreator.dataBaseLog("actualizar Solcitud Status", sql, null, result);
   }
 
+  static Future<void> updateMoverSolicitud(Solicitud solicitud) async{
+    final sql = '''UPDATE ${DataBaseCreator.solicitudesTable}
+      SET ${DataBaseCreator.id_grupo} = ${solicitud.idGrupo}, ${DataBaseCreator.nombre_Grupo} = "${solicitud.nombreGrupo}",
+      ${DataBaseCreator.status} = ${solicitud.status}
+      WHERE ${DataBaseCreator.idSolicitud} = ${solicitud.idSolicitud}''';
+
+    final result = await db.rawUpdate(sql);
+    DataBaseCreator.dataBaseLog("Mover Solicitud", sql, null, result);
+  }
+
   static Future<void> deleteSolicitudCompleta(Solicitud solicitud) async{
     final sql = '''DELETE FROM ${DataBaseCreator.solicitudesTable}
       WHERE ${DataBaseCreator.idSolicitud} = ${solicitud.idSolicitud}''';
