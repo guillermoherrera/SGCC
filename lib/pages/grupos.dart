@@ -322,7 +322,7 @@ class _GroupState extends State<Group> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.error, color: Colors.yellow, size: 100.0,),
-                Text("\nAl cerrar el grupo no podrá agregarle mas solicitudes y estará listo para sincronizarse.\n\n¿Desea cerrar el grupo "+grupoNombre+"?"),
+                Text("\nAl cerrar el grupo no podrá agregar ni eliminar solicitudes y estará listo para sincronizarse.\n\n¿Desea cerrar el grupo "+grupoNombre+"?"),
               ],
             ),
             actions: <Widget>[

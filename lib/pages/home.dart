@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:mime_type/mime_type.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/components/custom_drawer.dart';
 import 'package:sgcartera_app/models/auth_res.dart';
@@ -17,6 +18,7 @@ import 'package:sgcartera_app/sqlite_files/repositories/repository_service_docum
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart' as path;
 
 class HomePage extends StatefulWidget {
   HomePage({this.onSingIn, this.colorTema});
@@ -327,7 +329,9 @@ class _HomePageState extends State<HomePage> {
     FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
     try{
       for(var doc in listaDocs){
-        StorageReference reference = _firebaseStorage.ref().child('Documentos').child(DateTime.now().toString()+"_"+doc['tipo'].toString());
+        String mimeType = mime(path.basename(doc['documento']));
+        String ext = "."+mimeType.split("/")[1];
+        StorageReference reference = _firebaseStorage.ref().child('Documentos').child(DateTime.now().millisecondsSinceEpoch.toString()+"_"+doc['tipo'].toString()+ext);
         StorageUploadTask uploadTask = reference.putFile(File(doc['documento']));
         StorageTaskSnapshot downloadUrl = await uploadTask.onComplete.timeout(Duration(seconds: 10));
         doc['documento'] = await downloadUrl.ref.getDownloadURL();

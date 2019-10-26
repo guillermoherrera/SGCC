@@ -1,14 +1,18 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mime_type/mime_type.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud_editar.dart';
+import 'package:sgcartera_app/sqlite_files/models/documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud.dart' as SolicitudPage;
@@ -16,6 +20,8 @@ import 'package:sgcartera_app/sqlite_files/repositories/repository_service_docum
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart'; 
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:path/path.dart' as path;
 
 import 'lista_solicitudes_grupo.dart';
 
@@ -36,7 +42,11 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   AuthFirebase authFirebase = new AuthFirebase();
   List<String> grupos = List();
   Firestore _firestore = Firestore.instance;
+  FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
   String mensaje = "Cargando ...";
+
+  bool downloading = false;
+  var progressString = "";
   
   Future<void> getListDocumentos() async{
     final pref = await SharedPreferences.getInstance();
@@ -61,6 +71,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     try{
       Query q = _firestore.collection("Solicitudes").where('status', isEqualTo: 1);
       QuerySnapshot querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
+      solicitudes.clear();
       for(DocumentSnapshot dato in querySnapshot.documents){
         Solicitud solicitud = new Solicitud(
           apellidoPrimero: dato.data['persona']['apellido'],
@@ -77,7 +88,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           nombreGrupo: dato.data['grupoNombre'],
           userID: dato.data['userID'],
           status: dato.data['status'],
-          tipoContrato: dato.data['tipoContrato']
+          tipoContrato: dato.data['tipoContrato'],
+          documentID: dato.documentID
         );
         solicitudes.add(solicitud);
       }
@@ -103,7 +115,28 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           widget.status == 0 ? IconButton(icon: Icon(Icons.cached), color: Colors.white, onPressed: () {showDialogo();},) : Text("")
         ],
       ),
-      body: Container(
+      body: downloading ? Center(child: Container(
+          height: 120.0,
+          width: 200.0,
+          child: Card(
+            color: Colors.black,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                CircularProgressIndicator(),
+                SizedBox(
+                  height: 20.0,
+                ),
+                Text(
+                  " Descargarndo Información:\n$progressString",
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                )
+              ],
+            ),
+          ),
+        )) :  Container(
         child: Stack(
           children: <Widget>[
             Container(
@@ -137,14 +170,14 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 title: Text(getNombre(solicitudes[index]), style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(getImporte(solicitudes[index])),
                 isThreeLine: true,
-                trailing: solicitudes[index].status == 0 ? getIcono(solicitudes[index]) : Icon(Icons.done_all),
+                trailing: solicitudes[index].status == 0 ? getIcono(solicitudes[index]) : getIconoRecuperar(solicitudes[index]),
               ) : 
               ListTile(
                 leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
                 title: Text(solicitudes[index].nombreGrupo, style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: getLeyendaGrupo(solicitudes[index].idGrupo),
                 isThreeLine: true,
-                trailing: getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo)//gruposGuardados.length > 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : Icon(Icons.done_all),
+                trailing: solicitudes[index].status == 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : Icon(Icons.done_all)//gruposGuardados.length > 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : Icon(Icons.done_all),
               ),
               
               decoration: BoxDecoration(
@@ -174,12 +207,19 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     //if(gruposGuardados.length == 0) return null;
     //bool accion;
     bool accion = false;
+    Grupo grupo;
     try{
       //accion = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == idGrupo).status == 0;
+      grupo = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == idGrupo);
     }catch(e){
-      return null;
+      return Row(children: <Widget>[
+          Icon(accion ? Icons.lock_open : Icons.lock, size: 20,),
+          Text("Integrantes: "+0.toString()+"\nImporte: "+0.toString())
+        ],
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,);
     }
-    Grupo grupo = gruposGuardados.firstWhere((grupo)=>grupo.idGrupo == idGrupo);
+    
     String texto;
     texto = "Integrantes: "+grupo.cantidad.toString()+"\nImporte: "+grupo.importe.toString();
     //texto = accion ? "Grupo Abierto.\nCierralo para sincronizar." : "Grupo Cerrado.\nListo para sincronizar.";
@@ -222,6 +262,27 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     );
   }
 
+  Widget getIconoRecuperar(Solicitud solicitud){
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: 
+      <Widget>[
+        PopupMenuButton(
+          itemBuilder: (_) => <PopupMenuItem<int>>[
+            new PopupMenuItem<int>(
+              child: Row(children: <Widget>[Icon(Icons.assignment_return, color: Colors.green,),Text(" Regresar a 'En espera...'")],), value: 1),
+          ],
+          onSelected: (value){
+            if(value == 1){
+              recuperarSolicitud(solicitud);
+            }
+          }
+        ),
+        Icon(Icons.done_all)
+      ],
+    );
+  }
+
   eliminarSolicitud(Solicitud solicitud) async{
     showDialog(
     context: context,
@@ -229,28 +290,28 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
       return AlertDialog(
         title: Center(child: Text("Elminar Solicitud")),
         content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.error, color: Colors.yellow, size: 100.0,),
-                Text("\n¿Desea elminar la solicitud a nombre de "+getNombre(solicitud)+"?"),
-              ],
-            ),
-            actions: <Widget>[
-              new FlatButton(
-                child: const Text("No"),
-                onPressed: (){Navigator.pop(context);}
-              ),
-              new FlatButton(
-                child: const Text("Sí, eliminar."),
-                onPressed: ()async{
-                  Navigator.pop(context);
-                  await ServiceRepositorySolicitudes.deleteSolicitudCompleta(solicitud);
-                  grupos.clear();
-                  widget.actualizaHome();
-                  getListDocumentos();
-                }
-              )
-            ],
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error, color: Colors.yellow, size: 100.0,),
+            Text("\n¿Desea elminar la solicitud a nombre de "+getNombre(solicitud)+"?"),
+          ],
+        ),
+        actions: <Widget>[
+          new FlatButton(
+            child: const Text("No"),
+            onPressed: (){Navigator.pop(context);}
+          ),
+          new FlatButton(
+            child: const Text("Sí, eliminar."),
+            onPressed: ()async{
+              Navigator.pop(context);
+              await ServiceRepositorySolicitudes.deleteSolicitudCompleta(solicitud);
+              grupos.clear();
+              widget.actualizaHome();
+              getListDocumentos();
+            }
+          )
+        ],
       );
     });
   }
@@ -505,7 +566,9 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
     try{
       for(var doc in listaDocs){
-        StorageReference reference = _firebaseStorage.ref().child('Documentos').child(DateTime.now().toString()+"_"+doc['tipo'].toString());
+        String mimeType = mime(path.basename(doc['documento']));
+        String ext = "."+mimeType.split("/")[1];
+        StorageReference reference = _firebaseStorage.ref().child('Documentos').child(DateTime.now().millisecondsSinceEpoch.toString()+"_"+doc['tipo'].toString()+ext);
         StorageUploadTask uploadTask = reference.putFile(File(doc['documento']));
         StorageTaskSnapshot downloadUrl = await uploadTask.onComplete.timeout(Duration(seconds: 10));
         doc['documento'] = await downloadUrl.ref.getDownloadURL();
@@ -556,4 +619,93 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     Navigator.of(context).pop();
  }
 
+  recuperarSolicitud(Solicitud solicitud)async{
+    setState(() {
+      downloading = true;
+      progressString = "";
+    });
+    
+    Solicitud _solicitud = solicitud;
+    try{
+      var document = await _firestore.collection("Solicitudes").document(_solicitud.documentID).get().timeout(Duration(seconds:10));
+      final int _id = await ServiceRepositorySolicitudes.solicitudesCount();
+      final pref = await SharedPreferences.getInstance();
+      final String userID = pref.getString("uid");
+      final Solicitud solicitud = new Solicitud(
+        idSolicitud: _id + 1,
+        importe: document.data['importe'],
+        nombrePrimero: document.data['persona']['nombre'],
+        nombreSegundo: document.data['persona']['nombreSegundo'],
+        apellidoPrimero: document.data['persona']['apellido'],
+        apellidoSegundo: document.data['persona']['apellidoSegundo'],
+        fechaNacimiento: document.data['persona']['fechaNacimiento'].millisecondsSinceEpoch,
+        curp: document.data['persona']['curp'],
+        rfc: document.data['persona']['rfc'],
+        telefono:  document.data['persona']['telefono'],
+        userID: userID,
+        status: 0,
+        tipoContrato: document.data['tipoContrato'],
+        idGrupo: null,
+        nombreGrupo: null
+      );
+ 
+      Dio dio = Dio();
+      var dir = await getApplicationDocumentsDirectory();
+      List<Map> listaDocs = List();
+
+      try{
+        //if(document.data['documentos'].length > 0) downloading = true;
+        int iteracion = 0;
+        for(final documento in document.data['documentos']){
+          iteracion ++;
+          String filename = documento['documento'].replaceAll(new 
+                  RegExp(r'https://firebasestorage.googleapis.com/v0/b/sgcc-57fde.appspot.com/o/Documentos%2F'), '').split('?')[0];
+          String rutaImagen = "${dir.path}/"+filename;
+          
+          await dio.download(documento['documento'], rutaImagen,
+            onReceiveProgress: (rec,total){
+              setState(() {
+                progressString = " Documento "+iteracion.toString()+" de "+document.data['documentos'].length.toString()+" "+((rec / total) * 100).toStringAsFixed(0) + "%";
+              });
+            }
+          );
+          Documento docu = new Documento(tipo:documento['tipo'], documento: rutaImagen);
+          listaDocs.add(docu.toJson());
+        }
+      }catch(e){
+        print(e);
+      }
+      
+      print("Download completed");
+      
+      await ServiceRepositorySolicitudes.addSolicitud(solicitud).then((_) async{
+        for(var doc in listaDocs){
+          final int _idD = await ServiceRepositoryDocumentosSolicitud.documentosSolicitudCount();
+          final DocumentoSolicitud documentoSolicitud = new DocumentoSolicitud(
+            idDocumentoSolicitud: _idD + 1,
+            idSolicitud: solicitud.idSolicitud,
+            tipo: doc['tipo'],
+            documento: doc['documento'] 
+          );
+          await ServiceRepositoryDocumentosSolicitud.addDocumentoSolicitud(documentoSolicitud);
+        }
+        await _firestore.collection("Solicitudes").document(_solicitud.documentID).delete();
+        
+        for(final documento in document.data['documentos']){
+          String filePath = documento['documento'].replaceAll(new 
+                    RegExp(r'https://firebasestorage.googleapis.com/v0/b/sgcc-57fde.appspot.com/o/Documentos%2F'), '').split('?')[0];
+          await _firebaseStorage.ref().child("Documentos").child(filePath).delete();
+        }
+        
+        await getListDocumentos();
+        setState(() {
+          downloading = false;
+          progressString = "Completed";
+        });
+      });
+      
+    }catch(e){
+      
+    }
+  }
 }
