@@ -9,6 +9,7 @@ import 'package:mime_type/mime_type.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/models/documento.dart';
+import 'package:sgcartera_app/models/grupo.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud_editar.dart';
@@ -78,7 +79,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           apellidoSegundo: dato.data['persona']['apellidoSegundo'],
           curp: dato.data['persona']['curp'],
           fechaNacimiento: dato.data['persona']['fechaNacimiento'].millisecondsSinceEpoch,
-          idGrupo: dato.data['grupoId'],
+          //idGrupo: dato.data['grupoId'],
+          grupoID: dato.data['grupoID'],
           idSolicitud: null,
           importe: dato.data['importe'],
           nombrePrimero: dato.data['persona']['nombre'],
@@ -159,12 +161,12 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
       itemCount: solicitudes.length,
       itemBuilder: (context, index){
         if(grupos.contains(solicitudes[index].nombreGrupo)) return Padding(padding: EdgeInsets.all(0),);
-        if(solicitudes[index].idGrupo != null) grupos.add(solicitudes[index].nombreGrupo);
+        if(solicitudes[index].grupoID != null) grupos.add(solicitudes[index].nombreGrupo);
         return InkWell(
           child: Card(
             child: Container(
 
-              child: solicitudes[index].idGrupo == null ?
+              child: solicitudes[index].grupoID == null ?
               ListTile(
                 leading: Icon(Icons.person, color: widget.colorTema,size: 40.0,),
                 title: Text(getNombre(solicitudes[index]), style: TextStyle(fontWeight: FontWeight.bold)),
@@ -175,7 +177,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
               ListTile(
                 leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
                 title: Text(solicitudes[index].nombreGrupo, style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: getLeyendaGrupo(solicitudes[index].idGrupo),
+                subtitle: solicitudes[index].status == 0 ? getLeyendaGrupo(solicitudes[index].idGrupo) : Text("Importe:\nIntegrantes:"),//agregar metodo para mostrar importe e integrantes
                 isThreeLine: true,
                 trailing: solicitudes[index].status == 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : Icon(Icons.done_all)//gruposGuardados.length > 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : Icon(Icons.done_all),
               ),
@@ -493,6 +495,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
 
   sincronizarDatos() async{
     //List<File> documentos;
+    List<String> gruposSinc = List();
+    List<GrupoObj> gruposGuardados = List();
     List<Map> documentos;
     Persona persona;
     for(final solicitud in solicitudes){
@@ -507,16 +511,6 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         fechaNacimiento: DateTime.fromMicrosecondsSinceEpoch(solicitud.fechaNacimiento),
         telefono: solicitud.telefono
       );
-
-      SolicitudObj solicitudObj = new SolicitudObj(
-        persona: persona.toJson(),
-        importe: solicitud.importe,
-        tipoContrato: solicitud.tipoContrato,
-        userID: solicitud.userID,
-        status: 1,
-        grupoId: solicitud.idGrupo,
-        grupoNombre: solicitud.idGrupo == null ? null : solicitud.nombreGrupo 
-      );
       
       documentos = [];
       await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(solicitud.idSolicitud).then((listaDocs){
@@ -528,6 +522,30 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
 
       await saveFireStore(documentos).then((lista) async{
         if(lista.length > 0){
+
+          GrupoObj grupoObj = new GrupoObj();
+          if(solicitud.idGrupo != null && !gruposSinc.contains(solicitud.nombreGrupo)){
+            Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitud.idGrupo);
+            grupoObj = new GrupoObj(nombre: solicitud.nombreGrupo, status: 2, userID: solicitud.userID, importe: grupo.importe, integrantes: grupo.cantidad);
+            var result = await _firestore.collection("Grupos").add(grupoObj.toJson());
+            print(result);
+            grupoObj.grupoID = result.documentID;
+            gruposSinc.add(grupoObj.nombre);
+            gruposGuardados.add(grupoObj);
+          }else if(solicitud.idGrupo != null && gruposSinc.contains(solicitud.nombreGrupo)){
+            grupoObj.grupoID = gruposGuardados.firstWhere((grupo)=> grupo.nombre == solicitud.nombreGrupo).grupoID;
+          }
+
+          SolicitudObj solicitudObj = new SolicitudObj(
+            persona: persona.toJson(),
+            importe: solicitud.importe,
+            tipoContrato: solicitud.tipoContrato,
+            userID: solicitud.userID,
+            status: 1,
+            grupoID: solicitud.idGrupo == null ? null : grupoObj.grupoID,
+            grupoNombre: solicitud.idGrupo == null ? null : solicitud.nombreGrupo
+          );
+
           solicitudObj.documentos = lista;   
           solicitudObj.fechaCaputra = DateTime.now();
           var result = await _firestore.collection("Solicitudes").add(solicitudObj.toJson());

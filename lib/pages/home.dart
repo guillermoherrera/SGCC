@@ -8,11 +8,13 @@ import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/components/custom_drawer.dart';
 import 'package:sgcartera_app/models/auth_res.dart';
 import 'package:sgcartera_app/models/documento.dart';
+import 'package:sgcartera_app/models/grupo.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/grupos.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
+import 'package:sgcartera_app/sqlite_files/models/grupo.dart' as grupoModel;
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart' as solicitudModel;
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
@@ -256,6 +258,8 @@ class _HomePageState extends State<HomePage> {
 
   sincronizarDatos() async{
     //List<File> documentos;
+    List<String> gruposSinc = List();
+    List<GrupoObj> gruposGuardados = List();
     List<Map> documentos;
     Persona persona;
     for(final solicitud in solicitudes){
@@ -270,16 +274,6 @@ class _HomePageState extends State<HomePage> {
         fechaNacimiento: DateTime.fromMicrosecondsSinceEpoch(solicitud.fechaNacimiento),
         telefono: solicitud.telefono
       );
-
-      SolicitudObj solicitudObj = new SolicitudObj(
-        persona: persona.toJson(),
-        importe: solicitud.importe,
-        tipoContrato: solicitud.tipoContrato,
-        userID: solicitud.userID,
-        status: 1,
-        grupoId: solicitud.idGrupo,
-        grupoNombre: solicitud.idGrupo == null ? null : solicitud.nombreGrupo 
-      );
       
       documentos = [];
       await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(solicitud.idSolicitud).then((listaDocs){
@@ -291,6 +285,31 @@ class _HomePageState extends State<HomePage> {
 
       await saveFireStore(documentos).then((lista) async{
         if(lista.length > 0){
+          
+          GrupoObj grupoObj = new GrupoObj();
+          if(solicitud.idGrupo != null && !gruposSinc.contains(solicitud.nombreGrupo)){
+            grupoModel.Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitud.idGrupo);
+            grupoObj = new GrupoObj(nombre: solicitud.nombreGrupo, status: 2, userID: solicitud.userID, importe: grupo.importe, integrantes: grupo.cantidad);
+            var result = await _firestore.collection("Grupos").add(grupoObj.toJson());
+            print(result);
+            grupoObj.grupoID = result.documentID;
+            gruposSinc.add(grupoObj.nombre);
+            gruposGuardados.add(grupoObj);
+          }else if(solicitud.idGrupo != null && gruposSinc.contains(solicitud.nombreGrupo)){
+            grupoObj.grupoID = gruposGuardados.firstWhere((grupo)=> grupo.nombre == solicitud.nombreGrupo).grupoID;
+          }
+
+          SolicitudObj solicitudObj = new SolicitudObj(
+            persona: persona.toJson(),
+            importe: solicitud.importe,
+            tipoContrato: solicitud.tipoContrato,
+            userID: solicitud.userID,
+            status: 1,
+            //grupoId: solicitud.idGrupo,
+            grupoID: solicitud.idGrupo == null ? null : grupoObj.grupoID,
+            grupoNombre: solicitud.idGrupo == null ? null : solicitud.nombreGrupo 
+          );
+
           solicitudObj.documentos = lista;   
           solicitudObj.fechaCaputra = DateTime.now();
           var result = await _firestore.collection("Solicitudes").add(solicitudObj.toJson());

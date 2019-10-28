@@ -9,6 +9,7 @@ class SolicitudObj{
 
   String grupoNombre;
   int grupoId;
+  String grupoID;
 
   SolicitudObj({
     this.persona,
@@ -19,7 +20,8 @@ class SolicitudObj{
     this.documentos,
     this.status,
     this.grupoId,
-    this.grupoNombre
+    this.grupoNombre,
+    this.grupoID
   });
 
   Map<String, dynamic> toJson()=>{
@@ -30,7 +32,8 @@ class SolicitudObj{
     'userID': userID,
     'documentos': documentos,
     'status': status,
-    'grupoId': grupoId,
-    'grupoNombre': grupoNombre
+    //'grupoId': grupoId,
+    'grupoNombre': grupoNombre,
+    'grupoID': grupoID
   };
 }
