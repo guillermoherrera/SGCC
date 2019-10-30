@@ -8,13 +8,16 @@ class Grupo{
   double importe;
   int cantidad;
 
+  String grupoID;
+
   Grupo({
     this.idGrupo,
     this.nombreGrupo,
     this.status,
     this.userID,
     this.cantidad,
-    this.importe
+    this.importe,
+    this.grupoID
   }); 
 
   Grupo.fromjson(Map<String, dynamic> json){

@@ -61,16 +61,16 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         break;
       case 1:
         mensaje = "Sin solicitudes por autorizar";
-        await getSolcitudesespera();
+        await getSolcitudesespera(userID);
         break;
       default:
     }
     setState(() {});
   }
 
-  getSolcitudesespera() async{
+  getSolcitudesespera(userID) async{
     try{
-      Query q = _firestore.collection("Solicitudes").where('status', isEqualTo: 1);
+      Query q = _firestore.collection("Solicitudes").where('status', isEqualTo: 1).where('userID', isEqualTo:userID);
       QuerySnapshot querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
       solicitudes.clear();
       for(DocumentSnapshot dato in querySnapshot.documents){
@@ -95,7 +95,24 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         );
         solicitudes.add(solicitud);
       }
+
+      Query q2 = _firestore.collection("Grupos").where('status', isEqualTo: 2).where('userID', isEqualTo:userID);
+      QuerySnapshot querySnapshot2 = await q2.getDocuments().timeout(Duration(seconds: 10));
+      gruposGuardados.clear();
+      for(DocumentSnapshot dato in querySnapshot2.documents){
+        Grupo grupo = new Grupo(
+          grupoID: dato.documentID,
+          nombreGrupo: dato.data['nombre'],
+          status: dato.data['status'],
+          userID: dato.data['userID'],
+          cantidad: dato.data['integrantes'],
+          importe: dato.data['importe']
+        );
+        gruposGuardados.add(grupo);
+      }
+
     }catch(e){
+      solicitudes.clear();
       mensaje = "Error interno. Revisa tu conexión a internet";
     }
   }
@@ -114,7 +131,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         title: Text(widget.title),
         centerTitle: true,
         actions: <Widget>[
-          widget.status == 0 ? IconButton(icon: Icon(Icons.cached), color: Colors.white, onPressed: () {showDialogo();},) : Text("")
+          //widget.status == 0 ? IconButton(icon: Icon(Icons.cached), color: Colors.white, onPressed: () {showDialogo();},) : Text("")
         ],
       ),
       body: downloading ? Center(child: Container(
@@ -166,7 +183,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           child: Card(
             child: Container(
 
-              child: solicitudes[index].grupoID == null ?
+              child: solicitudes[index].grupoID == null && solicitudes[index].idGrupo == null ?
               ListTile(
                 leading: Icon(Icons.person, color: widget.colorTema,size: 40.0,),
                 title: Text(getNombre(solicitudes[index]), style: TextStyle(fontWeight: FontWeight.bold)),
@@ -177,7 +194,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
               ListTile(
                 leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
                 title: Text(solicitudes[index].nombreGrupo, style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: solicitudes[index].status == 0 ? getLeyendaGrupo(solicitudes[index].idGrupo) : Text("Importe:\nIntegrantes:"),//agregar metodo para mostrar importe e integrantes
+                subtitle: solicitudes[index].status == 0 ? getLeyendaGrupo(solicitudes[index].idGrupo) : getImpCant(solicitudes[index]),//Text("Importe:\nIntegrantes:"),
                 isThreeLine: true,
                 trailing: solicitudes[index].status == 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : Icon(Icons.done_all)//gruposGuardados.length > 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : Icon(Icons.done_all),
               ),
@@ -203,6 +220,12 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   String getImporte(Solicitud solicitud){
     double importe = solicitud.importe;
     return "TELÉFONO: "+solicitud.telefono+"\nIMPORTE: "+importe.toStringAsFixed(2);
+  }
+
+  Widget getImpCant(Solicitud solicitud){
+    Grupo grupo;
+    grupo = gruposGuardados.firstWhere((grupo)=>grupo.grupoID == solicitud.grupoID);
+    return Text("Importe: "+grupo.importe.toString()+"\nIntegrantes: "+grupo.cantidad.toString());
   }
 
   Widget getLeyendaGrupo(int idGrupo){

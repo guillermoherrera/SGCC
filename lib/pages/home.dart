@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
+import 'package:sgcartera_app/classes/sincroniza.dart';
 import 'package:sgcartera_app/components/custom_drawer.dart';
 import 'package:sgcartera_app/models/auth_res.dart';
 import 'package:sgcartera_app/models/documento.dart';
@@ -34,6 +36,9 @@ class _HomePageState extends State<HomePage> {
   List<solicitudModel.Solicitud> solicitudes = List();
   AuthFirebase authFirebase = new AuthFirebase();
   Firestore _firestore = Firestore.instance;
+  Sincroniza sincroniza = new Sincroniza();
+  bool sincManual = true;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   
   Future<void> getListDocumentos() async{
     final pref = await SharedPreferences.getInstance();
@@ -47,9 +52,25 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    getListDocumentos();
-    // TODO: implement initState
+    getListDocumentos();  
+    sincronizarInfo();
     super.initState();
+  }
+
+  sincronizarInfo()async{
+    sincManual = false;
+    await sincroniza.sincronizaDatos();
+    actualizaInfo();
+    sincManual = true;
+    print("Sincronización Realizada: "+DateTime.now().toString());
+    const oneSec = const Duration(seconds:300);
+    new Timer.periodic(oneSec, (Timer t)async{
+      sincManual = false;
+      await sincroniza.sincronizaDatos();
+      actualizaInfo();
+      sincManual = true;
+      print("Sincronización Realizada: "+DateTime.now().toString());
+    });
   }
 
   @override
@@ -57,6 +78,7 @@ class _HomePageState extends State<HomePage> {
     return WillPopScope(
       onWillPop: (){return new Future(() => false);},
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text("App Originación"),
           centerTitle: true,
@@ -191,7 +213,11 @@ class _HomePageState extends State<HomePage> {
       ],
       onSelected: (value){
         if(value == 1){
-          showDialogo();
+          if(sincManual){
+            showDialogo();
+          }else{
+            showSnackBar("Atención: El proceso de sincronizaición esta en curso, por favor espera un momento.", Colors.red);
+          }
         }
         else if(value == 2){
           Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudes(colorTema: widget.colorTema,title: "En Espera (no sincronizadas)",status: 0,actualizaHome: ()=>actualizaInfo() )));
@@ -360,6 +386,15 @@ class _HomePageState extends State<HomePage> {
     }
     
     return listaDocs;
+  }
+
+  showSnackBar(String texto, MaterialColor color){
+    final snackBar = SnackBar(
+      content: Text(texto, style: TextStyle(fontWeight: FontWeight.bold),),
+      backgroundColor: color[300],
+      duration: Duration(seconds: 3),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
   void actualizaInfo(){
