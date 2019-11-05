@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
+import 'package:sgcartera_app/pages/home.dart';
 import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud_editar.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
@@ -47,7 +48,8 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: ()=> Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: authFirebase, colorTema: widget.colorTema,))),
+      //onWillPop: ()=> Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: authFirebase, colorTema: widget.colorTema,))),
+      onWillPop: ()=> Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>HomePage(onSingIn: (){}, colorTema: widget.colorTema,)), (Route<dynamic> route) => false),
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -135,17 +137,17 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
         PopupMenuButton(
           itemBuilder: (_) => <PopupMenuItem<int>>[
             new PopupMenuItem<int>(
-              child: Row(children: <Widget>[Icon(Icons.mode_edit, color: Colors.green,),Text(" Ver/Editar Solicitud")],), value: 1),
+              child: Row(children: <Widget>[Icon(Icons.mode_edit, color: status ? Colors.green : Colors.grey,),Text(" Ver/Editar Solicitud")],), value: 1),
             new PopupMenuItem<int>(
               child: Row(children: <Widget>[Icon(Icons.person_pin, color: status ? Colors.blue : Colors.grey),Text(" Mover a Individual")],), value: 3),
             new PopupMenuItem<int>(
               child: Row(children: <Widget>[Icon(Icons.group_work, color: status ? Colors.blue : Colors.grey),Text(" Mover a otro Grupo")],), value: 4),
             new PopupMenuItem<int>(
-              child: Row(children: <Widget>[Icon(Icons.delete, color: Colors.red),Text(" Eliminar Solicitud")],), value: 2),
+              child: Row(children: <Widget>[Icon(Icons.delete, color: status ? Colors.red : Colors.grey),Text(" Eliminar Solicitud")],), value: 2),
                       ],
           onSelected: (value){
             if(value == 1){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SolicitudEditar(title: "Solicitud Editar:", colorTema: widget.colorTema, idSolicitud: solicitud.idSolicitud )));
+              if(status) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SolicitudEditar(title: "Solicitud Editar:", colorTema: widget.colorTema, idSolicitud: solicitud.idSolicitud )));
             }
             else if(value == 2){
               if(status) eliminarSolicitud(solicitud);
@@ -263,7 +265,8 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                 child: const Text("Sí, mover."),
                 onPressed: ()async{
                   Navigator.pop(context);
-                  Solicitud solicitud = new Solicitud(idSolicitud: solicitudAux.idSolicitud, idGrupo: null, nombreGrupo: null, status: 0);
+                  Solicitud solicitud = new Solicitud(idSolicitud: solicitudAux.idSolicitud, idGrupo: null, nombreGrupo: null, status: 0, tipoContrato: 1
+                  );
                   await ServiceRepositorySolicitudes.updateMoverSolicitud(solicitud);
                   Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitudAux.idGrupo);
                   Grupo grupoAux = new Grupo(idGrupo: grupo.idGrupo, cantidad: grupo.cantidad - 1, importe: grupo.importe - solicitudAux.importe);
@@ -318,7 +321,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
 
   moverGrupo(Solicitud solicitudAux, Grupo group)async{
     if(solicitudAux.idGrupo != group.idGrupo){
-      Solicitud solicitud = new Solicitud(idSolicitud: solicitudAux.idSolicitud, idGrupo: group.idGrupo, nombreGrupo: group.nombreGrupo, status: 6);
+      Solicitud solicitud = new Solicitud(idSolicitud: solicitudAux.idSolicitud, idGrupo: group.idGrupo, nombreGrupo: group.nombreGrupo, status: 6, tipoContrato: 2);
       await ServiceRepositorySolicitudes.updateMoverSolicitud(solicitud);
       Grupo grupoAux = new Grupo(idGrupo: group.idGrupo, cantidad: group.cantidad + 1, importe: group.importe + solicitudAux.importe);
       await ServiceRepositoryGrupos.updateGrupoImpCant(grupoAux);

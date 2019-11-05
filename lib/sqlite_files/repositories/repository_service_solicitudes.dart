@@ -122,7 +122,7 @@ class ServiceRepositorySolicitudes{
   static Future<void> updateMoverSolicitud(Solicitud solicitud) async{
     final sql = '''UPDATE ${DataBaseCreator.solicitudesTable}
       SET ${DataBaseCreator.id_grupo} = ${solicitud.idGrupo}, ${DataBaseCreator.nombre_Grupo} = "${solicitud.nombreGrupo}",
-      ${DataBaseCreator.status} = ${solicitud.status}
+        ${DataBaseCreator.tipoContrato} = ${solicitud.tipoContrato}, ${DataBaseCreator.status} = ${solicitud.status}
       WHERE ${DataBaseCreator.idSolicitud} = ${solicitud.idSolicitud}''';
 
     final result = await db.rawUpdate(sql);

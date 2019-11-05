@@ -5,6 +5,8 @@ import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud2.dart';
+
+import 'home.dart';
 //import 'package:intl/intl.dart';
 
 class Solicitud extends StatefulWidget {
@@ -70,7 +72,8 @@ class _SolicitudState extends State<Solicitud> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: ()=> Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: authFirebase, colorTema: widget.colorTema,))),
+      //onWillPop: ()=> Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: authFirebase, colorTema: widget.colorTema,))),
+      onWillPop: ()=> Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>HomePage(onSingIn: (){}, colorTema: widget.colorTema,)), (Route<dynamic> route) => false),
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -382,7 +385,7 @@ class _SolicitudState extends State<Solicitud> {
       solicitudObj = new SolicitudObj(
         persona: persona.toJson(),
         importe: double.parse(importe.text),
-        tipoContrato: 1,
+        tipoContrato: widget.grupoId == null ? 1 : 2,
         userID: "userID",
         grupoId: widget.grupoId,
         grupoNombre: widget.grupoNombre

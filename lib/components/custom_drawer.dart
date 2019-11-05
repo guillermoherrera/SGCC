@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/pages/cartera.dart';
+import 'package:sgcartera_app/pages/home.dart';
 import 'package:sgcartera_app/pages/mis_solicitudes.dart';
 import 'package:sgcartera_app/pages/nuevas_solicitudes.dart';
 import 'package:sgcartera_app/pages/root_page.dart';
@@ -55,7 +56,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           InkWell(
-            onTap: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));},//Navigator.popUntil(context, ModalRoute.withName('/'));},//Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));},
+            onTap: (){Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>HomePage(onSingIn: (){}, colorTema: widget.colorTema,)), (Route<dynamic> route) => false);},//Navigator.popUntil(context, ModalRoute.withName('/'));},//Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));},
             child: ListTile(
               title: Text("Inicio"),
               leading: Icon(Icons.home, color: widget.colorTema,),

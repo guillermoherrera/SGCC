@@ -651,7 +651,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
  }
 
   moverGrupo(Solicitud solicitudAux, Grupo group)async{
-    Solicitud solicitud = new Solicitud(idSolicitud: solicitudAux.idSolicitud, idGrupo: group.idGrupo, nombreGrupo: group.nombreGrupo, status: 6);
+    Solicitud solicitud = new Solicitud(idSolicitud: solicitudAux.idSolicitud, idGrupo: group.idGrupo, nombreGrupo: group.nombreGrupo, status: 6, tipoContrato: 2);
     await ServiceRepositorySolicitudes.updateMoverSolicitud(solicitud);
     Grupo grupoAux = new Grupo(idGrupo: group.idGrupo, cantidad: group.cantidad + 1, importe: group.importe + solicitudAux.importe);
     await ServiceRepositoryGrupos.updateGrupoImpCant(grupoAux);
@@ -740,8 +740,10 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         
         await getListDocumentos();
         setState(() {
+          widget.actualizaHome();
           downloading = false;
           progressString = "Completed";
+          grupos.clear();
         });
       });
       

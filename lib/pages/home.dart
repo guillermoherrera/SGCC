@@ -44,7 +44,8 @@ class _HomePageState extends State<HomePage> {
     final pref = await SharedPreferences.getInstance();
     String userID = pref.getString("uid");
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);    
-    setState(() {});
+    print("******** "+this.mounted.toString()+"**********");
+    try{ setState(() {}); }catch(e){ print("ERROR: linea 47 Home:"+e.toString()); }
   }
 
   void _moveToSignInScreen(BuildContext context) =>
@@ -63,13 +64,17 @@ class _HomePageState extends State<HomePage> {
     actualizaInfo();
     sincManual = true;
     print("Sincronización Realizada: "+DateTime.now().toString());
-    const oneSec = const Duration(seconds:300);
+    const oneSec = const Duration(seconds:30);
     new Timer.periodic(oneSec, (Timer t)async{
-      sincManual = false;
-      await sincroniza.sincronizaDatos();
-      actualizaInfo();
-      sincManual = true;
-      print("Sincronización Realizada: "+DateTime.now().toString());
+      if(this.mounted){
+        sincManual = false;
+        await sincroniza.sincronizaDatos();
+        actualizaInfo();
+        sincManual = true;
+        print("Sincronización Realizada: "+DateTime.now().toString());
+      }else{
+        t.cancel();
+      }
     });
   }
 
