@@ -339,7 +339,7 @@ class _GroupState extends State<Group> {
                   var result = await RepositoryServiceCatIntegrantes.getAllCatIntegrantes();
                   int cantidad = result[0].cantidad;
                   if(solicitudes.length >= cantidad){
-                    await ServiceRepositoryGrupos.updateGrupoStatus(1, grupoId);
+                    await ServiceRepositoryGrupos.updateGrupoStatus(1, null, grupoId);
                     final pref = await SharedPreferences.getInstance();
                     userID = pref.getString("uid");
                     for(final solicitud in solicitudes){

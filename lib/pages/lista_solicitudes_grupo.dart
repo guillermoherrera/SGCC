@@ -224,7 +224,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                   var result = await RepositoryServiceCatIntegrantes.getAllCatIntegrantes();
                   int cantidad = result[0].cantidad;
                   if(solicitudes.length >= cantidad){
-                    await ServiceRepositoryGrupos.updateGrupoStatus(1, grupo.idGrupo);
+                    await ServiceRepositoryGrupos.updateGrupoStatus(1, null, grupo.idGrupo);
                     for(final solicitud in solicitudes){
                       if(solicitud.idGrupo == grupo.idGrupo) await ServiceRepositorySolicitudes.updateSolicitudStatus(0, solicitud.idSolicitud);
                     }

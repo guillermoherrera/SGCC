@@ -59,9 +59,13 @@ class Sincroniza{
           if(solicitud.idGrupo != null && !gruposSinc.contains(solicitud.nombreGrupo)){
             Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitud.idGrupo);
             grupoObj = new GrupoObj(nombre: solicitud.nombreGrupo, status: 2, userID: solicitud.userID, importe: grupo.importe, integrantes: grupo.cantidad);
-            var result = await _firestore.collection("Grupos").add(grupoObj.toJson());
-            print(result);
-            grupoObj.grupoID = result.documentID;
+            if(grupo.grupoID == null){
+              var result = await _firestore.collection("Grupos").add(grupoObj.toJson());
+              await ServiceRepositoryGrupos.updateGrupoStatus(2, result.documentID, solicitud.idGrupo);
+              grupoObj.grupoID = result.documentID;
+            }else{
+              grupoObj.grupoID = grupo.grupoID;
+            }
             gruposSinc.add(grupoObj.nombre);
             gruposGuardados.add(grupoObj);
           }else if(solicitud.idGrupo != null && gruposSinc.contains(solicitud.nombreGrupo)){
@@ -82,7 +86,7 @@ class Sincroniza{
           solicitudObj.fechaCaputra = DateTime.now();
           var result = await _firestore.collection("Solicitudes").add(solicitudObj.toJson());
           await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
-          if(solicitudObj.grupoId != null) ServiceRepositoryGrupos.updateGrupoStatus(2, solicitudObj.grupoId);
+          //if(solicitudObj.grupoId != null) ServiceRepositoryGrupos.updateGrupoStatus(2, grupoObj.grupoID, solicitudObj.grupoId);
           print(result);
           
         }else{

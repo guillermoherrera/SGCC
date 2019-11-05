@@ -42,6 +42,7 @@ class DataBaseCreator{
   static const cantidad = 'cantidadSolicitudes';
   
   static const userID = 'userID';
+  static const grupoID = 'grupoID';
   static const status = 'status';
 
   static void dataBaseLog(String functionName, String sql, [List<Map<String, dynamic>> selectedQueryResult, int insertAndUpdateQueryResult]){
@@ -110,6 +111,7 @@ class DataBaseCreator{
       $nombreGrupo TEXT,
       $status INTEGER,
       $userID TEXT,
+      $grupoID TEXT,
       $importe_grupo DOUBLE,
       $cantidad INTEGER
     )''';

@@ -92,10 +92,10 @@ class ServiceRepositoryGrupos{
     DataBaseCreator.dataBaseLog("actualiza cantidad e importe", sql, null, result);
   }
 
-  static Future<void> updateGrupoStatus(int status, int grupoID)async{
+  static Future<void> updateGrupoStatus(int status, String grupoID, int idGrupo)async{
     final sql = '''UPDATE ${DataBaseCreator.gruposTable}
-      SET ${DataBaseCreator.status} = $status
-      WHERE ${DataBaseCreator.idGrupo} = $grupoID''';
+      SET ${DataBaseCreator.status} = $status, ${DataBaseCreator.grupoID} = "$grupoID"
+      WHERE ${DataBaseCreator.idGrupo} = $idGrupo''';
     
     final result = await db.rawUpdate(sql);
     DataBaseCreator.dataBaseLog("actualizar Grupo Status", sql, null, result);
