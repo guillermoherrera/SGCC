@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
     actualizaInfo();
     sincManual = true;
     print("Sincronización Realizada: "+DateTime.now().toString());
-    const oneSec = const Duration(seconds:30);
+    const oneSec = const Duration(seconds:300);
     new Timer.periodic(oneSec, (Timer t)async{
       if(this.mounted){
         sincManual = false;
@@ -302,7 +302,7 @@ class _HomePageState extends State<HomePage> {
         apellidoSegundo: solicitud.apellidoSegundo,
         curp: solicitud.curp,
         rfc: solicitud.rfc,
-        fechaNacimiento: DateTime.fromMicrosecondsSinceEpoch(solicitud.fechaNacimiento),
+        fechaNacimiento: DateTime.fromMillisecondsSinceEpoch(solicitud.fechaNacimiento),
         telefono: solicitud.telefono
       );
       

@@ -22,9 +22,14 @@ class Sincroniza{
 
   sincronizaDatos()async{
     
-    final result = await InternetAddress.lookup('google.com');
-    if (!result.isNotEmpty || !result[0].rawAddress.isNotEmpty) return null; 
+    try{
+      final result = await InternetAddress.lookup('google.com');
     
+      if (!result.isNotEmpty || !result[0].rawAddress.isNotEmpty) return null; 
+    }catch(e){
+      return null;
+    }
+
     await getSolcitudesespera();
     
     List<String> gruposSinc = List();
@@ -40,7 +45,7 @@ class Sincroniza{
         apellidoSegundo: solicitud.apellidoSegundo,
         curp: solicitud.curp,
         rfc: solicitud.rfc,
-        fechaNacimiento: DateTime.fromMicrosecondsSinceEpoch(solicitud.fechaNacimiento),
+        fechaNacimiento: DateTime.fromMillisecondsSinceEpoch(solicitud.fechaNacimiento),
         telefono: solicitud.telefono
       );
     

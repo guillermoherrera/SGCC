@@ -178,7 +178,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
       itemCount: solicitudes.length,
       itemBuilder: (context, index){
         if(grupos.contains(solicitudes[index].nombreGrupo)) return Padding(padding: EdgeInsets.all(0),);
-        if(solicitudes[index].grupoID != null) grupos.add(solicitudes[index].nombreGrupo);
+        if(solicitudes[index].grupoID != null || solicitudes[index].idGrupo != null) grupos.add(solicitudes[index].nombreGrupo);
         return InkWell(
           child: Card(
             child: Container(
@@ -531,7 +531,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         apellidoSegundo: solicitud.apellidoSegundo,
         curp: solicitud.curp,
         rfc: solicitud.rfc,
-        fechaNacimiento: DateTime.fromMicrosecondsSinceEpoch(solicitud.fechaNacimiento),
+        fechaNacimiento: DateTime.fromMillisecondsSinceEpoch(solicitud.fechaNacimiento),
         telefono: solicitud.telefono
       );
       
