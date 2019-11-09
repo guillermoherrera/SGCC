@@ -4,6 +4,7 @@ import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/root_page.dart';
+import 'package:sgcartera_app/pages/solicitud1.dart';
 import 'package:sgcartera_app/pages/solicitud2.dart';
 
 import 'home.dart';
@@ -329,7 +330,7 @@ class _SolicitudState extends State<Solicitud> {
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Text("Paso 1 de 2", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10))
+          Text("Paso 1 de 3", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10))
         ],
       )
     ];
@@ -391,7 +392,8 @@ class _SolicitudState extends State<Solicitud> {
         grupoNombre: widget.grupoNombre
       );
       _buttonStatus();
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome)));
+      //Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome)));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDireccion(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome)));
     }else{
       final snackBar = SnackBar(
         content: Text("Error al guardar. Revisa el formulario para más información.", style: TextStyle(fontWeight: FontWeight.bold),),

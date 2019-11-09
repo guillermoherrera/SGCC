@@ -56,7 +56,15 @@ class ServiceRepositorySolicitudes{
       ${DataBaseCreator.nombre_Grupo},
       ${DataBaseCreator.userID},
       ${DataBaseCreator.status},
-      ${DataBaseCreator.tipoContrato}
+      ${DataBaseCreator.tipoContrato},
+      
+      ${DataBaseCreator.direccion1},
+      ${DataBaseCreator.coloniaPoblacion},
+      ${DataBaseCreator.delegacionMunicipio},
+      ${DataBaseCreator.ciudad},
+      ${DataBaseCreator.estado},
+      ${DataBaseCreator.cp},
+      ${DataBaseCreator.pais}
     )values(
       ${solicitud.importe},
       "${solicitud.nombrePrimero}",
@@ -71,7 +79,15 @@ class ServiceRepositorySolicitudes{
       "${solicitud.nombreGrupo}",
       "${solicitud.userID}",
       ${solicitud.status},
-      ${solicitud.tipoContrato}
+      ${solicitud.tipoContrato},
+      
+      "${solicitud.direccion1}",
+      "${solicitud.coloniaPoblacion}",
+      "${solicitud.delegacionMunicipio}",
+      "${solicitud.ciudad}",
+      "${solicitud.estado}",
+      ${solicitud.cp},
+      "${solicitud.pais}"
     )
     ''';
 

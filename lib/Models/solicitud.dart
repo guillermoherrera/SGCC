@@ -1,5 +1,6 @@
 class SolicitudObj{
   Map persona;
+  Map direccion;
   double importe;
   DateTime fechaCaputra;
   int tipoContrato; 
@@ -13,6 +14,7 @@ class SolicitudObj{
 
   SolicitudObj({
     this.persona,
+    this.direccion,
     this.importe,
     this.fechaCaputra,
     this.tipoContrato,
@@ -26,6 +28,7 @@ class SolicitudObj{
 
   Map<String, dynamic> toJson()=>{
     'persona': persona,
+    'direccion': direccion,
     'importe': importe,
     'fechaCaputra': fechaCaputra,
     'tipoContrato': tipoContrato,

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
+import 'package:sgcartera_app/models/direccion.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/grupo.dart';
 import 'package:sgcartera_app/models/persona.dart';
@@ -522,6 +523,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     List<GrupoObj> gruposGuardados = List();
     List<Map> documentos;
     Persona persona;
+    Direccion direccion;
     for(final solicitud in solicitudes){
 
       persona = new Persona(
@@ -535,6 +537,16 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         telefono: solicitud.telefono
       );
       
+      direccion = new Direccion(
+        ciudad: solicitud.ciudad,
+        coloniaPoblacion: solicitud.coloniaPoblacion,
+        cp: solicitud.cp,
+        delegacionMunicipio: solicitud.delegacionMunicipio,
+        direccion1: solicitud.direccion1,
+        estado: solicitud.estado,
+        pais: solicitud.pais
+      );
+
       documentos = [];
       await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(solicitud.idSolicitud).then((listaDocs){
         for(final doc in listaDocs){
@@ -565,6 +577,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
 
           SolicitudObj solicitudObj = new SolicitudObj(
             persona: persona.toJson(),
+            direccion: direccion.toJson(),
             importe: solicitud.importe,
             tipoContrato: solicitud.tipoContrato,
             userID: solicitud.userID,
@@ -691,7 +704,15 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         status: 0,
         tipoContrato: document.data['tipoContrato'],
         idGrupo: null,
-        nombreGrupo: null
+        nombreGrupo: null,
+
+        direccion1: document.data['direccion']['direccion1'],
+        coloniaPoblacion: document.data['direccion']['coloniaPoblacion'],
+        delegacionMunicipio: document.data['direccion']['delegacionMunicipio'],
+        ciudad: document.data['direccion']['ciudad'],
+        estado: document.data['direccion']['estado'],
+        cp: document.data['direccion']['cp'],
+        pais: document.data['direccion']['pais']
       );
  
       Dio dio = Dio();

@@ -110,7 +110,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Text("Paso 2 de 2", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+          Text("Paso 3 de 3", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
         ],
       )
     ];
@@ -264,6 +264,13 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
                 Text("TELÉFONO: ", style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(widget.datos.persona['telefono']),
               ]
+            ),
+            TableRow(
+              children: [
+                Icon(Icons.home, size: 15.0, color: widget.colorTema,),
+                Text("DIRECCIÖN: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(widget.datos.direccion['direccion1']+" "+widget.datos.direccion['coloniaPoblacion']+" "+widget.datos.direccion['delegacionMunicipio']+" "+widget.datos.direccion['ciudad']+", "+widget.datos.direccion['estado']+" "+widget.datos.direccion['pais']),
+              ]
             )
           ],
         )
@@ -393,7 +400,15 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
         status: widget.datos.grupoId == null ? 0 : 6 ,
         tipoContrato: widget.datos.tipoContrato,
         idGrupo: widget.datos.grupoId,
-        nombreGrupo: widget.datos.grupoNombre
+        nombreGrupo: widget.datos.grupoNombre,
+
+        direccion1: widget.datos.direccion['direccion1'],
+        coloniaPoblacion: widget.datos.direccion['coloniaPoblacion'],
+        delegacionMunicipio: widget.datos.direccion['delegacionMunicipio'],
+        ciudad: widget.datos.direccion['ciudad'],
+        estado: widget.datos.direccion['estado'],
+        cp: widget.datos.direccion['cp'],
+        pais: widget.datos.direccion['pais']
       );
 
       await ServiceRepositorySolicitudes.addSolicitud(solicitud).then((_) async{

@@ -19,6 +19,14 @@ class Solicitud{
   String documentID;
   String grupoID;
 
+  String direccion1;
+  String coloniaPoblacion;
+  String delegacionMunicipio;
+  String ciudad;
+  String estado;
+  int cp;
+  String pais;
+
   Solicitud({
     this.apellidoPrimero,
     this.apellidoSegundo,
@@ -36,7 +44,15 @@ class Solicitud{
     this.status,
     this.tipoContrato,
     this.documentID,
-    this.grupoID
+    this.grupoID,
+    
+    this.ciudad,
+    this.coloniaPoblacion,
+    this.cp,
+    this.delegacionMunicipio,
+    this.direccion1,
+    this.estado,
+    this.pais
   });
 
   Solicitud.fromJson(Map<String, dynamic>json){
@@ -55,5 +71,13 @@ class Solicitud{
     this.userID = json[DataBaseCreator.userID];
     this.status = json[DataBaseCreator.status];
     this.tipoContrato = json[DataBaseCreator.tipoContrato];
+
+    this.ciudad = json[DataBaseCreator.ciudad];
+    this.coloniaPoblacion = json[DataBaseCreator.coloniaPoblacion];
+    this.cp = json[DataBaseCreator.cp];
+    this.delegacionMunicipio = json[DataBaseCreator.delegacionMunicipio];
+    this.direccion1 = json[DataBaseCreator.direccion1];
+    this.estado = json[DataBaseCreator.estado];
+    this.pais = json[DataBaseCreator.pais];
   }
 }

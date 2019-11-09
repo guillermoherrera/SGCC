@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mime_type/mime_type.dart';
+import 'package:sgcartera_app/models/direccion.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/grupo.dart';
 import 'package:sgcartera_app/models/persona.dart';
@@ -36,6 +37,7 @@ class Sincroniza{
     List<GrupoObj> gruposGuardados = List();
     List<Map> documentos;
     Persona persona;
+    Direccion direccion;
     
     for(final solicitud in solicitudes){
       persona = new Persona(
@@ -49,6 +51,16 @@ class Sincroniza{
         telefono: solicitud.telefono
       );
     
+      direccion = new Direccion(
+        ciudad: solicitud.ciudad,
+        coloniaPoblacion: solicitud.coloniaPoblacion,
+        cp: solicitud.cp,
+        delegacionMunicipio: solicitud.delegacionMunicipio,
+        direccion1: solicitud.direccion1,
+        estado: solicitud.estado,
+        pais: solicitud.pais
+      );
+
       documentos = [];
       await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(solicitud.idSolicitud).then((listaDocs){
         for(final doc in listaDocs){
@@ -79,6 +91,7 @@ class Sincroniza{
 
           SolicitudObj solicitudObj = new SolicitudObj(
             persona: persona.toJson(),
+            direccion: direccion.toJson(),
             importe: solicitud.importe,
             tipoContrato: solicitud.tipoContrato,
             userID: solicitud.userID,

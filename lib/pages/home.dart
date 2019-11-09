@@ -9,6 +9,7 @@ import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/classes/sincroniza.dart';
 import 'package:sgcartera_app/components/custom_drawer.dart';
 import 'package:sgcartera_app/models/auth_res.dart';
+import 'package:sgcartera_app/models/direccion.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/grupo.dart';
 import 'package:sgcartera_app/models/persona.dart';
@@ -128,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                         child: ListTile(
                         leading: Icon(Icons.person_add, color: widget.colorTema,size: 40.0,),
                         title: Text("Nueva Solicitud Individual", style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("Captura solicitudes de credito individual."),
+                        subtitle: Text("Captura solicitudes de credito individual en 3 pasos."),
 
                         ),
                         decoration: BoxDecoration(
@@ -225,7 +226,11 @@ class _HomePageState extends State<HomePage> {
           }
         }
         else if(value == 2){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudes(colorTema: widget.colorTema,title: "En Espera (no sincronizadas)",status: 0,actualizaHome: ()=>actualizaInfo() )));
+          if(sincManual){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudes(colorTema: widget.colorTema,title: "En Espera (no sincronizadas)",status: 0,actualizaHome: ()=>actualizaInfo() )));
+          }else{
+            showSnackBar("Atención: El proceso de sincronizaición esta en curso, por favor espera un momento.", Colors.red);
+          }
         }
       }
     ) : Text("");
@@ -293,6 +298,7 @@ class _HomePageState extends State<HomePage> {
     List<GrupoObj> gruposGuardados = List();
     List<Map> documentos;
     Persona persona;
+    Direccion direccion;
     for(final solicitud in solicitudes){
 
       persona = new Persona(
@@ -304,6 +310,16 @@ class _HomePageState extends State<HomePage> {
         rfc: solicitud.rfc,
         fechaNacimiento: DateTime.fromMillisecondsSinceEpoch(solicitud.fechaNacimiento),
         telefono: solicitud.telefono
+      );
+
+      direccion = new Direccion(
+        ciudad: solicitud.ciudad,
+        coloniaPoblacion: solicitud.coloniaPoblacion,
+        cp: solicitud.cp,
+        delegacionMunicipio: solicitud.delegacionMunicipio,
+        direccion1: solicitud.direccion1,
+        estado: solicitud.estado,
+        pais: solicitud.pais
       );
       
       documentos = [];
@@ -336,6 +352,7 @@ class _HomePageState extends State<HomePage> {
 
           SolicitudObj solicitudObj = new SolicitudObj(
             persona: persona.toJson(),
+            direccion: direccion.toJson(),
             importe: solicitud.importe,
             tipoContrato: solicitud.tipoContrato,
             userID: solicitud.userID,

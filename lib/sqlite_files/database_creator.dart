@@ -29,6 +29,14 @@ class DataBaseCreator{
   static const telefono = 'telefono';
   static const tipoContrato = 'tipoContrato';
 
+  static const direccion1 = 'direccion1';
+  static const coloniaPoblacion = 'coloniaPoblacion';
+  static const delegacionMunicipio = 'delegacionMunicipio';
+  static const ciudad = 'ciudad';
+  static const estado = 'estado';
+  static const cp = 'cp';
+  static const pais = 'pais';
+
   static const documentoSolicitudesTable = 'documentosSolicitudes';
   static const idDocumentoSolicitudes = 'idDocumentoSolicitud';
   static const id_Solicitud = 'idSolicitud';
@@ -88,7 +96,15 @@ class DataBaseCreator{
       $telefono TEXT,
       $status INTEGER,
       $tipoContrato INTEGER,
-      $userID TEXT
+      $userID TEXT,
+      
+      $direccion1 TEXT,
+      $coloniaPoblacion TEXT,
+      $delegacionMunicipio TEXT,
+      $ciudad TEXT,
+      $estado TEXT,
+      $cp INTEGER,
+      $pais TEXT
     )''';
     
     await db.execute(solicitudesSql);
