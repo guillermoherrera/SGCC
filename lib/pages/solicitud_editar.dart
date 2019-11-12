@@ -1,8 +1,10 @@
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:sgcartera_app/models/direccion.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud2.dart';
+import 'package:sgcartera_app/pages/solicitud_editar1.dart';
 import 'package:sgcartera_app/pages/solicitud_editar2.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
@@ -38,6 +40,14 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
   int idGrupo;
   String nombreGrupo;
   double importeOriginal;
+
+  String direccion1;
+  String coloniaPoblacion;
+  String delegacionMunicipio;
+  String ciudad;
+  String estado;
+  int cp;
+  String pais;
 
   DateTime now = new DateTime.now();
   DateTime selectedDate;
@@ -85,6 +95,14 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
     tipoContrato = solicitudEditar.tipoContrato;
     idGrupo = solicitudEditar.idGrupo;
     nombreGrupo = solicitudEditar.nombreGrupo;
+
+    direccion1 = solicitudEditar.direccion1;
+    coloniaPoblacion = solicitudEditar.coloniaPoblacion;
+    delegacionMunicipio = solicitudEditar.delegacionMunicipio;
+    ciudad = solicitudEditar.ciudad;
+    estado = solicitudEditar.estado;
+    cp = solicitudEditar.cp;
+    pais = solicitudEditar.pais;
   }
 
   @override
@@ -406,29 +424,49 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
         status: idGrupo == null ? 0 : 6 ,
         tipoContrato: tipoContrato,
         idGrupo: idGrupo,
-        nombreGrupo: nombreGrupo
+        nombreGrupo: nombreGrupo,
+        direccion1: direccion1,
+        coloniaPoblacion: coloniaPoblacion,
+        delegacionMunicipio: delegacionMunicipio,
+        ciudad: ciudad,
+        estado: estado,
+        cp: cp,
+        pais: pais
       );
 
       Persona persona;
-        persona = new Persona(
-          nombre: nombre.text,
-          nombreSegundo: nombreAdicional.text,
-          apellido:  apellidoPrimero.text,
-          apellidoSegundo: apellidoSegundo.text,
-          curp: curp.text,
-          rfc: rfc.text,
-          fechaNacimiento: selectedDate,
-          telefono: telefono.text
-        );
-        SolicitudObj solicitudObj;
-        solicitudObj = new SolicitudObj(
-          persona: persona.toJson(),
-          importe: double.parse(importe.text),
-          tipoContrato: 1,
-          userID: "userID",
-          grupoId: idGrupo,
-          grupoNombre: nombreGrupo
-        );
+      persona = new Persona(
+        nombre: nombre.text,
+        nombreSegundo: nombreAdicional.text,
+        apellido:  apellidoPrimero.text,
+        apellidoSegundo: apellidoSegundo.text,
+        curp: curp.text,
+        rfc: rfc.text,
+        fechaNacimiento: selectedDate,
+        telefono: telefono.text
+      );
+
+      Direccion direccion;
+      direccion = new Direccion(
+        direccion1: direccion1,
+        coloniaPoblacion: coloniaPoblacion,
+        delegacionMunicipio: delegacionMunicipio,
+        ciudad: ciudad,
+        estado: estado,
+        cp: cp,
+        pais: pais
+      );
+
+      SolicitudObj solicitudObj;
+      solicitudObj = new SolicitudObj(
+        persona: persona.toJson(),
+        direccion:  direccion.toJson(),
+        importe: double.parse(importe.text),
+        tipoContrato: tipoContrato,
+        userID: userID,
+        grupoId: idGrupo,
+        grupoNombre: nombreGrupo,
+      );
 
       await ServiceRepositorySolicitudes.updateSolicitud(solicitud).then((_) async{
         if(idGrupo != null){
@@ -439,7 +477,8 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
         }
         _buttonStatus();
       });
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentosEditar(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, solicitudId: idSolicitud)));
+      //Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentosEditar(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, solicitudId: idSolicitud)));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDireccionEditar(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: (){}, idSolicitud: idSolicitud)));
     }else{
       final snackBar = SnackBar(
         content: Text("Error al guardar. Revisa el formulario para más información.", style: TextStyle(fontWeight: FontWeight.bold),),

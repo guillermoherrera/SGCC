@@ -276,6 +276,13 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
                 Text("TELÉFONO: ", style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(widget.datos.persona['telefono']),
               ]
+            ),
+            TableRow(
+              children: [
+                Icon(Icons.home, size: 15.0, color: widget.colorTema,),
+                Text("DIRECCIÖN: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(widget.datos.direccion['direccion1']+" "+widget.datos.direccion['coloniaPoblacion']+" "+widget.datos.direccion['delegacionMunicipio']+" "+widget.datos.direccion['ciudad']+", "+widget.datos.direccion['estado']+" "+widget.datos.direccion['pais']),
+              ]
             )
           ],
         )

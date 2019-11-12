@@ -110,7 +110,15 @@ class ServiceRepositorySolicitudes{
       ${DataBaseCreator.nombre_Grupo} = "${solicitud.nombreGrupo}",
       ${DataBaseCreator.userID} = "${solicitud.userID}",
       ${DataBaseCreator.status} = ${solicitud.status},
-      ${DataBaseCreator.tipoContrato} = ${solicitud.tipoContrato}
+      ${DataBaseCreator.tipoContrato} = ${solicitud.tipoContrato},
+
+      ${DataBaseCreator.direccion1} = "${solicitud.direccion1}",
+      ${DataBaseCreator.coloniaPoblacion} = "${solicitud.coloniaPoblacion}",
+      ${DataBaseCreator.delegacionMunicipio} = "${solicitud.delegacionMunicipio}",
+      ${DataBaseCreator.ciudad} = "${solicitud.ciudad}",
+      ${DataBaseCreator.estado} = "${solicitud.estado}",
+      ${DataBaseCreator.cp} = ${solicitud.cp},
+      ${DataBaseCreator.pais} = "${solicitud.pais}"
       WHERE ${DataBaseCreator.idSolicitud} = ${solicitud.idSolicitud} ''';
     
     final result = await db.rawUpdate(sql);
