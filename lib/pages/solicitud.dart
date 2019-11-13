@@ -6,6 +6,8 @@ import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud1.dart';
 import 'package:sgcartera_app/pages/solicitud2.dart';
+import 'package:sgcartera_app/sqlite_files/models/cat_estado.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catEstado.dart';
 
 import 'home.dart';
 //import 'package:intl/intl.dart';
@@ -35,6 +37,7 @@ class _SolicitudState extends State<Solicitud> {
   var telefono = TextEditingController();
   bool buttonEnabled = true;
   AuthFirebase authFirebase = new AuthFirebase();
+  List<CatEstado> estados = List();
 
   DateTime now = new DateTime.now();
   DateTime selectedDate;
@@ -62,8 +65,13 @@ class _SolicitudState extends State<Solicitud> {
       }
   }
 
+  getEstados()async{
+    estados = await RepositoryCatEstados.getAllCatEstados();
+  }
+
   @override
   void initState() {
+    getEstados();
     //formatted = formatter.format(selectedDate);
     //fechaNacimiento.text = formatted;
     // TODO: implement initState
@@ -393,7 +401,8 @@ class _SolicitudState extends State<Solicitud> {
       );
       _buttonStatus();
       //Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome)));
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDireccion(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome)));
+      estados.sort((a, b) => a.estado.compareTo(b.estado));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDireccion(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, estados: estados)));
     }else{
       final snackBar = SnackBar(
         content: Text("Error al guardar. Revisa el formulario para más información.", style: TextStyle(fontWeight: FontWeight.bold),),

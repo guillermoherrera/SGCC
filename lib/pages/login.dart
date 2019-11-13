@@ -4,8 +4,10 @@ import 'package:sgcartera_app/Models/auth_res.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/sqlite_files/database_creator.dart';
 import 'package:sgcartera_app/sqlite_files/models/cat_documento.dart';
+import 'package:sgcartera_app/sqlite_files/models/cat_estado.dart';
 import 'package:sgcartera_app/sqlite_files/models/cat_integrantes.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catDocumento.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catEstado.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catIntegrantes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -192,5 +194,14 @@ class _LoginState extends State<Login> {
     querySnapshot = await q.getDocuments();
     final catIntegrante = CatIntegrante(cantidad: querySnapshot.documents[0].data['cantidad']);
     await RepositoryServiceCatIntegrantes.addCatIntegrante(catIntegrante);
+
+    //catEstados
+    await RepositoryCatEstados.deleteAll();
+    q = _firestore.collection("catEstados");
+    querySnapshot = await q.getDocuments();
+    for(DocumentSnapshot value in querySnapshot.documents){
+      final catEstado = CatEstado(codigo: value.data['codigo'], estado: value.data['estado']);
+      await RepositoryCatEstados.addCatEstado(catEstado);
+    }
   }
 }

@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:sgcartera_app/models/direccion.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud2.dart';
+import 'package:sgcartera_app/sqlite_files/models/cat_estado.dart';
 
 class SolicitudDireccion extends StatefulWidget {
-  SolicitudDireccion({this.actualizaHome, this.colorTema, this.datos,this.title});
+  SolicitudDireccion({this.actualizaHome, this.colorTema, this.datos,this.title,this.estados});
   final String title;
   final SolicitudObj datos;
   final MaterialColor colorTema;
   final VoidCallback actualizaHome;
+  final List<CatEstado> estados;
   @override
   _SolicitudDireccionState createState() => _SolicitudDireccionState();
 }
@@ -25,7 +27,16 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
   var cp = TextEditingController();
   var paisCod = TextEditingController();
   bool buttonEnabled = true;
+  //List<CatEstado> estados = List();
+  var estado;
+  String estadoAux = "Estado";
 
+  @override
+  void initState() {
+    paisCod.text = "MX";
+    super.initState();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,7 +165,31 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
               validator: (value){return value.isEmpty && municipio.text.isEmpty ? "Ingresa la ciudad" : null;},
             )
           ),
-          flexPadded(TextFormField(
+          flexPadded(
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  //Text("Estado: "),
+                  InkWell(onTap:(){FocusScope.of(context).requestFocus(FocusNode());},child: DropdownButton(
+                    items: widget.estados.map((f)=>DropdownMenuItem(
+                      child: Text(f.estado),
+                      value: f.codigo
+                      )).toList(),
+                    onChanged: MediaQuery.of(context).viewInsets.bottom == 0 ?(estadoSel){
+                      setState(() {
+                        estadoCod.text = estadoSel;
+                        estado = estadoSel;
+                        estadoAux = widget.estados.firstWhere((f)=>f.codigo == estadoSel).estado;
+                      });
+                    } : null,
+                    value: estado,
+                    underline: Container(color: Colors.grey,height: 1),
+                    isExpanded: true,
+                    hint: Text(estadoAux),
+                  ))
+                ],
+              )
+              /*TextFormField(
               controller: estadoCod,
               maxLength: 4,
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -167,7 +202,7 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
                   estadoCod.value = estadoCod.value.copyWith(text: value.toUpperCase());
               },
               validator: (value){return value.isEmpty ? "Ingresa el Estado" : null;},
-            )
+            )*/
           )
         ]
       ),
@@ -198,6 +233,7 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
               decoration: InputDecoration(
                 labelText: "País"
               ),
+              enabled: false,
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
                 if (paisCod.text != value.toUpperCase())
@@ -238,7 +274,7 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
 
   void validaSubmit(){
     FocusScope.of(context).requestFocus(FocusNode());
-    if(formKey.currentState.validate()){
+    if(formKey.currentState.validate() && estado != null){
       _buttonStatus();
       Direccion direccion = new Direccion(
         direccion1: direccion1.text,

@@ -4,16 +4,18 @@ import 'package:sgcartera_app/models/direccion.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud2.dart';
 import 'package:sgcartera_app/pages/solicitud_editar2.dart';
+import 'package:sgcartera_app/sqlite_files/models/cat_estado.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 
 class SolicitudDireccionEditar extends StatefulWidget {
-  SolicitudDireccionEditar({this.actualizaHome, this.colorTema, this.datos,this.title,this.idSolicitud});
+  SolicitudDireccionEditar({this.actualizaHome, this.colorTema, this.datos,this.title,this.idSolicitud,this.estados});
   final String title;
   final SolicitudObj datos;
   final MaterialColor colorTema;
   final VoidCallback actualizaHome;
   final int idSolicitud;
+  final List<CatEstado> estados;
   @override
   _SolicitudDireccionEditarState createState() => _SolicitudDireccionEditarState();
 }
@@ -29,6 +31,8 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
   var cp = TextEditingController();
   var paisCod = TextEditingController();
   bool buttonEnabled = true;
+  var estado;
+  String estadoAux = "Estado";
 
   getSolicitudInfo() async{
     print(widget.datos);
@@ -37,8 +41,10 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
     municipio.text = widget.datos.direccion['delegacionMunicipio'];
     ciudad.text = widget.datos.direccion['ciudad'];
     estadoCod.text = widget.datos.direccion['estado'];
+    estado = widget.datos.direccion['estado'];
     cp.text = widget.datos.direccion['cp'].toString();
     paisCod.text = widget.datos.direccion['pais'];
+    estadoAux = widget.estados.firstWhere((f)=>f.codigo == estado).estado;
   }
   
   @override
@@ -176,7 +182,31 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
               validator: (value){return value.isEmpty && municipio.text.isEmpty ? "Ingresa la ciudad" : null;},
             )
           ),
-          flexPadded(TextFormField(
+          flexPadded(
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                //Text("Estado: "),
+                 InkWell(onTap:(){FocusScope.of(context).requestFocus(FocusNode());},child: DropdownButton(
+                  items: widget.estados.map((f)=>DropdownMenuItem(
+                    child: Text(f.estado),
+                    value: f.codigo
+                    )).toList(),
+                  onChanged: MediaQuery.of(context).viewInsets.bottom == 0 ?(estadoSel){
+                    setState(() {
+                      estadoCod.text = estadoSel;
+                      estado = estadoSel;
+                      estadoAux = widget.estados.firstWhere((f)=>f.codigo == estadoSel).estado;
+                    });
+                  } : null,
+                  value: estado,
+                  underline: Container(color: Colors.grey,height: 1),
+                  isExpanded: true,
+                  hint: Text(estadoAux),
+                ))
+              ],
+            )
+            /*TextFormField(
               controller: estadoCod,
               maxLength: 4,
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -189,7 +219,7 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
                   estadoCod.value = estadoCod.value.copyWith(text: value.toUpperCase());
               },
               validator: (value){return value.isEmpty ? "Ingresa el Estado" : null;},
-            )
+            )*/
           )
         ]
       ),
@@ -260,7 +290,7 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
 
   void validaSubmit() async{
     FocusScope.of(context).requestFocus(FocusNode());
-    if(formKey.currentState.validate()){
+    if(formKey.currentState.validate() && estado != null){
       _buttonStatus();
 
       final Solicitud solicitud = new Solicitud(

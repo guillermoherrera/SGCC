@@ -6,8 +6,10 @@ import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud2.dart';
 import 'package:sgcartera_app/pages/solicitud_editar1.dart';
 import 'package:sgcartera_app/pages/solicitud_editar2.dart';
+import 'package:sgcartera_app/sqlite_files/models/cat_estado.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catEstado.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 
@@ -33,6 +35,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
   var importe = TextEditingController();
   var telefono = TextEditingController();
   bool buttonEnabled = true;
+  List<CatEstado> estados = List();
 
   String userID;
   int idSolicitud;
@@ -77,6 +80,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
   }
 
   getSolicitudInfo() async{
+    estados = await RepositoryCatEstados.getAllCatEstados();
     var solicitudEditar = await ServiceRepositorySolicitudes.getOneSolicitud(widget.idSolicitud);
     nombre.text = solicitudEditar.nombrePrimero;
     nombreAdicional.text = solicitudEditar.nombreSegundo;
@@ -478,7 +482,8 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
         _buttonStatus();
       });
       //Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentosEditar(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, solicitudId: idSolicitud)));
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDireccionEditar(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: (){}, idSolicitud: idSolicitud)));
+      estados.sort((a, b) => a.estado.compareTo(b.estado));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDireccionEditar(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: (){}, idSolicitud: idSolicitud, estados: estados)));
     }else{
       final snackBar = SnackBar(
         content: Text("Error al guardar. Revisa el formulario para más información.", style: TextStyle(fontWeight: FontWeight.bold),),

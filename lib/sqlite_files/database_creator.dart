@@ -48,6 +48,9 @@ class DataBaseCreator{
   static const nombreGrupo = 'nombreGrupo';
   static const importe_grupo = 'importeTotal';
   static const cantidad = 'cantidadSolicitudes';
+
+  static const catEstadosTable = 'catEstados';
+  static const codigo = 'codigo';
   
   static const userID = 'userID';
   static const grupoID = 'grupoID';
@@ -78,6 +81,15 @@ class DataBaseCreator{
     )''';
 
     await db.execute(catIntegrantes);
+  }
+
+  Future<void> createCatEstadosTable(Database db) async{
+    final catEstados = '''CREATE TABLE $catEstadosTable(
+      $estado TEXT,
+      $codigo TEXT
+    )''';
+
+    await db.execute(catEstados);
   }
 
   Future<void> createSolicitudesTable(Database db)async{
@@ -159,6 +171,7 @@ class DataBaseCreator{
     await createDocumentosSolicitudTable(db);
     await createGruposTable(db);
     await createCatIntegrantesTable(db);
+    await createCatEstadosTable(db);
   }
 
 }
