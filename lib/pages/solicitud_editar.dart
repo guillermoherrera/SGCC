@@ -221,6 +221,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
+                getCurpRfc();
                 if (nombreAdicional.text != value.toUpperCase())
                   nombreAdicional.value = nombre.value.copyWith(text: value.toUpperCase());
               },
@@ -517,8 +518,12 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
     }
 
     curpStr = curpStr + (apellidoSegundo.text.length > 0 ? apellidoSegundo.text[0] : 'X');
-    curpStr = curpStr + (nombre.text.length > 0 ? nombre.text[0] : 'X');
-
+    //curpStr = curpStr + (nombre.text.length > 0 ? nombre.text[0] : 'X');
+    if((nombre.text == "MARÍA" || nombre.text == "JOSÉ" || nombre.text == "MARIA" || nombre.text == "JOSE") && nombreAdicional.text.length > 0){
+      curpStr = curpStr + (nombreAdicional.text.length > 0 ? nombreAdicional.text[0] : 'X');
+    }else{
+      curpStr = curpStr + (nombre.text.length > 0 ? nombre.text[0] : 'X');
+    }
     if(fechaNacimiento.text.length > 0){
       curpStr = curpStr + fechaNacimiento.text[8] +fechaNacimiento.text [9];
       curpStr = curpStr + fechaNacimiento.text[3] +fechaNacimiento.text [4];

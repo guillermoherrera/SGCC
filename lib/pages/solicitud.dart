@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
+import 'package:sgcartera_app/classes/consulta.dart';
+import 'package:sgcartera_app/models/curp_request.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/root_page.dart';
@@ -37,6 +41,7 @@ class _SolicitudState extends State<Solicitud> {
   var telefono = TextEditingController();
   bool buttonEnabled = true;
   AuthFirebase authFirebase = new AuthFirebase();
+  Consulta consulta = new Consulta();
   List<CatEstado> estados = List();
 
   DateTime now = new DateTime.now();
@@ -161,7 +166,43 @@ class _SolicitudState extends State<Solicitud> {
         ),
       ),
       Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          flexPadded(TextFormField(
+              controller: curp,
+              maxLength: 18,
+              style: TextStyle(fontWeight: FontWeight.bold),
+              decoration: InputDecoration(
+                labelText: "CURP"
+              ),
+              textCapitalization: TextCapitalization.characters,
+              onChanged: (value) {
+                if (curp.text != value.toUpperCase())
+                  curp.value = nombre.value.copyWith(text: value.toUpperCase());
+              },
+              validator: (value){
+                if(value.isEmpty){
+                  return "Ingresa la CURP";
+                }else if(value.length < 18){
+                  return "Complenta la CURP";
+                }
+                return null;
+              },
+            )
+          ),
+          flexPadded(
+            Center(child: 
+            RaisedButton(
+              onPressed: ()=>consultarCurp(),
+              color: Colors.blue,
+              padding: EdgeInsets.all(0.0),
+              child: Column(children: <Widget>[Icon(Icons.search, color: Colors.white,),Text("Consultar Curp", style: TextStyle(color: Colors.white),)],),
+            ))
+          )
+        ]
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           flexPadded(TextFormField(
               controller: nombre,
@@ -188,6 +229,7 @@ class _SolicitudState extends State<Solicitud> {
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
+                getCurpRfc();
                 if (nombreAdicional.text != value.toUpperCase())
                   nombreAdicional.value = nombre.value.copyWith(text: value.toUpperCase());
               },
@@ -262,7 +304,7 @@ class _SolicitudState extends State<Solicitud> {
               onTap: () => _selectDate(context),
             )
           ),
-          flexPadded(TextFormField(
+          /*flexPadded(TextFormField(
               controller: curp,
               maxLength: 18,
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -283,7 +325,7 @@ class _SolicitudState extends State<Solicitud> {
                 return null;
               },
             )
-          ),
+          ),*/
         ]
       ),
       Divider(),
@@ -436,8 +478,11 @@ class _SolicitudState extends State<Solicitud> {
     }
 
     curpStr = curpStr + (apellidoSegundo.text.length > 0 ? apellidoSegundo.text[0] : 'X');
-    curpStr = curpStr + (nombre.text.length > 0 ? nombre.text[0] : 'X');
-
+    if((nombre.text == "MARÍA" || nombre.text == "JOSÉ" || nombre.text == "MARIA" || nombre.text == "JOSE") && nombreAdicional.text.length > 0){
+      curpStr = curpStr + (nombreAdicional.text.length > 0 ? nombreAdicional.text[0] : 'X');
+    }else{
+      curpStr = curpStr + (nombre.text.length > 0 ? nombre.text[0] : 'X');
+    }
     if(fechaNacimiento.text.length > 0){
       curpStr = curpStr + fechaNacimiento.text[8] +fechaNacimiento.text [9];
       curpStr = curpStr + fechaNacimiento.text[3] +fechaNacimiento.text [4];
@@ -446,5 +491,91 @@ class _SolicitudState extends State<Solicitud> {
 
     curp.text = curpStr;
     rfc.text = curpStr;
+  }
+
+  consultarCurp()async{
+    CurpRequest curpRequest;
+    mostrarShowDialog(1,"\nCONSULTANDO CURP ...");
+    if(curp.text.length == 18){
+      try {
+        final result = await InternetAddress.lookup('google.com');
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+          curpRequest = await consulta.consultaCurp(curp.text);
+          if(curpRequest.result){
+            Navigator.pop(context);
+            fillFields(curpRequest.datos.persona);
+            mostrarShowDialog(3, curpRequest.mensaje);
+            print('connected');
+          }else{
+            Navigator.pop(context);
+            mostrarShowDialog(2, curpRequest.mensaje);
+            print('not connected');
+          }
+        }
+      } on SocketException catch (_) {
+        print('not connected');
+        Navigator.pop(context);
+        mostrarShowDialog(2, "\nSIN CONEXIÓN");
+      }
+    }else{
+      Navigator.pop(context);
+      mostrarShowDialog(2, "\nLA CURP '"+curp.text+"' NO TIENE LA LONGITUD CORRECTA (18 CARACTERES)");
+    }
+  }
+
+  mostrarShowDialog(int conectado, String mensaje){
+    Widget icono;
+    switch (conectado) {
+      case 1:
+        icono = CircularProgressIndicator();
+        break;
+      case 2:
+        icono = Icon(Icons.error, color: Colors.red, size: 100.0,);
+        break;
+      case 3:
+        icono = Icon(Icons.check_circle, color: Colors.green, size: 100.0,);
+        break;
+      default:
+        icono = Icon(Icons.error, color: Colors.yellow, size: 100.0,);
+        break;
+    }
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: (){},
+          child: AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                //conectado ? CircularProgressIndicator() : Icon(Icons.error, color: Colors.red, size: 100.0,),
+                //conectado ? Text("\nCONSULTANDO CURP ...") : Text("\nSIN CONEXIÓN"),
+                icono,
+                Text(mensaje)
+              ],
+            ),
+            actions: <Widget>[
+              conectado != 1 ?
+              new FlatButton(
+                child: const Text("CERRAR"),
+                onPressed: (){Navigator.pop(context);}
+              ) : null
+            ],
+          )
+        );
+      },
+    );
+  }
+
+  fillFields(Map persona){
+    nombre.text = persona['nombre'];
+    nombreAdicional.text = persona['nombreSegundo'];
+    apellidoPrimero.text = persona['apellido'];
+    apellidoSegundo.text = persona['apellidoSegundo'];
+    rfc.text = persona['rfc'];
+    selectedDate = persona['fechaNacimiento'];
+    fechaNacimiento.text = formatDate( persona['fechaNacimiento'], [dd, '/', mm, '/', yyyy]);
+    
   }
 }
