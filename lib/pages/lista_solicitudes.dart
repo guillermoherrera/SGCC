@@ -190,7 +190,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 title: Text(getNombre(solicitudes[index]), style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(getImporte(solicitudes[index])),
                 isThreeLine: true,
-                trailing: solicitudes[index].status == 0 ? getIcono(solicitudes[index]) : getIconoRecuperar(solicitudes[index]),
+                trailing: solicitudes[index].status == 0 ? getIcono(solicitudes[index]) : Icon(Icons.done_all),//getIconoRecuperar(solicitudes[index]),
               ) : 
               ListTile(
                 leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
@@ -550,7 +550,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
       documentos = [];
       await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(solicitud.idSolicitud).then((listaDocs){
         for(final doc in listaDocs){
-          Documento documento = new Documento(tipo: doc.tipo, documento: doc.documento);
+          Documento documento = new Documento(tipo: doc.tipo, documento: doc.documento, version: doc.version);
           documentos.add(documento.toJson());
         }
       });

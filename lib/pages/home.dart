@@ -325,7 +325,7 @@ class _HomePageState extends State<HomePage> {
       documentos = [];
       await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(solicitud.idSolicitud).then((listaDocs){
         for(final doc in listaDocs){
-          Documento documento = new Documento(tipo: doc.tipo, documento: doc.documento);
+          Documento documento = new Documento(tipo: doc.tipo, documento: doc.documento, version: doc.version);
           documentos.add(documento.toJson());
         }
       });

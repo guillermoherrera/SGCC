@@ -496,6 +496,7 @@ class _SolicitudState extends State<Solicitud> {
   consultarCurp()async{
     CurpRequest curpRequest;
     mostrarShowDialog(1,"\nCONSULTANDO CURP ...");
+    clearFields();
     if(curp.text.length == 18){
       try {
         final result = await InternetAddress.lookup('google.com');
@@ -568,14 +569,23 @@ class _SolicitudState extends State<Solicitud> {
     );
   }
 
+  clearFields(){
+    nombre.text = "";
+    nombreAdicional.text = "";
+    apellidoPrimero.text = "";
+    apellidoSegundo.text = "";
+    rfc.text = "";
+    selectedDate = null;
+    fechaNacimiento.text = "";
+  }
+
   fillFields(Map persona){
     nombre.text = persona['nombre'];
     nombreAdicional.text = persona['nombreSegundo'];
     apellidoPrimero.text = persona['apellido'];
     apellidoSegundo.text = persona['apellidoSegundo'];
-    rfc.text = persona['rfc'];
+    rfc.text = persona['rfc'].isEmpty ? curp.text.substring(0,10) :persona['rfc'];
     selectedDate = persona['fechaNacimiento'];
     fechaNacimiento.text = formatDate( persona['fechaNacimiento'], [dd, '/', mm, '/', yyyy]);
-    
   }
 }

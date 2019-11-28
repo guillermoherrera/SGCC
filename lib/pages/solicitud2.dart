@@ -124,7 +124,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       tablesRows.add(TableRow(children: [Divider(),Divider(),Divider()]));
 
       if(docArchivos.length != catDocumentos.length){
-        DocumentoArchivo documentoArchivo = new DocumentoArchivo(tipo: catDoc.tipo, archivo: null);
+        DocumentoArchivo documentoArchivo = new DocumentoArchivo(tipo: catDoc.tipo, archivo: null, version: 1);
         docArchivos.add(documentoArchivo);
       }
     }
@@ -301,7 +301,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       
       List<Map> documentos = [];
       for(DocumentoArchivo docArchivo in docArchivos){
-        Documento documento = new Documento(tipo:docArchivo.tipo, documento: "");
+        Documento documento = new Documento(tipo:docArchivo.tipo, documento: "", version: docArchivo.version);
         documentos.add(documento.toJson());
       }
 
@@ -424,7 +424,8 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
             idDocumentoSolicitud: _idD + 1,
             idSolicitud: solicitud.idSolicitud,
             tipo: doc['tipo'],
-            documento: docArchivos.firstWhere((archivo) => archivo.tipo == doc['tipo']).archivo.path 
+            documento: docArchivos.firstWhere((archivo) => archivo.tipo == doc['tipo']).archivo.path,
+            version: doc['version']
           );
           await ServiceRepositoryDocumentosSolicitud.addDocumentoSolicitud(documentoSolicitud);
         }

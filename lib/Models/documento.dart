@@ -3,29 +3,35 @@ import 'dart:io';
 class Documento{
   int tipo;
   String documento;
+  int version;
 
   Documento({
     this.tipo,
-    this.documento
+    this.documento,
+    this.version
   });
 
   Map<String, dynamic> toJson()=>{
     'tipo': tipo,
-    'documento': documento
+    'documento': documento,
+    'version': version
   };
 }
 
 class DocumentoArchivo{
   int tipo;
   File archivo;
+  int version;
 
   DocumentoArchivo({
     this.tipo,
-    this.archivo
+    this.archivo,
+    this.version
   });
 
   Map<String, dynamic> toJson()=>{
     'tipo': tipo,
-    'archivo': archivo
+    'archivo': archivo,
+    'version': version
   };
 }

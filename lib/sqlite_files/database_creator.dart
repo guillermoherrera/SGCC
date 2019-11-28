@@ -10,6 +10,7 @@ class DataBaseCreator{
   static const catDocumentosTable = 'catDocumentos';
   static const tipo = 'tipo';
   static const descDocumento = 'descDocumento';
+  static const version = 'version';
 
   static const catIntegrantesTable = 'catIntegrantes';
   static const cantidadIntegrantes = 'cantidad';
@@ -127,7 +128,8 @@ class DataBaseCreator{
       $idDocumentoSolicitudes INTEGER PRIMARY KEY,
       $id_Solicitud INTEGER,
       $tipoDocumento INTEGER,
-      $documento TEXT
+      $documento TEXT,
+      $version INT
     )''';
     
     await db.execute(solicitudesSql);

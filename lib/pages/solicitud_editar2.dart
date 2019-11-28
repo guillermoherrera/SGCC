@@ -48,7 +48,7 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
   getSolicitudInfo() async{
     var documentosEditar = await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(widget.solicitudId);
     for(final doc in documentosEditar){
-      DocumentoArchivo documentoArchivo = new DocumentoArchivo(tipo: doc.tipo, archivo: File(doc.documento));
+      DocumentoArchivo documentoArchivo = new DocumentoArchivo(tipo: doc.tipo, archivo: File(doc.documento), version: doc.version);
       docArchivos.add(documentoArchivo);
     }
     setState(() {});
@@ -313,7 +313,7 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
       
       List<Map> documentos = [];
       for(DocumentoArchivo docArchivo in docArchivos){
-        Documento documento = new Documento(tipo:docArchivo.tipo, documento:docArchivo.archivo.path);
+        Documento documento = new Documento(tipo:docArchivo.tipo, documento:docArchivo.archivo.path, version: docArchivo.version);
         documentos.add(documento.toJson());
       }
 
@@ -390,7 +390,8 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
           idDocumentoSolicitud: null,
           idSolicitud: widget.solicitudId,
           tipo: doc['tipo'],
-          documento: doc['documento'] 
+          documento: doc['documento'],
+          version: doc['version'] 
         );
         await ServiceRepositoryDocumentosSolicitud.updateDocumentoSolicitud(documentoSolicitud);
       }
