@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/pages/grupos.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NuevasSolicitudes extends StatefulWidget {
   NuevasSolicitudes({this.colorTema, this.actualizaHome});
@@ -11,6 +12,22 @@ class NuevasSolicitudes extends StatefulWidget {
 }
 
 class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
+  int userType;
+
+  Future<void> getInfo() async{
+    final pref = await SharedPreferences.getInstance();
+    userType = pref.getInt('tipoUsuario');
+    setState(() {
+      
+    });
+  }
+
+  @override
+  void initState() {
+    getInfo();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +35,7 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
         title: Text("Nuevas Solicitudes"),
         centerTitle: true,
       ),
-      body: Container(
+      body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado. :(\n\nPonte en contacto con soporte para mas información."))) : Container(
           child: Stack(
             children: <Widget>[
               Container(
@@ -31,7 +48,7 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
               ),
               ListView(
               children: <Widget>[
-                InkWell(
+                userType == 2 ? Text("") : InkWell(
                   child: Card(
                     child: Container(
                       child: ListTile(
@@ -50,11 +67,11 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                   ),
                   onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Individual", colorTema: widget.colorTema,)));},
                 ),
-                InkWell(
+                userType == 1 ? Text("") : InkWell(
                   child: Card(
                     child: Container(
                       child: ListTile(
-                      leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
+                      leading: Icon(Icons.group_add, color: widget.colorTema,size: 40.0,),
                       title: Text("Grupos", style: TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text("Captura y revisa tus solicitudes de Credito Grupal."),
 

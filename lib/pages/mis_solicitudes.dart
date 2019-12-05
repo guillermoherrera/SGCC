@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/pages/grupos.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MisSolicitudes extends StatefulWidget {
   MisSolicitudes({this.colorTema, this.actualizaHome});
@@ -11,6 +12,22 @@ class MisSolicitudes extends StatefulWidget {
 }
 
 class _MisSolicitudesState extends State<MisSolicitudes> {
+  int userType;
+
+  Future<void> getInfo() async{
+    final pref = await SharedPreferences.getInstance();
+    userType = pref.getInt('tipoUsuario');
+    setState(() {
+      
+    });
+  }
+
+  @override
+  void initState() {
+    getInfo();
+    super.initState();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +35,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         title: Text("Mis Solicitudes"),
         centerTitle: true,
       ),
-      body: Container(
+      body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado. :(\n\nPonte en contacto con soporte para mas información."))) : Container(
         child: Stack(
           children: <Widget>[
             Container(
@@ -30,12 +47,13 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
               ),
             ),
             GridView.builder(
-              itemCount: 5,
+              itemCount: userType == 1 ? 4 : 5,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
               itemBuilder: (context, index){
+                int iter = userType == 1 ? index+1 : index;
                 return Padding(
                   padding: const EdgeInsets.all(0),
-                  child: itemSolicitudes(index),
+                  child: itemSolicitudes(iter),
                 );
               }
             )

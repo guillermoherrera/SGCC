@@ -120,7 +120,7 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Text("Paso 2 de 2", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+          Text("Paso 3 de 3", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
         ],
       )
     ];

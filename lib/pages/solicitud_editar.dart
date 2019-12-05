@@ -312,7 +312,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
                 if(value.isEmpty){
                   return "Ingresa la CURP";
                 }else if(value.length < 18){
-                  return "Complenta la CURP";
+                  return "Completa la CURP";
                 }
                 return null;
               },
@@ -340,7 +340,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
                 if(value.isEmpty){
                   return "Ingresa el RFC";
                 }else if(value.length < 10){
-                  return "Complenta el RFC";
+                  return "Completa el RFC";
                 }
                 return null;
               },
@@ -358,7 +358,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
                 if(value.isEmpty){
                   return "Ingresa un teléfono";
                 }else if(value.length < 10){
-                  return "Complenta el teléfono";
+                  return "Completa el teléfono";
                 }
                 return null;
               },

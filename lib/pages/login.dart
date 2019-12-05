@@ -27,6 +27,7 @@ class _LoginState extends State<Login> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool buttonEnabled = true;
   Firestore _firestore = Firestore.instance;
+  AuthFirebase authFirebase = new AuthFirebase();
   DocumentSnapshot _datosCatalogo;
   
   @override
@@ -50,14 +51,14 @@ class _LoginState extends State<Login> {
                   colors: [widget.colorTema[100], Colors.white])
                 ),
               ),
-              SingleChildScrollView(
+              Center(child: SingleChildScrollView(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(),
                   child: Card(
                     color: Colors.white70,
-                    margin: EdgeInsets.only(left: 20, right: 20, top: 40, bottom: 80),
+                    margin: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 100),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    elevation: 8.0,
+                    elevation: 20.0,
                     child: Padding(
                       padding: EdgeInsets.all(25),
                       child: Column(
@@ -66,7 +67,7 @@ class _LoginState extends State<Login> {
                     ),
                   )
                 )
-              )
+              ))
             ],
           ),
         ),
@@ -178,7 +179,17 @@ class _LoginState extends State<Login> {
   Future<void> getCatalogos() async{
     QuerySnapshot querySnapshot;
     Query q;
-
+    final pref = await SharedPreferences.getInstance();
+    
+    //Tipo de usuario
+    q = _firestore.collection("UsuariosTipos").where('uid', isEqualTo: pref.getString('uid'));
+    querySnapshot = await q.getDocuments();
+    if(querySnapshot.documents.length > 0){
+      pref.setInt("tipoUsuario",querySnapshot.documents[0].data['tipoUsuario']);
+    }else{
+      pref.setInt("tipoUsuario",0);
+    }
+    
     //catDocumentos
     await RepositoryServiceCatDocumento.deleteAll();
     q = _firestore.collection("catDocumentos").where('activo', isEqualTo: true);
@@ -203,5 +214,6 @@ class _LoginState extends State<Login> {
       final catEstado = CatEstado(codigo: value.data['codigo'], estado: value.data['estado']);
       await RepositoryCatEstados.addCatEstado(catEstado);
     }
+
   }
 }

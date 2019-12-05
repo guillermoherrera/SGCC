@@ -40,13 +40,15 @@ class _HomePageState extends State<HomePage> {
   Sincroniza sincroniza = new Sincroniza();
   bool sincManual = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  
+  int userType;
+
   Future<void> getListDocumentos() async{
     final pref = await SharedPreferences.getInstance();
     String userID = pref.getString("uid");
+    userType = pref.getInt('tipoUsuario');
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);    
     print("******** "+this.mounted.toString()+"**********");
-    try{ setState(() {}); }catch(e){ print("ERROR: linea 47 Home:"+e.toString()); }
+    try{ setState(() {}); }catch(e){ print("ERROR: linea 49 Home:"+e.toString()); }
   }
 
   void _moveToSignInScreen(BuildContext context) =>
@@ -90,7 +92,7 @@ class _HomePageState extends State<HomePage> {
           centerTitle: true,
         ),
         drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo() ),
-        body: Container(
+        body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado. :(\n\nPonte en contacto con soporte para mas información."))) : Container(
             child: Stack(
               children: <Widget>[
                 Container(
@@ -123,7 +125,7 @@ class _HomePageState extends State<HomePage> {
                     onTap: (){},
                   ),
                   Divider(),
-                  InkWell(
+                  userType == 2 ? Text("") : InkWell(
                     child: Card(
                       child: Container(
                         child: ListTile(
@@ -142,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Individual", colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo(),)));},
                   ),
-                  InkWell(
+                  userType == 1 ? Text("") :InkWell(
                     child: Card(
                       child: Container(
                         child: ListTile(

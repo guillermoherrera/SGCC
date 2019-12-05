@@ -28,11 +28,13 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
   bool status;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   List<Grupo> gruposAbiertos = List();  
+  int userType;
 
   Future<void> getListDocumentos() async{
     status = widget.grupo.status == 0 ? true : false;
     final pref = await SharedPreferences.getInstance();
     String userID = pref.getString("uid");
+    userType = pref.getInt('tipoUsuario');
     gruposAbiertos = await ServiceRepositoryGrupos.getAllGrupos(userID);
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, widget.title);   
     setState(() {});
@@ -153,7 +155,11 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
               if(status) eliminarSolicitud(solicitud);
               //Navigator.push(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo,)));
             }else if(value == 3){
-              if(status) moverAIndividual(solicitud);
+              if(userType == 2){
+                showSnackBar("Acción no valida. No puedes mover esta solicitud a Individual.", Colors.red);
+              }else{
+                if(status) moverAIndividual(solicitud);
+              } 
             }else if(value == 4){
               if(status) mostrarActionSheet(context, solicitud);
             }

@@ -107,6 +107,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
   }
 
   void _logOut() async{
+    final pref = await SharedPreferences.getInstance();
+    pref.clear();
     await widget.authFirebase.signOut();
   }
 }

@@ -12,7 +12,7 @@ class Consulta{
 
   Firestore _firestore = Firestore.instance;
   DocumentSnapshot _datosApi;
-  final String baseURL= "http://192.168.70.134:82/v1.0/";
+  final String baseURL= "http://192.168.70.183:82/v1.0/";
 
   Future<ConsultaToken> getTokenConsulta() async{
     ConsultaToken result = new ConsultaToken();
