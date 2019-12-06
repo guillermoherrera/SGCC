@@ -56,6 +56,7 @@ class DataBaseCreator{
   static const userID = 'userID';
   static const grupoID = 'grupoID';
   static const status = 'status';
+  static const documentID = 'documentID';
 
   static void dataBaseLog(String functionName, String sql, [List<Map<String, dynamic>> selectedQueryResult, int insertAndUpdateQueryResult]){
     print(functionName);
@@ -110,6 +111,7 @@ class DataBaseCreator{
       $status INTEGER,
       $tipoContrato INTEGER,
       $userID TEXT,
+      $documentID TEXT,
       
       $direccion1 TEXT,
       $coloniaPoblacion TEXT,

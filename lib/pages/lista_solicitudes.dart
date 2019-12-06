@@ -735,7 +735,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
               });
             }
           );
-          Documento docu = new Documento(tipo:documento['tipo'], documento: rutaImagen);
+          Documento docu = new Documento(tipo:documento['tipo'], documento: rutaImagen);//creo falta la version
           listaDocs.add(docu.toJson());
         }
       }catch(e){
@@ -752,7 +752,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
             idSolicitud: solicitud.idSolicitud,
             tipo: doc['tipo'],
             documento: doc['documento'] 
-          );
+          );//creo que falta version
           await ServiceRepositoryDocumentosSolicitud.addDocumentoSolicitud(documentoSolicitud);
         }
         await _firestore.collection("Solicitudes").document(_solicitud.documentID).delete();

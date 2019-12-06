@@ -27,6 +27,19 @@ class ServiceRepositorySolicitudes{
     return Solicitud.fromJson(data[0]);
   }
 
+  static Future<Solicitud> getOneSolicitudByDocumentID(String documentID) async{
+    final sql = ''' SELECT * FROM ${DataBaseCreator.solicitudesTable}
+      WHERE ${DataBaseCreator.documentID} = "$documentID"''';
+
+    final data = await db.rawQuery(sql);
+    if(data.length > 0){
+      return Solicitud.fromJson(data[0]);
+    }else{
+      return null;
+    }
+    
+  }
+
   static Future<List<Solicitud>> getAllSolicitudesGrupo(String userID, String nombreGrupo) async{
     final sql = '''SELECT * FROM ${DataBaseCreator.solicitudesTable}
       WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.nombre_Grupo} = "$nombreGrupo"''';
@@ -88,6 +101,64 @@ class ServiceRepositorySolicitudes{
       "${solicitud.estado}",
       ${solicitud.cp},
       "${solicitud.pais}"
+    )
+    ''';
+
+    final result = await db.rawInsert(sql);
+    DataBaseCreator.dataBaseLog("agregar Solcitud", sql, null, result);
+  }
+
+  static Future<void> addSolicitudCambio(Solicitud solicitud) async{
+    final sql = '''INSERT INTO ${DataBaseCreator.solicitudesTable}(
+      ${DataBaseCreator.importe},
+      ${DataBaseCreator.nombrePrimero},
+      ${DataBaseCreator.nombreSegundo},
+      ${DataBaseCreator.apellidoPrimero},
+      ${DataBaseCreator.apellidoSegundo},
+      ${DataBaseCreator.fechaNacimiento},
+      ${DataBaseCreator.curp},
+      ${DataBaseCreator.rfc},
+      ${DataBaseCreator.telefono},
+      ${DataBaseCreator.id_grupo},
+      ${DataBaseCreator.nombre_Grupo},
+      ${DataBaseCreator.userID},
+      ${DataBaseCreator.status},
+      ${DataBaseCreator.tipoContrato},
+      
+      ${DataBaseCreator.direccion1},
+      ${DataBaseCreator.coloniaPoblacion},
+      ${DataBaseCreator.delegacionMunicipio},
+      ${DataBaseCreator.ciudad},
+      ${DataBaseCreator.estado},
+      ${DataBaseCreator.cp},
+      ${DataBaseCreator.pais},
+      
+      ${DataBaseCreator.documentID}
+    )values(
+      ${solicitud.importe},
+      "${solicitud.nombrePrimero}",
+      "${solicitud.nombreSegundo}",
+      "${solicitud.apellidoPrimero}",
+      "${solicitud.apellidoSegundo}",
+      ${solicitud.fechaNacimiento},
+      "${solicitud.curp}",
+      "${solicitud.rfc}",
+      "${solicitud.telefono}",
+      ${solicitud.idGrupo},
+      "${solicitud.nombreGrupo}",
+      "${solicitud.userID}",
+      ${solicitud.status},
+      ${solicitud.tipoContrato},
+      
+      "${solicitud.direccion1}",
+      "${solicitud.coloniaPoblacion}",
+      "${solicitud.delegacionMunicipio}",
+      "${solicitud.ciudad}",
+      "${solicitud.estado}",
+      ${solicitud.cp},
+      "${solicitud.pais}",
+
+      "${solicitud.documentID}"
     )
     ''';
 

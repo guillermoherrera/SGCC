@@ -9,6 +9,7 @@ import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/grupo.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
+import 'package:sgcartera_app/sqlite_files/models/documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_documentoSolicitud.dart';
@@ -30,8 +31,10 @@ class Sincroniza{
     }catch(e){
       return null;
     }
-
-    await getSolcitudesespera();
+    final pref = await SharedPreferences.getInstance();
+    String userID = pref.getString("uid");
+    
+    await getSolcitudesespera(userID);
     
     List<String> gruposSinc = List();
     List<GrupoObj> gruposGuardados = List();
@@ -106,13 +109,15 @@ class Sincroniza{
           await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
           //if(solicitudObj.grupoId != null) ServiceRepositoryGrupos.updateGrupoStatus(2, grupoObj.grupoID, solicitudObj.grupoId);
           print(result);
-          
+
         }else{
           print("Class Sincroniza sincronizaDatos: Sin internet");
         }
       });
     
-    }  
+    }
+    ///Consulta Cambios
+    await getCambios(userID);
   }
 
   Future<List<Map>> saveFireStore(List<Map> listaDocs) async{
@@ -132,9 +137,68 @@ class Sincroniza{
     return listaDocs;
   }
 
-  getSolcitudesespera() async{
-    final pref = await SharedPreferences.getInstance();
-    String userID = pref.getString("uid");
+  getSolcitudesespera(userID) async{
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);
+  }
+
+  getCambios(userID) async{
+    Query q = _firestore.collection("Solicitudes").where('status', isEqualTo: 6).where('userID', isEqualTo:userID);
+    QuerySnapshot querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
+    
+    for(DocumentSnapshot document in querySnapshot.documents){//querySnapshot.documents[0].documentID
+      Solicitud solicitudAux = await ServiceRepositorySolicitudes.getOneSolicitudByDocumentID(document.documentID);
+      if(solicitudAux == null){
+        final int _id = await ServiceRepositorySolicitudes.solicitudesCount();
+        final Solicitud solicitud = new Solicitud(
+          idSolicitud: _id + 1,
+          importe: document.data['importe'],
+          nombrePrimero: document.data['persona']['nombre'],
+          nombreSegundo: document.data['persona']['nombreSegundo'],
+          apellidoPrimero: document.data['persona']['apellido'],
+          apellidoSegundo: document.data['persona']['apellidoSegundo'],
+          fechaNacimiento: document.data['persona']['fechaNacimiento'].millisecondsSinceEpoch,
+          curp: document.data['persona']['curp'],
+          rfc: document.data['persona']['rfc'],
+          telefono:  document.data['persona']['telefono'],
+          userID: userID,
+          status: 6,
+          tipoContrato: document.data['tipoContrato'],
+          idGrupo: null,
+          nombreGrupo: null,
+
+          direccion1: document.data['direccion']['direccion1'],
+          coloniaPoblacion: document.data['direccion']['coloniaPoblacion'],
+          delegacionMunicipio: document.data['direccion']['delegacionMunicipio'],
+          ciudad: document.data['direccion']['ciudad'],
+          estado: document.data['direccion']['estado'],
+          cp: document.data['direccion']['cp'],
+          pais: document.data['direccion']['pais'],
+
+          documentID: document.documentID
+        );
+
+        List<Map> listaDocs = List();
+        for(final documento in document.data['documentos']){
+          if(documento['solicitudCambio'] != null && documento['solicitudCambio'] == true){
+            Documento docu = new Documento(tipo:documento['tipo'], documento: null, version: documento['version']);//creo falta la version
+            listaDocs.add(docu.toJson());
+          }
+        }
+        
+        await ServiceRepositorySolicitudes.addSolicitudCambio(solicitud).then((_) async{
+          for(var doc in listaDocs){
+            final int _idD = await ServiceRepositoryDocumentosSolicitud.documentosSolicitudCount();
+            final DocumentoSolicitud documentoSolicitud = new DocumentoSolicitud(
+              idDocumentoSolicitud: _idD + 1,
+              idSolicitud: solicitud.idSolicitud,
+              tipo: doc['tipo'],
+              documento: doc['documento'],
+              version: doc['version'] 
+            );//creo que falta version
+            await ServiceRepositoryDocumentosSolicitud.addDocumentoSolicitud(documentoSolicitud);
+          }
+        });
+      }
+    }
   }
 }
