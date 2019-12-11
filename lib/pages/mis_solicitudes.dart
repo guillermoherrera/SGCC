@@ -47,10 +47,10 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
               ),
             ),
             GridView.builder(
-              itemCount: userType == 1 ? 4 : 5,
+              itemCount: 6,//userType == 1 ? 5 : 6,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
               itemBuilder: (context, index){
-                int iter = userType == 1 ? index+1 : index;
+                int iter = index;//iter = userType == 1 ? index+1 : index;
                 return Padding(
                   padding: const EdgeInsets.all(0),
                   child: itemSolicitudes(iter),
@@ -92,7 +92,11 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   Icon iconoItem(i){
     switch(i){
       case 0:
-        return Icon(Icons.group, size: 90,color: Colors.yellow[700],);
+        if(userType == 1){
+          return Icon(Icons.format_align_justify, size: 90,);
+        }else{
+          return Icon(Icons.group, size: 90,color: Colors.yellow[700],);
+        }
         break;
       case 1:
         return Icon(Icons.access_time, size: 90,color: Colors.yellow[700],);
@@ -101,9 +105,12 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         return Icon(Icons.done_all, size: 90, color: Colors.grey);
         break;
       case 3:
-        return Icon(Icons.done_all, size: 90,color: Colors.green,);
+        return Icon(Icons.autorenew, size: 90, color: Colors.blueAccent);
         break;
       case 4:
+        return Icon(Icons.done_all, size: 90,color: Colors.green,);
+        break;
+      case 5:
         return Icon(Icons.block, size: 90, color: Colors.red);
         break;
       default:
@@ -115,7 +122,12 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   Widget textoItem(i){
     switch(i){
       case 0:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Grupos Capturados\n", style: TextStyle(fontWeight: FontWeight.bold),)),);
+        if(userType == 1){
+          return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("MIS SOLICITUDES ...\n", style: TextStyle(fontWeight: FontWeight.bold),)),);
+        }
+        else{
+          return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Grupos Capturados\n(grupos abiertos)", style: TextStyle(fontWeight: FontWeight.bold),)),);
+        }
         break;
       case 1:
         return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("En Espera (no\nsincronizadas)", style: TextStyle(fontWeight: FontWeight.bold),)),);
@@ -124,9 +136,12 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Por autorizar\n", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       case 3:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Aprobadas\n", style: TextStyle(fontWeight: FontWeight.bold))));
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Cambio de Documentos\n", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       case 4:
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Aprobadas\n", style: TextStyle(fontWeight: FontWeight.bold))));
+        break;
+      case 5:
         return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Denegadas\n", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       default:
@@ -138,7 +153,12 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   void _accionItem(i){
     switch(i){
       case 0:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Group(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome )));
+        if(userType == 1){
+
+        }
+        else{
+          Navigator.push(context, MaterialPageRoute(builder: (context) => Group(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome )));
+        }
         break;
       case 1:
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "En Espera (no sincronizadas)", status: 0, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome,) ));
@@ -147,10 +167,13 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Por autorizar", status: 1, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
       case 3:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Aprobadas", status: 2, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Cambio de Documentos", status: 2, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
       case 4:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Denegadas", status: 3, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Aprobadas", status: 3, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
+        break;
+      case 5:
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Denegadas", status: 4, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
       default:
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "x_x", status: 0, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));

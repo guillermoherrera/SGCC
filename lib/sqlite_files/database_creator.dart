@@ -11,6 +11,7 @@ class DataBaseCreator{
   static const tipo = 'tipo';
   static const descDocumento = 'descDocumento';
   static const version = 'version';
+  static const cambioDoc = 'cambioDoc';
 
   static const catIntegrantesTable = 'catIntegrantes';
   static const cantidadIntegrantes = 'cantidad';
@@ -131,7 +132,8 @@ class DataBaseCreator{
       $id_Solicitud INTEGER,
       $tipoDocumento INTEGER,
       $documento TEXT,
-      $version INT
+      $version INT,
+      $cambioDoc INT
     )''';
     
     await db.execute(solicitudesSql);

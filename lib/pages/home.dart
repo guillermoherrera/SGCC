@@ -41,12 +41,14 @@ class _HomePageState extends State<HomePage> {
   bool sincManual = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int userType;
+  int cantSolicitudesCambios;
 
   Future<void> getListDocumentos() async{
     final pref = await SharedPreferences.getInstance();
     String userID = pref.getString("uid");
     userType = pref.getInt('tipoUsuario');
-    solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);    
+    solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);
+    cantSolicitudesCambios = await ServiceRepositorySolicitudes.solicitudesCambioCount(userID); 
     print("******** "+this.mounted.toString()+"**********");
     try{ setState(() {}); }catch(e){ print("ERROR: linea 49 Home:"+e.toString()); }
   }
@@ -91,7 +93,7 @@ class _HomePageState extends State<HomePage> {
           title: Text("App Originación"),
           centerTitle: true,
         ),
-        drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo() ),
+        drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), cantSolicitudesCambios: cantSolicitudesCambios, ),
         body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado. :(\n\nPonte en contacto con soporte para mas información."))) : Container(
             child: Stack(
               children: <Widget>[
@@ -328,7 +330,10 @@ class _HomePageState extends State<HomePage> {
       await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(solicitud.idSolicitud).then((listaDocs){
         for(final doc in listaDocs){
           Documento documento = new Documento(tipo: doc.tipo, documento: doc.documento, version: doc.version);
-          documentos.add(documento.toJson());
+          //documentos.add(documento.toJson());
+          Map docMap = documento.toJson();
+          docMap.removeWhere((key, value) => key == "idDocumentoSolicitud");
+          documentos.add(docMap);
         }
       });
 

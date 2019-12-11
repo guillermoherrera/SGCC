@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/pages/cartera.dart';
 import 'package:sgcartera_app/pages/home.dart';
+import 'package:sgcartera_app/pages/lista_solicitudes.dart';
 import 'package:sgcartera_app/pages/mis_solicitudes.dart';
 import 'package:sgcartera_app/pages/nuevas_solicitudes.dart';
 import 'package:sgcartera_app/pages/root_page.dart';
@@ -9,11 +10,12 @@ import 'package:sgcartera_app/pages/solicitud.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomDrawer extends StatefulWidget {
-  CustomDrawer({this.authFirebase, this.onSingIn, this.colorTema, this.actualizaHome});
+  CustomDrawer({this.authFirebase, this.onSingIn, this.colorTema, this.actualizaHome, this.cantSolicitudesCambios });
   final AuthFirebase authFirebase;
   final VoidCallback onSingIn;
   final MaterialColor colorTema;
   final VoidCallback actualizaHome;
+  final int cantSolicitudesCambios;
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
 }
@@ -77,6 +79,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           InkWell(
+            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Cambio de Documentos", status: 2, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));},
+            child: ListTile(
+              title: Text("Cambio de Documentos"),
+              leading: Icon(Icons.autorenew, color: widget.colorTema,),
+              trailing: numeroACambiar(widget.cantSolicitudesCambios),
+            ),
+          ),
+          InkWell(
             onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera() ));},
             child: ListTile(
               title: Text("Mi Cartera"),
@@ -110,5 +120,43 @@ class _CustomDrawerState extends State<CustomDrawer> {
     final pref = await SharedPreferences.getInstance();
     pref.clear();
     await widget.authFirebase.signOut();
+  }
+
+  Widget numeroACambiar(int n){
+    switch (n) {
+      case 0:
+        return Text("");
+        break;
+      case 1:
+        return Icon(Icons.filter_1, color: Colors.redAccent[700]);
+        break;
+      case 2:
+        return Icon(Icons.filter_2, color: Colors.redAccent[700]);
+        break;
+      case 3:
+        return Icon(Icons.filter_3, color: Colors.redAccent[700]);
+        break;
+      case 4:
+        return Icon(Icons.filter_4, color: Colors.redAccent[700]);
+        break;
+      case 5:
+        return Icon(Icons.filter_5, color: Colors.redAccent[700]);
+        break;
+      case 6:
+        return Icon(Icons.filter_6, color: Colors.redAccent[700]);
+        break;
+      case 7:
+        return Icon(Icons.filter_7, color: Colors.redAccent[700]);
+        break;
+      case 8:
+        return Icon(Icons.filter_8, color: Colors.redAccent[700]);
+        break;
+      case 9:
+        return Icon(Icons.filter_9, color: Colors.redAccent[700]);
+        break;
+      default:
+        return Icon(Icons.filter_9_plus, color: Colors.redAccent[700]);
+        break;
+    }
   }
 }

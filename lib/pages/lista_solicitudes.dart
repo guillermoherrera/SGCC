@@ -13,6 +13,7 @@ import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/grupo.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
+import 'package:sgcartera_app/pages/cambio_documento.dart';
 import 'package:sgcartera_app/pages/solicitud_editar.dart';
 import 'package:sgcartera_app/sqlite_files/models/documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
@@ -63,6 +64,10 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
       case 1:
         mensaje = "Sin solicitudes por autorizar";
         await getSolcitudesespera(userID);
+        break;
+      case 2:
+        mensaje = "Sin Solicitudes con peticiones de cambio de documentos";
+        solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesCambio(userID);
         break;
       default:
     }
@@ -190,7 +195,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 title: Text(getNombre(solicitudes[index]), style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(getImporte(solicitudes[index])),
                 isThreeLine: true,
-                trailing: solicitudes[index].status == 0 ? getIcono(solicitudes[index]) : Icon(Icons.done_all),//getIconoRecuperar(solicitudes[index]),
+                trailing: solicitudes[index].status == 0 ? getIcono(solicitudes[index]) : getIconoMenu(solicitudes[index]),//Icon(Icons.done_all),//getIconoRecuperar(solicitudes[index]),
               ) : 
               ListTile(
                 leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
@@ -286,6 +291,24 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         )
       ],
     );
+  }
+
+  Widget getIconoMenu(Solicitud solicitud){
+    if(solicitud.status == 99){
+      return PopupMenuButton(
+        itemBuilder: (_) => <PopupMenuItem<int>>[
+          new PopupMenuItem<int>(
+            child: Row(children: <Widget>[Icon(Icons.add_photo_alternate, color: Colors.green,),Text(" Atender cambio de documentos")],), value: 1),
+        ],
+        onSelected: (value){
+          if(value == 1){
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CambioDocumento(title: getNombre(solicitud), colorTema: widget.colorTema, idSolicitud: solicitud.idSolicitud )));
+          }
+        }
+      );
+    }else{
+      return Icon(Icons.done_all);
+    }
   }
 
   Widget getIconoRecuperar(Solicitud solicitud){

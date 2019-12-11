@@ -18,6 +18,20 @@ class ServiceRepositorySolicitudes{
     return solicitudes;
   }
 
+  static Future<List<Solicitud>> getAllSolicitudesCambio(String userID) async{
+    final sql = ''' SELECT * FROM ${DataBaseCreator.solicitudesTable}
+      WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.status} = 99''';
+
+    final data = await db.rawQuery(sql);
+    List<Solicitud> solicitudes = List();
+
+    for(final node in data){
+      final solicitud = Solicitud.fromJson(node);
+      solicitudes.add(solicitud);
+    }
+    return solicitudes;
+  }
+
   static Future<Solicitud> getOneSolicitud(int idSolicitud) async{
     final sql = ''' SELECT * FROM ${DataBaseCreator.solicitudesTable}
       WHERE ${DataBaseCreator.idSolicitud} = $idSolicitud''';
@@ -238,6 +252,13 @@ class ServiceRepositorySolicitudes{
 
   static Future<int> solicitudesCount() async{
     final data = await db.rawQuery('''SELECT COUNT(*) FROM ${DataBaseCreator.solicitudesTable}''');
+    int count = data[0].values.elementAt(0);
+    return count;
+  }
+
+  static Future<int> solicitudesCambioCount(String userID) async{
+    final data = await db.rawQuery('''SELECT COUNT(*) FROM ${DataBaseCreator.solicitudesTable}
+      WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.status} = 99''');
     int count = data[0].values.elementAt(0);
     return count;
   }

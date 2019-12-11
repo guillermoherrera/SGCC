@@ -68,7 +68,10 @@ class Sincroniza{
       await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(solicitud.idSolicitud).then((listaDocs){
         for(final doc in listaDocs){
           Documento documento = new Documento(tipo: doc.tipo, documento: doc.documento, version: doc.version);
-          documentos.add(documento.toJson());
+          //documentos.add(documento.toJson());
+          Map docMap = documento.toJson();
+          docMap.removeWhere((key, value) => key == "idDocumentoSolicitud");
+          documentos.add(docMap);
         }
       });
 
@@ -116,8 +119,10 @@ class Sincroniza{
       });
     
     }
-    ///Consulta Cambios
+    ///Consulta Cambios de Documentos
     await getCambios(userID);
+    //Sincroniza Cambios de Documentos
+    await sincCambios();
   }
 
   Future<List<Map>> saveFireStore(List<Map> listaDocs) async{
@@ -161,10 +166,10 @@ class Sincroniza{
           rfc: document.data['persona']['rfc'],
           telefono:  document.data['persona']['telefono'],
           userID: userID,
-          status: 6,
+          status: 99,
           tipoContrato: document.data['tipoContrato'],
           idGrupo: null,
-          nombreGrupo: null,
+          nombreGrupo: document.data['grupoNombre'],
 
           direccion1: document.data['direccion']['direccion1'],
           coloniaPoblacion: document.data['direccion']['coloniaPoblacion'],
@@ -181,7 +186,15 @@ class Sincroniza{
         for(final documento in document.data['documentos']){
           if(documento['solicitudCambio'] != null && documento['solicitudCambio'] == true){
             Documento docu = new Documento(tipo:documento['tipo'], documento: null, version: documento['version']);//creo falta la version
-            listaDocs.add(docu.toJson());
+            var docAux = listaDocs.singleWhere((archivo) => archivo['tipo'] == docu.tipo, orElse: () => null);
+            if(docAux == null){
+              listaDocs.add(docu.toJson());
+            }else{
+              if(docu.version > docAux['version']){
+                listaDocs.remove(docAux);
+                listaDocs.add(docu.toJson());
+              }
+            }
           }
         }
         
@@ -193,11 +206,96 @@ class Sincroniza{
               idSolicitud: solicitud.idSolicitud,
               tipo: doc['tipo'],
               documento: doc['documento'],
-              version: doc['version'] 
-            );//creo que falta version
+              version: doc['version'],
+              cambioDoc: 1
+            );
             await ServiceRepositoryDocumentosSolicitud.addDocumentoSolicitud(documentoSolicitud);
           }
         });
+      }else{
+        List<Map> listaDocs = List();
+        for(final documento in document.data['documentos']){
+          if(documento['solicitudCambio'] != null && documento['solicitudCambio'] == true){
+            Documento docu = new Documento(tipo:documento['tipo'], documento: null, version: documento['version']);
+            var docAux = listaDocs.singleWhere((archivo) => archivo['tipo'] == docu.tipo, orElse: () => null);
+            if(docAux == null){
+              listaDocs.add(docu.toJson());
+            }else{
+              if(docu.version > docAux['version']){
+                listaDocs.remove(docAux);
+                listaDocs.add(docu.toJson());
+              }
+            }
+          }
+        }
+
+        for(var doc in listaDocs){
+          final int _idD = await ServiceRepositoryDocumentosSolicitud.documentosSolicitudCount();
+          if(!await ServiceRepositoryDocumentosSolicitud.getOneDocumentosSolicitudCambio(solicitudAux.idSolicitud, doc['tipo'])){
+            final DocumentoSolicitud documentoSolicitud = new DocumentoSolicitud(
+              idDocumentoSolicitud: _idD + 1,
+              idSolicitud: solicitudAux.idSolicitud,
+              tipo: doc['tipo'],
+              documento: doc['documento'],
+              version: doc['version'],
+              cambioDoc: 1
+            );
+            await ServiceRepositoryDocumentosSolicitud.addDocumentoSolicitud(documentoSolicitud);
+            await ServiceRepositorySolicitudes.updateSolicitudStatus(99, solicitudAux.idSolicitud);
+          }
+        }
+      }
+    }
+  }
+
+  sincCambios()async{
+    FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+    List<Map> documentos;
+    List<int> solicitudesCambio = List();
+    List<DocumentoSolicitud> documentosCambio = await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolicitudCambio();
+    for(DocumentoSolicitud doc in documentosCambio){
+      if(!solicitudesCambio.contains(doc.idSolicitud)){
+        solicitudesCambio.add(doc.idSolicitud);
+      }
+      print(solicitudesCambio);
+    }
+    for(int idSol in solicitudesCambio){
+      documentos = [];
+      final Solicitud solicitud = await ServiceRepositorySolicitudes.getOneSolicitud(idSol);
+      List<DocumentoSolicitud> documentosActualizados = await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(idSol);
+      for(DocumentoSolicitud doc in documentosActualizados){
+        if(doc.cambioDoc == 1){
+          try{
+        
+            String mimeType = mime(path.basename(doc.documento));
+            String ext = "."+mimeType.split("/")[1];
+            StorageReference reference = _firebaseStorage.ref().child('Documentos').child(DateTime.now().millisecondsSinceEpoch.toString()+"_"+doc.tipo.toString()+ext);
+            StorageUploadTask uploadTask = reference.putFile(File(doc.documento));
+            StorageTaskSnapshot downloadUrl = await uploadTask.onComplete.timeout(Duration(seconds: 10));
+            doc.documento = await downloadUrl.ref.getDownloadURL();
+          
+            Documento documento = new Documento(tipo: doc.tipo, documento: doc.documento, version: doc.version+1);
+            Map docMap = documento.toJson();
+            docMap.removeWhere((key, value) => key == "idDocumentoSolicitud");
+            documentos.add(docMap);
+            
+            doc.cambioDoc = 0;
+            await ServiceRepositoryDocumentosSolicitud.updateDocumentoSolicitudCambio(doc);
+          }catch(e){
+            print(e);
+          }
+        }
+      }
+      
+      try{
+        if(documentos.length > 0) await _firestore.collection("Solicitudes").document(solicitud.documentID).updateData({"documentos": FieldValue.arrayUnion(documentos), "status": 1}).timeout(Duration(seconds: 10));
+      }catch(e){
+        //devolver los documentos al estado 1
+        List<DocumentoSolicitud> documentosActualizados = await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(idSol);
+        for(DocumentoSolicitud doc in documentosActualizados){
+          doc.cambioDoc = 1;
+          await ServiceRepositoryDocumentosSolicitud.updateDocumentoSolicitudCambio(doc);
+        }
       }
     }
   }

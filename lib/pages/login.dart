@@ -86,6 +86,7 @@ class _LoginState extends State<Login> {
             labelText: "Correo"
           ),
           autocorrect: false,
+          keyboardType: TextInputType.emailAddress,
           validator: (value){ return value.isEmpty ? "Por favor ingresa tu correo" : null; },
         )
       ),

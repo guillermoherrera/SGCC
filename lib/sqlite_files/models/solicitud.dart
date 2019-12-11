@@ -79,5 +79,7 @@ class Solicitud{
     this.direccion1 = json[DataBaseCreator.direccion1];
     this.estado = json[DataBaseCreator.estado];
     this.pais = json[DataBaseCreator.pais];
+
+    this.documentID = json[DataBaseCreator.documentID];
   }
 }
