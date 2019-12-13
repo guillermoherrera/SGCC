@@ -72,14 +72,16 @@ class ServiceRepositoryDocumentosSolicitud{
       ${DataBaseCreator.tipoDocumento},
       ${DataBaseCreator.documento},
       ${DataBaseCreator.version},
-      ${DataBaseCreator.cambioDoc}
+      ${DataBaseCreator.cambioDoc},
+      ${DataBaseCreator.observacionCambio}
     )values(
       ${documentoSolicitud.idDocumentoSolicitud},
       ${documentoSolicitud.idSolicitud},
       ${documentoSolicitud.tipo},
       "${documentoSolicitud.documento}",
       ${documentoSolicitud.version},
-      ${documentoSolicitud.cambioDoc}
+      ${documentoSolicitud.cambioDoc},
+      "${documentoSolicitud.observacionCambio}"
     )''';
 
     final result = await db.rawInsert(sql);

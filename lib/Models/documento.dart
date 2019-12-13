@@ -6,18 +6,24 @@ class Documento{
   String documento;
   int version;
 
+  String observacionCambio;
+
   Documento({
     this.idDocumentoSolicitud,
     this.tipo,
     this.documento,
-    this.version
+    this.version,
+
+    this.observacionCambio
   });
 
   Map<String, dynamic> toJson()=>{
     'idDocumentoSolicitud': idDocumentoSolicitud,
     'tipo': tipo,
     'documento': documento,
-    'version': version
+    'version': version,
+
+    'observacionCambio': observacionCambio
   };
 }
 
@@ -26,18 +32,21 @@ class DocumentoArchivo{
   int tipo;
   File archivo;
   int version;
+  String observacionCambio;
 
   DocumentoArchivo({
     this.idDocumentoSolicitud,
     this.tipo,
     this.archivo,
-    this.version
+    this.version,
+    this.observacionCambio
   });
 
   Map<String, dynamic> toJson()=>{
     'idDocumentoSolicitud': idDocumentoSolicitud,
     'tipo': tipo,
     'archivo': archivo,
-    'version': version
+    'version': version,
+    'observacionCambio': observacionCambio
   };
 }

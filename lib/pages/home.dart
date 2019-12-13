@@ -333,6 +333,7 @@ class _HomePageState extends State<HomePage> {
           //documentos.add(documento.toJson());
           Map docMap = documento.toJson();
           docMap.removeWhere((key, value) => key == "idDocumentoSolicitud");
+          docMap.removeWhere((key, value) => key == "observacionCambio");
           documentos.add(docMap);
         }
       });

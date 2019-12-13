@@ -71,6 +71,7 @@ class Sincroniza{
           //documentos.add(documento.toJson());
           Map docMap = documento.toJson();
           docMap.removeWhere((key, value) => key == "idDocumentoSolicitud");
+          docMap.removeWhere((key, value) => key == "observacionCambio");
           documentos.add(docMap);
         }
       });
@@ -185,7 +186,7 @@ class Sincroniza{
         List<Map> listaDocs = List();
         for(final documento in document.data['documentos']){
           if(documento['solicitudCambio'] != null && documento['solicitudCambio'] == true){
-            Documento docu = new Documento(tipo:documento['tipo'], documento: null, version: documento['version']);//creo falta la version
+            Documento docu = new Documento(tipo:documento['tipo'], documento: null, version: documento['version'], observacionCambio: documento['observacion']);
             var docAux = listaDocs.singleWhere((archivo) => archivo['tipo'] == docu.tipo, orElse: () => null);
             if(docAux == null){
               listaDocs.add(docu.toJson());
@@ -195,6 +196,9 @@ class Sincroniza{
                 listaDocs.add(docu.toJson());
               }
             }
+          }else{
+            var docAux = listaDocs.singleWhere((archivo) => archivo['tipo'] == documento['tipo'], orElse: () => null);
+            if(docAux != null) listaDocs.remove(docAux);
           }
         }
         
@@ -207,7 +211,8 @@ class Sincroniza{
               tipo: doc['tipo'],
               documento: doc['documento'],
               version: doc['version'],
-              cambioDoc: 1
+              cambioDoc: 1,
+              observacionCambio: doc['observacionCambio']
             );
             await ServiceRepositoryDocumentosSolicitud.addDocumentoSolicitud(documentoSolicitud);
           }
@@ -216,7 +221,7 @@ class Sincroniza{
         List<Map> listaDocs = List();
         for(final documento in document.data['documentos']){
           if(documento['solicitudCambio'] != null && documento['solicitudCambio'] == true){
-            Documento docu = new Documento(tipo:documento['tipo'], documento: null, version: documento['version']);
+            Documento docu = new Documento(tipo:documento['tipo'], documento: null, version: documento['version'], observacionCambio: documento['observacion']);
             var docAux = listaDocs.singleWhere((archivo) => archivo['tipo'] == docu.tipo, orElse: () => null);
             if(docAux == null){
               listaDocs.add(docu.toJson());
@@ -226,6 +231,9 @@ class Sincroniza{
                 listaDocs.add(docu.toJson());
               }
             }
+          }else{
+            var docAux = listaDocs.singleWhere((archivo) => archivo['tipo'] == documento['tipo'], orElse: () => null);
+            if(docAux != null) listaDocs.remove(docAux);
           }
         }
 
@@ -238,7 +246,8 @@ class Sincroniza{
               tipo: doc['tipo'],
               documento: doc['documento'],
               version: doc['version'],
-              cambioDoc: 1
+              cambioDoc: 1,
+              observacionCambio: doc['observacionCambio']
             );
             await ServiceRepositoryDocumentosSolicitud.addDocumentoSolicitud(documentoSolicitud);
             await ServiceRepositorySolicitudes.updateSolicitudStatus(99, solicitudAux.idSolicitud);
@@ -277,6 +286,7 @@ class Sincroniza{
             Documento documento = new Documento(tipo: doc.tipo, documento: doc.documento, version: doc.version+1);
             Map docMap = documento.toJson();
             docMap.removeWhere((key, value) => key == "idDocumentoSolicitud");
+            docMap.removeWhere((key, value) => key == "observacionCambio");
             documentos.add(docMap);
             
             doc.cambioDoc = 0;

@@ -35,7 +35,7 @@ class _CambioDocumentoState extends State<CambioDocumento> {
     var documentosEditar = await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(widget.idSolicitud);
     for(final doc in documentosEditar){
       if(doc.cambioDoc == 1){
-        DocumentoArchivo documentoArchivo = new DocumentoArchivo(idDocumentoSolicitud: doc.idDocumentoSolicitud,tipo: doc.tipo, archivo: null, version: doc.version);
+        DocumentoArchivo documentoArchivo = new DocumentoArchivo(idDocumentoSolicitud: doc.idDocumentoSolicitud,tipo: doc.tipo, archivo: null, version: doc.version, observacionCambio: doc.observacionCambio);
         docArchivos.add(documentoArchivo);
       }
     }
@@ -122,6 +122,7 @@ class _CambioDocumentoState extends State<CambioDocumento> {
     for(CatDocumento catDoc in catDocumentos){
       if(docArchivos.singleWhere((archivo) => archivo.tipo == catDoc.tipo, orElse: () => null) != null){
         tablesRows.add(itemsFiles(catDoc.descDocumento,catDoc.tipo));
+        tablesRows.add(observCambio(docArchivos.singleWhere((archivo) => archivo.tipo == catDoc.tipo).observacionCambio));
         tablesRows.add(TableRow(children: [Divider(),Divider(),Divider()]));
       }
     }
@@ -160,6 +161,14 @@ class _CambioDocumentoState extends State<CambioDocumento> {
     );
   }
 
+  TableRow observCambio(String observ){
+    return TableRow(children: [
+      Text("OBSERVACIÓN:", style: TextStyle(color: Colors.red[900], fontWeight: FontWeight.bold),),
+      Text(observ, style: TextStyle(color: Colors.red[900], fontWeight: FontWeight.bold)),
+      Icon(Icons.error, color: Colors.yellow[900], size: 40,)
+    ]);
+  }
+  
   imageSelectorGallery(opc, tipo) async{
     File auxFile;
     try{

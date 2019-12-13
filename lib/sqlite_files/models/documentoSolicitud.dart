@@ -7,6 +7,7 @@ class DocumentoSolicitud{
   String documento;
   int version;
   int cambioDoc;
+  String observacionCambio;
 
   DocumentoSolicitud({
     this.documento,
@@ -14,7 +15,8 @@ class DocumentoSolicitud{
     this.idSolicitud,
     this.tipo,
     this.version,
-    this.cambioDoc
+    this.cambioDoc,
+    this.observacionCambio
   });
 
   DocumentoSolicitud.fromJson(Map<String, dynamic>json){
@@ -24,5 +26,6 @@ class DocumentoSolicitud{
     this.tipo = json[DataBaseCreator.tipoDocumento];
     this.version = json[DataBaseCreator.version];
     this.cambioDoc = json[DataBaseCreator.cambioDoc];
+    this.observacionCambio = json[DataBaseCreator.observacionCambio];
   }
 }
