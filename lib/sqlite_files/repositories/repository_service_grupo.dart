@@ -33,6 +33,21 @@ class ServiceRepositoryGrupos{
     return grupos;
   }
 
+  static Future<List<Grupo>> getAllGruposSync(String userID) async{
+    final sql = '''SELECT * FROM ${DataBaseCreator.gruposTable}
+      WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.status} = 2''';
+    
+    final data = await db.rawQuery(sql);
+    List<Grupo> grupos = List();
+    
+    for(final node in data){
+      final grupo = Grupo.fromjson(node);
+      grupos.add(grupo);
+    }
+
+    return grupos;
+  }
+
   static Future<Grupo> getOneGrupo(int idGrupo) async{
     final sql = '''SELECT * FROM ${DataBaseCreator.gruposTable}
       WHERE ${DataBaseCreator.idGrupo} = $idGrupo''';

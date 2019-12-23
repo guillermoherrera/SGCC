@@ -27,5 +27,7 @@ class Grupo{
     this.userID = json[DataBaseCreator.userID];
     this.cantidad = json[DataBaseCreator.cantidad];
     this.importe = json[DataBaseCreator.importe_grupo];
+
+    this.grupoID = json[DataBaseCreator.grupoID];
   }
 }

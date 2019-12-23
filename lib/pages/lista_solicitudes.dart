@@ -82,9 +82,21 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         mensaje = "Sin solicitudes Denegadas para mostrar 📦☹️";
         await getSolcitudesespera(userID,3);
         break;
+      case 5:
+        gruposGuardados = await ServiceRepositoryGrupos.getAllGruposSync(userID);
+        //gruposAbiertos = await ServiceRepositoryGrupos.getAllGrupos(userID);
+        solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesSync(userID);  
+        mensaje = "Sin historial para mostrar 📦☹️";
+        break;
       default:
+        mensaje = "Error en la busqueda, vuelve a intentarlo 📦☹️";
+        break;
     }
-    setState(() {});
+    try{
+      setState(() {});
+    }catch(e){
+      print("*** Error lista");
+    }
   }
 
   getSolcitudesespera(userID, status) async{
@@ -139,7 +151,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
 
     }catch(e){
       solicitudes.clear();
-      mensaje = "Error interno. Revisa tu conexión a internet";
+      mensaje = "Error interno. Revisa tu conexión a internet 🚫☹️";
     }
   }
 
@@ -196,6 +208,13 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           ]
         )
       ),
+      bottomNavigationBar: widget.status == 0 ? InkWell(
+          child:  Container(
+            child: ListTile(
+              trailing: InkWell(onTap: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Historial", status: 5, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome,) ));}, child: Text("Historial", style: TextStyle(color: Colors.black26))),
+            ),
+          ), 
+        ) : Text("-"),
     );
   }
 
@@ -376,7 +395,30 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
       case 4:
         return Tooltip(message: "El grupo fue Denegado.", child: Icon(Icons.done_all, color: Colors.red,)); 
         break;
+      case 5:
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: 
+          <Widget>[
+            Icon(Icons.done_all, color: Colors.black,),
+            PopupMenuButton(
+              itemBuilder: (_) => <PopupMenuItem<int>>[
+                new PopupMenuItem<int>(
+                  child: Row(children: <Widget>[Icon(Icons.list, color: Colors.blue),Text(" Ver Solicitudes", style: TextStyle(color: Colors.blue),)],), value: 2),
+              ],
+              onSelected: (value)async{
+                if(value == 2){
+                  Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitud.idGrupo); 
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: solicitud.nombreGrupo, actualizaHome: widget.actualizaHome, grupo: grupo)));
+                }
+              }
+            )
+          ],
+        );
+        break;
       default:
+        return Tooltip(message: "Default .", child: Icon(Icons.done_all, color: Colors.black,));
+        break;
     }
   }
 
@@ -654,7 +696,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           if(solicitud.idGrupo != null && !gruposSinc.contains(solicitud.nombreGrupo)){
             Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitud.idGrupo);
             grupoObj = new GrupoObj(nombre: solicitud.nombreGrupo, status: 2, userID: solicitud.userID, importe: grupo.importe, integrantes: grupo.cantidad);
-            if(grupo.grupoID == null){
+            if(grupo.grupoID == null || grupo.grupoID == "null"){
               var result = await _firestore.collection("Grupos").add(grupoObj.toJson());
               await ServiceRepositoryGrupos.updateGrupoStatus(2, result.documentID, solicitud.idGrupo);
               grupoObj.grupoID = result.documentID;

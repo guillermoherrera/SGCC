@@ -18,6 +18,20 @@ class ServiceRepositorySolicitudes{
     return solicitudes;
   }
 
+  static Future<List<Solicitud>> getAllSolicitudesSync(String userID) async{
+    final sql = ''' SELECT * FROM ${DataBaseCreator.solicitudesTable}
+      WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.status} = 1''';
+
+    final data = await db.rawQuery(sql);
+    List<Solicitud> solicitudes = List();
+
+    for(final node in data){
+      final solicitud = Solicitud.fromJson(node);
+      solicitudes.add(solicitud);
+    }
+    return solicitudes;
+  }
+
   static Future<List<Solicitud>> getAllSolicitudesCambio(String userID) async{
     final sql = ''' SELECT * FROM ${DataBaseCreator.solicitudesTable}
       WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.status} = 99''';

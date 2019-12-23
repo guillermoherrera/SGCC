@@ -83,7 +83,7 @@ class Sincroniza{
           if(solicitud.idGrupo != null && !gruposSinc.contains(solicitud.nombreGrupo)){
             Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitud.idGrupo);
             grupoObj = new GrupoObj(nombre: solicitud.nombreGrupo, status: 2, userID: solicitud.userID, importe: grupo.importe, integrantes: grupo.cantidad);
-            if(grupo.grupoID == null){
+            if(grupo.grupoID == null || grupo.grupoID == "null"){
               var result = await _firestore.collection("Grupos").add(grupoObj.toJson());
               await ServiceRepositoryGrupos.updateGrupoStatus(2, result.documentID, solicitud.idGrupo);
               grupoObj.grupoID = result.documentID;

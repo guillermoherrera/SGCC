@@ -198,7 +198,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
         children: <Widget>[
           flexPadded(TextFormField(
               controller: nombre,
-              maxLength: 30,
+              maxLength: 50,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                 labelText: "Nombre"
@@ -214,7 +214,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
           ),
           flexPadded(TextFormField(
               controller: nombreAdicional,
-              maxLength: 30,
+              maxLength: 50,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                 labelText: "Segundo Nombre"
@@ -235,7 +235,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
         children: <Widget>[
           flexPadded(TextFormField(
               controller: apellidoPrimero,
-              maxLength: 30,
+              maxLength: 50,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                 labelText: "Primer Apellido"
@@ -251,7 +251,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
           ),
           flexPadded(TextFormField(
               controller: apellidoSegundo,
-              maxLength: 30,
+              maxLength: 50,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                 labelText: "Segundo Apellido"

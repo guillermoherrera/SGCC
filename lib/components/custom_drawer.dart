@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
+import 'package:sgcartera_app/pages/acerca_de.dart';
 import 'package:sgcartera_app/pages/cartera.dart';
 import 'package:sgcartera_app/pages/home.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes.dart';
@@ -107,10 +108,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           InkWell(
-            onTap: (){},
+            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> About(colorTema: widget.colorTema)));},
             child: ListTile(
               title: Text("Acerca de ..."),
-              leading: Icon(Icons.help, color: Colors.grey),
+              leading: Icon(Icons.info, color: Colors.blue),
             ),
           )
         ],
