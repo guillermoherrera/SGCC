@@ -35,7 +35,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         title: Text("Mis Solicitudes"),
         centerTitle: true,
       ),
-      body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado. :(\n\nPonte en contacto con soporte para mas información."))) : Container(
+      body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : Container(
         child: Stack(
           children: <Widget>[
             Container(
@@ -95,7 +95,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         if(userType == 1){
           return Icon(Icons.format_align_justify, size: 90,);
         }else{
-          return Icon(Icons.group, size: 90,color: Colors.yellow[700],);
+          return Icon(Icons.group, size: 90,color: Colors.black54);
         }
         break;
       case 1:
@@ -105,7 +105,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         return Icon(Icons.done_all, size: 90, color: Colors.grey);
         break;
       case 3:
-        return Icon(Icons.autorenew, size: 90, color: Colors.blueAccent);
+        return Icon(Icons.autorenew, size: 90, color: Colors.blue);
         break;
       case 4:
         return Icon(Icons.done_all, size: 90,color: Colors.green,);
@@ -130,7 +130,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         }
         break;
       case 1:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("En Espera (no\nsincronizadas)", style: TextStyle(fontWeight: FontWeight.bold),)),);
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("En Espera (no\nsincronizado)", style: TextStyle(fontWeight: FontWeight.bold),)),);
         break;
       case 2:
         return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Por autorizar\n", style: TextStyle(fontWeight: FontWeight.bold))));
@@ -161,7 +161,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         }
         break;
       case 1:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "En Espera (no sincronizadas)", status: 0, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome,) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "En Espera (no sincronizado)", status: 0, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome,) ));
         break;
       case 2:
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Por autorizar", status: 1, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));

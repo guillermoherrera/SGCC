@@ -10,12 +10,13 @@ import 'package:sgcartera_app/pages/solicitud.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomDrawer extends StatefulWidget {
-  CustomDrawer({this.authFirebase, this.onSingIn, this.colorTema, this.actualizaHome, this.cantSolicitudesCambios });
+  CustomDrawer({this.authFirebase, this.onSingIn, this.colorTema, this.actualizaHome, this.cantSolicitudesCambios, this.sincManual });
   final AuthFirebase authFirebase;
   final VoidCallback onSingIn;
   final MaterialColor colorTema;
   final VoidCallback actualizaHome;
   final int cantSolicitudesCambios;
+  final bool sincManual;
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
 }
@@ -58,12 +59,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           InkWell(
-            onTap: (){Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>HomePage(onSingIn: (){}, colorTema: widget.colorTema,)), (Route<dynamic> route) => false);},//Navigator.popUntil(context, ModalRoute.withName('/'));},//Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));},
+            onTap: (){widget.sincManual ? Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>HomePage(onSingIn: (){}, colorTema: widget.colorTema,)), (Route<dynamic> route) => false) : Navigator.pop(context); },//Navigator.popUntil(context, ModalRoute.withName('/'));},//Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));},
             child: ListTile(
               title: Text("Inicio"),
               leading: Icon(Icons.home, color: widget.colorTema,),
             ),
           ),
+          Divider(),
           InkWell(
             onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome) ));},
             child: ListTile(
@@ -86,13 +88,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
               trailing: numeroACambiar(widget.cantSolicitudesCambios),
             ),
           ),
-          InkWell(
+          /*InkWell(
             onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera() ));},
             child: ListTile(
               title: Text("Mi Cartera"),
               leading: Icon(Icons.account_balance_wallet, color: widget.colorTema,),
             ),
-          ),
+          ),*/
           Divider(),
           InkWell(
             onTap: (){

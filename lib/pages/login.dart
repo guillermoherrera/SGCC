@@ -182,38 +182,42 @@ class _LoginState extends State<Login> {
     Query q;
     final pref = await SharedPreferences.getInstance();
     
-    //Tipo de usuario
-    q = _firestore.collection("UsuariosTipos").where('uid', isEqualTo: pref.getString('uid'));
-    querySnapshot = await q.getDocuments();
-    if(querySnapshot.documents.length > 0){
-      pref.setInt("tipoUsuario",querySnapshot.documents[0].data['tipoUsuario']);
-    }else{
+    try{
+      //Tipo de usuario
+      q = _firestore.collection("UsuariosTipos").where('uid', isEqualTo: pref.getString('uid'));
+      querySnapshot = await q.getDocuments();
+      if(querySnapshot.documents.length > 0){
+        pref.setInt("tipoUsuario",querySnapshot.documents[0].data['tipoUsuario']);
+      }else{
+        pref.setInt("tipoUsuario",0);
+      }
+      
+      //catDocumentos
+      await RepositoryServiceCatDocumento.deleteAll();
+      q = _firestore.collection("catDocumentos").where('activo', isEqualTo: true);
+      querySnapshot = await q.getDocuments();
+      for (DocumentSnapshot value in querySnapshot.documents) {
+        final catDocumento = CatDocumento(tipo: value.data['tipo'], descDocumento: value.data['descDocumento'] );
+        await RepositoryServiceCatDocumento.addCatDocumento(catDocumento);
+      }
+
+      //catIntegrantes
+      await RepositoryServiceCatIntegrantes.deleteAll();
+      q = _firestore.collection("catIntegrantesGrupo").where('activo', isEqualTo: true);
+      querySnapshot = await q.getDocuments();
+      final catIntegrante = CatIntegrante(cantidad: querySnapshot.documents[0].data['cantidad']);
+      await RepositoryServiceCatIntegrantes.addCatIntegrante(catIntegrante);
+
+      //catEstados
+      await RepositoryCatEstados.deleteAll();
+      q = _firestore.collection("catEstados");
+      querySnapshot = await q.getDocuments();
+      for(DocumentSnapshot value in querySnapshot.documents){
+        final catEstado = CatEstado(codigo: value.data['codigo'], estado: value.data['estado']);
+        await RepositoryCatEstados.addCatEstado(catEstado);
+      }
+    }catch(e){
       pref.setInt("tipoUsuario",0);
-    }
-    
-    //catDocumentos
-    await RepositoryServiceCatDocumento.deleteAll();
-    q = _firestore.collection("catDocumentos").where('activo', isEqualTo: true);
-    querySnapshot = await q.getDocuments();
-    for (DocumentSnapshot value in querySnapshot.documents) {
-      final catDocumento = CatDocumento(tipo: value.data['tipo'], descDocumento: value.data['descDocumento'] );
-      await RepositoryServiceCatDocumento.addCatDocumento(catDocumento);
-    }
-
-    //catIntegrantes
-    await RepositoryServiceCatIntegrantes.deleteAll();
-    q = _firestore.collection("catIntegrantesGrupo").where('activo', isEqualTo: true);
-    querySnapshot = await q.getDocuments();
-    final catIntegrante = CatIntegrante(cantidad: querySnapshot.documents[0].data['cantidad']);
-    await RepositoryServiceCatIntegrantes.addCatIntegrante(catIntegrante);
-
-    //catEstados
-    await RepositoryCatEstados.deleteAll();
-    q = _firestore.collection("catEstados");
-    querySnapshot = await q.getDocuments();
-    for(DocumentSnapshot value in querySnapshot.documents){
-      final catEstado = CatEstado(codigo: value.data['codigo'], estado: value.data['estado']);
-      await RepositoryCatEstados.addCatEstado(catEstado);
     }
 
   }

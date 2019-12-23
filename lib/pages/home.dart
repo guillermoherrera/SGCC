@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
   bool sincManual = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int userType;
-  int cantSolicitudesCambios;
+  int cantSolicitudesCambios = 0;
 
   Future<void> getListDocumentos() async{
     final pref = await SharedPreferences.getInstance();
@@ -92,9 +92,29 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           title: Text("App Originación"),
           centerTitle: true,
+          leading: new IconButton(
+                icon: cantSolicitudesCambios > 0 ? Stack(children: <Widget>[
+                        Icon(Icons.menu),
+                        Positioned(
+                            bottom: -5.0,
+                            left: 8.0,
+                            child: new Center(
+                              child: new Text(
+                                ".",
+                                style: new TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 90.0,
+                                    fontWeight: FontWeight.w500
+
+                                ),
+                              ),
+                            )),
+                          ],
+                        ) : Icon(Icons.menu),
+                onPressed: () => _scaffoldKey.currentState.openDrawer())
         ),
-        drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), cantSolicitudesCambios: cantSolicitudesCambios, ),
-        body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado. :(\n\nPonte en contacto con soporte para mas información."))) : Container(
+        drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), cantSolicitudesCambios: cantSolicitudesCambios, sincManual: sincManual ),
+        body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : Container(
             child: Stack(
               children: <Widget>[
                 Container(

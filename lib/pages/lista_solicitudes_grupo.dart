@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/pages/home.dart';
+import 'package:sgcartera_app/pages/solicitud.dart' as SolicitudPage;
 import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud_editar.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
@@ -60,6 +61,10 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
           actions: status ? <Widget>[
             IconButton(icon: Icon(Icons.lock), onPressed: () {
               cerrarGrupo(widget.grupo);
+            },),
+            IconButton(icon: Icon(Icons.person_add), onPressed: () {
+              //cerrarGrupo(widget.grupo);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => SolicitudPage.Solicitud(title: "Solicitud Grupal: "+widget.grupo.nombreGrupo, colorTema: widget.colorTema, grupoId: widget.grupo.idGrupo, grupoNombre: widget.grupo.nombreGrupo, actualizaHome: widget.actualizaHome)));
             },)
           ] : null,
         ),
@@ -74,7 +79,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                   colors: [widget.colorTema[100], Colors.white])
                 ),
               ),
-              solicitudes.length > 0 ? listaSolicitudes() : Center(child: Text("Sin solicitudes para este Grupo"),) 
+              solicitudes.length > 0 ? listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text("Grupo sin solicitudes para mostrar 📦☹️", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema))))//Center(child: Text("Sin solicitudes para este Grupo"),) 
             ]
           )
         ),
@@ -105,7 +110,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                 title: Text(getNombre(solicitudes[index]), style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(getImporte(solicitudes[index])),
                 isThreeLine: true,
-                trailing: solicitudes[index].status != 0 && solicitudes[index].status != 6 ? Icon(Icons.verified_user) : getIcono(solicitudes[index]),
+                trailing: solicitudes[index].status != 0 && solicitudes[index].status != 6 ? Tooltip(message: "Integrante sincronizado.", child: Icon(Icons.done_all)) : getIcono(solicitudes[index]),
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -215,7 +220,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.error, color: Colors.yellow, size: 100.0,),
-                Text("\nAl cerrar el grupo no podrá agregarle mas solicitudes y estará listo para sincronizarse.\n\n¿Desea cerrar el grupo "+grupo.nombreGrupo+"?"),
+                Text("\nAl cerrar el grupo no podrá agregar ni eliminar solicitudes y estará listo para sincronizarse.\n\n¿Desea cerrar el grupo "+grupo.nombreGrupo+"?"),
               ],
             ),
             actions: <Widget>[

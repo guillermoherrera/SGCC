@@ -63,7 +63,7 @@ class _GroupState extends State<Group> {
                 colors: [widget.colorTema[100], Colors.white])
               ),
             ),
-            grupos.length > 0 ? listaGrupos() : Center(child: Text("Sin grupos en captura."),) 
+            grupos.length > 0 ? listaGrupos() :  Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text("Sin grupos en captura 📦☹️", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) 
           ]
         )
       ),

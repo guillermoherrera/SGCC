@@ -46,7 +46,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   List<String> grupos = List();
   Firestore _firestore = Firestore.instance;
   FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
-  String mensaje = "Cargando ...";
+  String mensaje = "Cargando ...🕔";
 
   bool downloading = false;
   var progressString = "";
@@ -59,26 +59,46 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         gruposGuardados = await ServiceRepositoryGrupos.getAllGruposEspera(userID);
         gruposAbiertos = await ServiceRepositoryGrupos.getAllGrupos(userID);
         solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);  
-        mensaje = "Sin solicitudes en espera";
+        mensaje = "Sin solicitudes en espera para mostrar 📦☹️";
         break;
       case 1:
-        mensaje = "Sin solicitudes por autorizar";
-        await getSolcitudesespera(userID);
+        mensaje = "Sin solicitudes por autorizar para mostrar 📦☹️";
+        await getSolcitudesespera(userID,1);
+        await getSolcitudesespera(userID,6);
+        await getSolcitudesespera(userID,7);
+        await getSolcitudesespera(userID,8);
+        await getSolcitudesespera(userID,9);
+        await getSolcitudesespera(userID,10);
         break;
       case 2:
-        mensaje = "Sin Solicitudes con peticiones de cambio de documentos";
+        mensaje = "Sin Solicitudes con peticiones de cambio de documentos para mostrar 📦☹️";
         solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesCambio(userID);
+        break;
+      case 3:
+        mensaje = "Sin solicitudes Aprobadas para mostrar 📦☹️";
+        await getSolcitudesespera(userID,2);
+        break;
+      case 4:
+        mensaje = "Sin solicitudes Denegadas para mostrar 📦☹️";
+        await getSolcitudesespera(userID,3);
         break;
       default:
     }
     setState(() {});
   }
 
-  getSolcitudesespera(userID) async{
+  getSolcitudesespera(userID, status) async{
     try{
-      Query q = _firestore.collection("Solicitudes").where('status', isEqualTo: 1).where('userID', isEqualTo:userID);
+      Query q;
+      if(status == 2){
+        q = _firestore.collection("Solicitudes").where('dictamen', isEqualTo: true).where('userID', isEqualTo:userID);
+      }else if(status == 3){
+        q = _firestore.collection("Solicitudes").where('dictamen', isEqualTo: false).where('userID', isEqualTo:userID);
+      }else{
+        q = _firestore.collection("Solicitudes").where('status', isEqualTo: status).where('userID', isEqualTo:userID);
+      }
       QuerySnapshot querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
-      solicitudes.clear();
+      if(status == 2 || status == 3) solicitudes.clear();
       for(DocumentSnapshot dato in querySnapshot.documents){
         Solicitud solicitud = new Solicitud(
           apellidoPrimero: dato.data['persona']['apellido'],
@@ -172,7 +192,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 colors: [widget.colorTema[100], Colors.white])
               ),
             ),
-            solicitudes.length > 0 ? listaSolicitudes() : Center(child: Text(mensaje),) 
+            solicitudes.length > 0 ? listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) 
           ]
         )
       ),
@@ -202,7 +222,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 title: Text(solicitudes[index].nombreGrupo, style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: solicitudes[index].status == 0 ? getLeyendaGrupo(solicitudes[index].idGrupo) : getImpCant(solicitudes[index]),//Text("Importe:\nIntegrantes:"),
                 isThreeLine: true,
-                trailing: solicitudes[index].status == 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : Icon(Icons.done_all)//gruposGuardados.length > 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : Icon(Icons.done_all),
+                trailing: solicitudes[index].status == 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : getIconoMenuGpal(solicitudes[index]),//Tooltip(message: "Los integrantes estan en proceso de aprobación.", child: Icon(Icons.done_all))//gruposGuardados.length > 0 ? getIcono2(solicitudes[index].idGrupo, solicitudes[index].nombreGrupo) : Icon(Icons.done_all),
               ),
               
               decoration: BoxDecoration(
@@ -230,8 +250,12 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
 
   Widget getImpCant(Solicitud solicitud){
     Grupo grupo;
-    grupo = gruposGuardados.firstWhere((grupo)=>grupo.grupoID == solicitud.grupoID);
-    return Text("Importe: "+grupo.importe.toString()+"\nIntegrantes: "+grupo.cantidad.toString());
+    if(widget.status == 0){
+      grupo = gruposGuardados.firstWhere((grupo)=>grupo.grupoID == solicitud.grupoID);
+      return Text("Importe: "+grupo.importe.toString()+"\nIntegrantes: "+grupo.cantidad.toString());
+    }else{
+      return Text("");
+    }
   }
 
   Widget getLeyendaGrupo(int idGrupo){
@@ -307,7 +331,52 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         }
       );
     }else{
-      return Icon(Icons.done_all);
+      Widget icono;
+      switch (solicitud.status) {
+        case 1:
+          icono = Tooltip(message: "Por autorizar consulta de Buró", child: Icon(Icons.done_all));
+          break;
+        case 2:
+          icono = Tooltip(message: "Aprobado", child: Icon(Icons.done_all, color: Colors.green));
+          break;
+        case 3:
+          icono = Tooltip(message: "Denegado", child: Icon(Icons.block, color: Colors.red));
+          break;
+        case 6:
+          icono = Tooltip(message: "En revisión por cambio de documentos", child: Icon(Icons.done_all, color: Colors.yellow));
+          break;
+        case 7:
+          icono = Tooltip(message: "En espera de consulta de Buró", child: Icon(Icons.done_all, color: Colors.blue));
+          break;
+        case 8:
+          icono = Tooltip(message: "En proceso de consulta de Buró", child: Icon(Icons.done_all, color: Colors.blue));
+          break;
+        case 9:
+          icono = Tooltip(message: "Por dictaminar (consulta de buró exitosa)", child: Icon(Icons.done_all, color: Colors.white));
+          break;
+        case 10:
+          icono = Tooltip(message: "Error en consulta de Buró", child: Icon(Icons.done_all, color: Colors.red));
+          break;
+        default:
+          icono = Tooltip(message: "Sin estatus, contactar a soporte", child: Icon(Icons.close, color: Colors.red));
+          break;
+      }
+      return icono;
+    }
+  }
+
+  Widget getIconoMenuGpal(Solicitud solicitud){
+    switch (widget.status) {
+      case 1:
+        return Tooltip(message: "Los integrantes estan en proceso de aprobación.", child: Icon(Icons.done_all)); 
+        break;
+      case 3:
+        return Tooltip(message: "El grupo fue Aprobado.", child: Icon(Icons.done_all, color: Colors.green,)); 
+        break;
+      case 4:
+        return Tooltip(message: "El grupo fue Denegado.", child: Icon(Icons.done_all, color: Colors.red,)); 
+        break;
+      default:
     }
   }
 
