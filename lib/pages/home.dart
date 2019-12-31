@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:mime_type/mime_type.dart';
@@ -318,6 +319,10 @@ class _HomePageState extends State<HomePage> {
 
   sincronizarDatos() async{
     //List<File> documentos;
+    final pref = await SharedPreferences.getInstance();
+    pref.setBool("Sinc", false);
+    pref.setString("fechaSinc", formatDate(DateTime.now(), [dd, '/', mm, '/', yyyy, " ", HH, ':', nn, ':', ss]));
+    String userID = pref.getString("uid");
     List<String> gruposSinc = List();
     List<GrupoObj> gruposGuardados = List();
     List<Map> documentos;
@@ -332,7 +337,7 @@ class _HomePageState extends State<HomePage> {
         apellidoSegundo: solicitud.apellidoSegundo,
         curp: solicitud.curp,
         rfc: solicitud.rfc,
-        fechaNacimiento: DateTime.fromMillisecondsSinceEpoch(solicitud.fechaNacimiento),
+        fechaNacimiento: DateTime.fromMillisecondsSinceEpoch(solicitud.fechaNacimiento).toUtc(),
         telefono: solicitud.telefono
       );
 
@@ -395,7 +400,7 @@ class _HomePageState extends State<HomePage> {
           await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
           //if(solicitudObj.grupoId != null) ServiceRepositoryGrupos.updateGrupoStatus(2, grupoObj.grupoID, solicitudObj.grupoId);
           print(result);
-          getListDocumentos();
+          //getListDocumentos();
         }else{
           Navigator.pop(context);
           showDialog(
@@ -420,7 +425,14 @@ class _HomePageState extends State<HomePage> {
           );
         }
       });
-    } 
+    }
+    ///Consulta Cambios de Documentos
+    await  sincroniza.getCambios(userID);
+    //Sincroniza Cambios de Documentos
+    await sincroniza.sincCambios();
+    pref.setBool("Sinc", true);
+    pref.setString("fechaSinc", formatDate(DateTime.now(), [dd, '/', mm, '/', yyyy, " ", HH, ':', nn, ':', ss]));
+    actualizaInfo();
   }
 
   Future<List<Map>> saveFireStore(listaDocs) async{

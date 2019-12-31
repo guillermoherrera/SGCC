@@ -23,11 +23,14 @@ class CustomDrawer extends StatefulWidget {
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
-  String email = "correo@dominio.com", name = "";
+  String email = "correo@dominio.com", name = "", fechaSinc = "";
+  bool sinc = false;
 
   Future<void> getDatos() async{
     final pref = await SharedPreferences.getInstance();
     email = pref.getString("email");
+    fechaSinc = pref.getString("fechaSinc");
+    sinc = pref.getBool("Sinc");
     setState(() {});
   }
   
@@ -41,7 +44,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
+      child: Column(children: <Widget>[Expanded(child: ListView(
         children: <Widget>[
           UserAccountsDrawerHeader(
             accountName: Text(email, style: TextStyle(color: Colors.black),),
@@ -115,7 +118,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           )
         ],
-      ),
+      ),),Text(fechaSinc != null ? "Ultima Sincronización: "+fechaSinc : "", style: TextStyle(color: sinc ? Colors.black38 : Colors.red[200], fontWeight: FontWeight.bold))])
     );
   }
 

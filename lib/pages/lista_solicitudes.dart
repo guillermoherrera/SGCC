@@ -211,7 +211,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
       bottomNavigationBar: widget.status == 0 ? InkWell(
           child:  Container(
             child: ListTile(
-              trailing: InkWell(onTap: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Historial", status: 5, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome,) ));}, child: Text("Historial", style: TextStyle(color: Colors.black26))),
+              trailing: InkWell(onTap: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Historial", status: 5, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome,) ));}, child: Text("Historial", style: TextStyle(color: Colors.black12))),
             ),
           ), 
         ) : Text("-"),

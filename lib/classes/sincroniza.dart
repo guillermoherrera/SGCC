@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mime_type/mime_type.dart';
@@ -27,103 +28,111 @@ class Sincroniza{
     try{
       final result = await InternetAddress.lookup('google.com');
     
-      if (!result.isNotEmpty || !result[0].rawAddress.isNotEmpty) return null; 
+      if (!result.isNotEmpty || !result[0].rawAddress.isNotEmpty) return null;
+    
+      final pref = await SharedPreferences.getInstance();
+      pref.setBool("Sinc", false);
+      pref.setString("fechaSinc", formatDate(DateTime.now(), [dd, '/', mm, '/', yyyy, " ", HH, ':', nn, ':', ss]));
+      String userID = pref.getString("uid");
+      
+      await getSolcitudesespera(userID);
+      
+      List<String> gruposSinc = List();
+      List<GrupoObj> gruposGuardados = List();
+      List<Map> documentos;
+      Persona persona;
+      Direccion direccion;
+      
+      for(final solicitud in solicitudes){
+        persona = new Persona(
+          nombre: solicitud.nombrePrimero,
+          nombreSegundo: solicitud.nombreSegundo,
+          apellido: solicitud.apellidoPrimero,
+          apellidoSegundo: solicitud.apellidoSegundo,
+          curp: solicitud.curp,
+          rfc: solicitud.rfc,
+          fechaNacimiento: DateTime.fromMillisecondsSinceEpoch(solicitud.fechaNacimiento).toUtc(),
+          telefono: solicitud.telefono
+        );
+      
+        direccion = new Direccion(
+          ciudad: solicitud.ciudad,
+          coloniaPoblacion: solicitud.coloniaPoblacion,
+          cp: solicitud.cp,
+          delegacionMunicipio: solicitud.delegacionMunicipio,
+          direccion1: solicitud.direccion1,
+          estado: solicitud.estado,
+          pais: solicitud.pais
+        );
+
+        documentos = [];
+        await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(solicitud.idSolicitud).then((listaDocs){
+          for(final doc in listaDocs){
+            Documento documento = new Documento(tipo: doc.tipo, documento: doc.documento, version: doc.version);
+            //documentos.add(documento.toJson());
+            Map docMap = documento.toJson();
+            docMap.removeWhere((key, value) => key == "idDocumentoSolicitud");
+            docMap.removeWhere((key, value) => key == "observacionCambio");
+            documentos.add(docMap);
+          }
+        });
+
+        await saveFireStore(documentos).then((lista) async{
+          if(lista.length > 0){
+
+            GrupoObj grupoObj = new GrupoObj();
+            if(solicitud.idGrupo != null && !gruposSinc.contains(solicitud.nombreGrupo)){
+              Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitud.idGrupo);
+              grupoObj = new GrupoObj(nombre: solicitud.nombreGrupo, status: 2, userID: solicitud.userID, importe: grupo.importe, integrantes: grupo.cantidad);
+              if(grupo.grupoID == null || grupo.grupoID == "null"){
+                var result = await _firestore.collection("Grupos").add(grupoObj.toJson());
+                await ServiceRepositoryGrupos.updateGrupoStatus(2, result.documentID, solicitud.idGrupo);
+                grupoObj.grupoID = result.documentID;
+              }else{
+                grupoObj.grupoID = grupo.grupoID;
+              }
+              gruposSinc.add(grupoObj.nombre);
+              gruposGuardados.add(grupoObj);
+            }else if(solicitud.idGrupo != null && gruposSinc.contains(solicitud.nombreGrupo)){
+              grupoObj.grupoID = gruposGuardados.firstWhere((grupo)=> grupo.nombre == solicitud.nombreGrupo).grupoID;
+            }
+
+            SolicitudObj solicitudObj = new SolicitudObj(
+              persona: persona.toJson(),
+              direccion: direccion.toJson(),
+              importe: solicitud.importe,
+              tipoContrato: solicitud.tipoContrato,
+              userID: solicitud.userID,
+              status: 1,
+              grupoID: solicitud.idGrupo == null ? null : grupoObj.grupoID,
+              grupoNombre: solicitud.idGrupo == null ? null : solicitud.nombreGrupo
+            );
+
+            solicitudObj.documentos = lista;   
+            solicitudObj.fechaCaputra = DateTime.now();
+            var result = await _firestore.collection("Solicitudes").add(solicitudObj.toJson());
+            await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
+            //if(solicitudObj.grupoId != null) ServiceRepositoryGrupos.updateGrupoStatus(2, grupoObj.grupoID, solicitudObj.grupoId);
+            print(result);
+
+          }else{
+            print("Class Sincroniza sincronizaDatos: Sin internet");
+          }
+        });
+      
+      }
+      ///Consulta Cambios de Documentos
+      await getCambios(userID);
+      //Sincroniza Cambios de Documentos
+      await sincCambios();
+      
+      pref.setBool("Sinc", true);
+      pref.setString("fechaSinc", formatDate(DateTime.now(), [dd, '/', mm, '/', yyyy, " ", HH, ':', nn, ':', ss]));
+
     }catch(e){
       return null;
     }
-    final pref = await SharedPreferences.getInstance();
-    String userID = pref.getString("uid");
     
-    await getSolcitudesespera(userID);
-    
-    List<String> gruposSinc = List();
-    List<GrupoObj> gruposGuardados = List();
-    List<Map> documentos;
-    Persona persona;
-    Direccion direccion;
-    
-    for(final solicitud in solicitudes){
-      persona = new Persona(
-        nombre: solicitud.nombrePrimero,
-        nombreSegundo: solicitud.nombreSegundo,
-        apellido: solicitud.apellidoPrimero,
-        apellidoSegundo: solicitud.apellidoSegundo,
-        curp: solicitud.curp,
-        rfc: solicitud.rfc,
-        fechaNacimiento: DateTime.fromMillisecondsSinceEpoch(solicitud.fechaNacimiento),
-        telefono: solicitud.telefono
-      );
-    
-      direccion = new Direccion(
-        ciudad: solicitud.ciudad,
-        coloniaPoblacion: solicitud.coloniaPoblacion,
-        cp: solicitud.cp,
-        delegacionMunicipio: solicitud.delegacionMunicipio,
-        direccion1: solicitud.direccion1,
-        estado: solicitud.estado,
-        pais: solicitud.pais
-      );
-
-      documentos = [];
-      await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(solicitud.idSolicitud).then((listaDocs){
-        for(final doc in listaDocs){
-          Documento documento = new Documento(tipo: doc.tipo, documento: doc.documento, version: doc.version);
-          //documentos.add(documento.toJson());
-          Map docMap = documento.toJson();
-          docMap.removeWhere((key, value) => key == "idDocumentoSolicitud");
-          docMap.removeWhere((key, value) => key == "observacionCambio");
-          documentos.add(docMap);
-        }
-      });
-
-      await saveFireStore(documentos).then((lista) async{
-        if(lista.length > 0){
-
-          GrupoObj grupoObj = new GrupoObj();
-          if(solicitud.idGrupo != null && !gruposSinc.contains(solicitud.nombreGrupo)){
-            Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitud.idGrupo);
-            grupoObj = new GrupoObj(nombre: solicitud.nombreGrupo, status: 2, userID: solicitud.userID, importe: grupo.importe, integrantes: grupo.cantidad);
-            if(grupo.grupoID == null || grupo.grupoID == "null"){
-              var result = await _firestore.collection("Grupos").add(grupoObj.toJson());
-              await ServiceRepositoryGrupos.updateGrupoStatus(2, result.documentID, solicitud.idGrupo);
-              grupoObj.grupoID = result.documentID;
-            }else{
-              grupoObj.grupoID = grupo.grupoID;
-            }
-            gruposSinc.add(grupoObj.nombre);
-            gruposGuardados.add(grupoObj);
-          }else if(solicitud.idGrupo != null && gruposSinc.contains(solicitud.nombreGrupo)){
-            grupoObj.grupoID = gruposGuardados.firstWhere((grupo)=> grupo.nombre == solicitud.nombreGrupo).grupoID;
-          }
-
-          SolicitudObj solicitudObj = new SolicitudObj(
-            persona: persona.toJson(),
-            direccion: direccion.toJson(),
-            importe: solicitud.importe,
-            tipoContrato: solicitud.tipoContrato,
-            userID: solicitud.userID,
-            status: 1,
-            grupoID: solicitud.idGrupo == null ? null : grupoObj.grupoID,
-            grupoNombre: solicitud.idGrupo == null ? null : solicitud.nombreGrupo
-          );
-
-          solicitudObj.documentos = lista;   
-          solicitudObj.fechaCaputra = DateTime.now();
-          var result = await _firestore.collection("Solicitudes").add(solicitudObj.toJson());
-          await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
-          //if(solicitudObj.grupoId != null) ServiceRepositoryGrupos.updateGrupoStatus(2, grupoObj.grupoID, solicitudObj.grupoId);
-          print(result);
-
-        }else{
-          print("Class Sincroniza sincronizaDatos: Sin internet");
-        }
-      });
-    
-    }
-    ///Consulta Cambios de Documentos
-    await getCambios(userID);
-    //Sincroniza Cambios de Documentos
-    await sincCambios();
   }
 
   Future<List<Map>> saveFireStore(List<Map> listaDocs) async{
