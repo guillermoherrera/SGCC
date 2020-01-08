@@ -65,8 +65,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
           InkWell(
             onTap: (){widget.sincManual ? Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>HomePage(onSingIn: (){}, colorTema: widget.colorTema,)), (Route<dynamic> route) => false) : Navigator.pop(context); },//Navigator.popUntil(context, ModalRoute.withName('/'));},//Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));},
             child: ListTile(
-              title: Text("Inicio"),
-              leading: Icon(Icons.home, color: widget.colorTema,),
+              title: Text("Inicio", style: TextStyle(fontWeight: FontWeight.bold),),
+              leading: Icon(Icons.home, color: widget.colorTema[900],),
             ),
           ),
           Divider(),
@@ -78,7 +78,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           InkWell(
-            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> MisSolicitudes(colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));},
+            onTap: (){widget.sincManual ? Navigator.push(context, MaterialPageRoute(builder: (context)=> MisSolicitudes(colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) )) : Navigator.pop(context);},
             child: ListTile(
               title: Text("Mis Solicitudes"),
               leading: Icon(Icons.folder_open, color: widget.colorTema,),
@@ -92,13 +92,22 @@ class _CustomDrawerState extends State<CustomDrawer> {
               trailing: numeroACambiar(widget.cantSolicitudesCambios),
             ),
           ),
-          /*InkWell(
+          Divider(),
+          InkWell(
             onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera() ));},
             child: ListTile(
               title: Text("Mi Cartera"),
               leading: Icon(Icons.account_balance_wallet, color: widget.colorTema,),
             ),
-          ),*/
+          ),
+          Divider(),
+          InkWell(
+            onTap: (){},
+            child: ListTile(
+              title: Text("Renovaciones"),
+              leading: Icon(Icons.cached, color: widget.colorTema,),
+            ),
+          ),
           Divider(),
           InkWell(
             onTap: (){
@@ -113,8 +122,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
           InkWell(
             onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> About(colorTema: widget.colorTema)));},
             child: ListTile(
-              title: Text("Acerca de ..."),
-              leading: Icon(Icons.info, color: Colors.blue),
+              title: Text("Acerca De ..."),
+              leading: Icon(Icons.info, color: Colors.blueAccent),
             ),
           )
         ],

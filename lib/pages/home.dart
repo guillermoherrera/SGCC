@@ -15,6 +15,7 @@ import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/grupo.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
+import 'package:sgcartera_app/pages/confia_shop.dart';
 import 'package:sgcartera_app/pages/grupos.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
@@ -155,7 +156,7 @@ class _HomePageState extends State<HomePage> {
                         leading: Icon(Icons.person_add, color: widget.colorTema,size: 40.0,),
                         title: Text("Nueva Solicitud Individual", style: TextStyle(fontWeight: FontWeight.bold)),
                         subtitle: Text("Captura solicitudes de credito individual en 3 pasos."),
-
+                        trailing: Icon(Icons.arrow_forward_ios),
                         ),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -174,7 +175,7 @@ class _HomePageState extends State<HomePage> {
                         leading: Icon(Icons.group_add, color: widget.colorTema,size: 40.0,),
                         title: Text("Nueva solicitud de credito Grupal", style: TextStyle(fontWeight: FontWeight.bold)),
                         subtitle: Text("Captura solicitudes de Credito Grupal."),
-
+                        trailing: Icon(Icons.arrow_forward_ios),
                         ),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -185,7 +186,65 @@ class _HomePageState extends State<HomePage> {
                       )
                     ),
                     onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Group(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo())));},
-                  )
+                  ),
+                  InkWell(
+                    child: Card(
+                      child: Container(
+                        child: ListTile(
+                        leading: Icon(Icons.account_balance_wallet, color: widget.colorTema ,size: 40.0),
+                        title: Text("Mi cartera", style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("Revisa tu cartera"),
+                        trailing: Icon(Icons.arrow_forward_ios),
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: [widget.colorTema[400], Colors.white])
+                        ),
+                      )
+                    ),
+                    onTap: (){},
+                  ),
+                  InkWell(
+                    child: Card(
+                      child: Container(
+                        child: ListTile(
+                        leading: Icon(Icons.cached, color: widget.colorTema ,size: 40.0),
+                        title: Text("Renovaciones", style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("Consulta y Solicita renovaciones"),
+                        trailing: Icon(Icons.arrow_forward_ios),
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: [widget.colorTema[400], Colors.white])
+                        ),
+                      )
+                    ),
+                    onTap: (){},
+                  ),
+                  Divider(),
+                  InkWell(
+                    child: Card(
+                      child: Container(
+                        child: ListTile(
+                        leading: Icon(Icons.shopping_cart, color: Colors.purple ,size: 40.0),
+                        title: Text("ConfiaShop", style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("Tu tienda de confianza"),
+                        trailing: Icon(Icons.arrow_forward_ios),
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: [widget.colorTema[400], Colors.white])
+                        ),
+                      )
+                    ),
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => ConfiaShopView()));},
+                  ),
                 ],
               )
             ]
@@ -220,7 +279,7 @@ class _HomePageState extends State<HomePage> {
     if(solicitudes.length > 0)
       return Icon(Icons.error_outline, color: Colors.red ,size: 40.0,);
     else 
-      return Icon(Icons.done, color: Colors.blue ,size: 40.0,);
+      return Icon(Icons.tag_faces, color: widget.colorTema ,size: 40.0,);
   }
 
   Widget getLeyenda(){
@@ -258,7 +317,7 @@ class _HomePageState extends State<HomePage> {
           }
         }
       }
-    ) : Text("");
+    ) : Icon(Icons.check_circle, color: Colors.blue ,size: 40.0,);
   }
 
   showDialogo() async{

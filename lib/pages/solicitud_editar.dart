@@ -64,7 +64,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: selectedDate,
-      locale: const Locale('es'),
+      //locale: const Locale('es'),
       firstDate: DateTime(1950, 1),
       lastDate: DateTime(2019));
     if (picked != null)

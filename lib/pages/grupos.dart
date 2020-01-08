@@ -63,7 +63,7 @@ class _GroupState extends State<Group> {
                 colors: [widget.colorTema[100], Colors.white])
               ),
             ),
-            grupos.length > 0 ? listaGrupos() :  Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text("Sin grupos en captura 📦☹️", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) 
+            grupos.length > 0 ? listaGrupos() :  Padding(padding: EdgeInsets.all(20.0),child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Sin grupos en captura 📦☹️", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)), Row(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Presiona ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)), Icon(Icons.group_add, size: 30.0,), Text(" para agregar un nuevo grupo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema))],)],))) 
           ]
         )
       ),

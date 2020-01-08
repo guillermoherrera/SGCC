@@ -229,13 +229,14 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
             child: Container(
 
               child: solicitudes[index].grupoID == null && solicitudes[index].idGrupo == null ?
-              ListTile(
+              InkWell(child:  ListTile(
                 leading: Icon(Icons.person, color: widget.colorTema,size: 40.0,),
                 title: Text(getNombre(solicitudes[index]), style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(getImporte(solicitudes[index])),
                 isThreeLine: true,
                 trailing: solicitudes[index].status == 0 ? getIcono(solicitudes[index]) : getIconoMenu(solicitudes[index]),//Icon(Icons.done_all),//getIconoRecuperar(solicitudes[index]),
-              ) : 
+              ), onTap: (){
+                solicitudes[index].status == 99 ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CambioDocumento(title: getNombre(solicitudes[index]), colorTema: widget.colorTema, idSolicitud: solicitudes[index].idSolicitud ))) : null; },) : 
               ListTile(
                 leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
                 title: Text(solicitudes[index].nombreGrupo, style: TextStyle(fontWeight: FontWeight.bold)),
@@ -338,7 +339,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
 
   Widget getIconoMenu(Solicitud solicitud){
     if(solicitud.status == 99){
-      return PopupMenuButton(
+      return Column(children: <Widget>[ Icon(Icons.arrow_forward_ios)], mainAxisAlignment: MainAxisAlignment.center,);
+      /*return PopupMenuButton(
         itemBuilder: (_) => <PopupMenuItem<int>>[
           new PopupMenuItem<int>(
             child: Row(children: <Widget>[Icon(Icons.add_photo_alternate, color: Colors.green,),Text(" Atender cambio de documentos")],), value: 1),
@@ -348,7 +350,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CambioDocumento(title: getNombre(solicitud), colorTema: widget.colorTema, idSolicitud: solicitud.idSolicitud )));
           }
         }
-      );
+      );*/
     }else{
       Widget icono;
       switch (solicitud.status) {

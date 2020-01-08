@@ -130,7 +130,8 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         }
         break;
       case 1:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("En Espera (no\nsincronizado)", style: TextStyle(fontWeight: FontWeight.bold),)),);
+        String texto = userType == 1 ? "En Espera (no\nsincronizado)" : userType == 2 ? "En Espera\n(grupos cerrados)" : "En Espera (solicitudes\ny grupos cerrados)";
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text(texto, style: TextStyle(fontWeight: FontWeight.bold),)),);
         break;
       case 2:
         return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Por autorizar\n", style: TextStyle(fontWeight: FontWeight.bold))));

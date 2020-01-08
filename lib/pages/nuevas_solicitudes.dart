@@ -55,7 +55,7 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                       leading: Icon(Icons.person_add, color: widget.colorTema,size: 40.0,),
                       title: Text("Nueva Solicitud Individual", style: TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text("Captura solicitudes de credito individual."),
-
+                      trailing: Icon(Icons.arrow_forward_ios),
                       ),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -74,7 +74,7 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                       leading: Icon(Icons.group_add, color: widget.colorTema,size: 40.0,),
                       title: Text("Grupos", style: TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text("Captura y revisa tus solicitudes de Credito Grupal."),
-
+                      trailing: Icon(Icons.arrow_forward_ios),
                       ),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(

@@ -116,7 +116,7 @@ class _LoginState extends State<Login> {
 
   List<Widget> buttonWidget(){
     return[
-      styleButton(buttonEnabled ? "Iniciar Sesión" : "Cargando ...", validateSubmit),
+      styleButton(buttonEnabled ? "Iniciar Sesión" : "Cargando, por favor espera ...", validateSubmit),
     ];
   }
 
