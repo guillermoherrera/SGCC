@@ -1,16 +1,17 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Cartera extends StatefulWidget {
+class Renovaciones extends StatefulWidget {
   @override
-  _CarteraState createState() => _CarteraState();
+  _RenovacionesState createState() => _RenovacionesState();
 }
 
-class _CarteraState extends State<Cartera> {
+class _RenovacionesState extends State<Renovaciones> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mi Cartera"),
+        title: Text("Renovaciones"),
         centerTitle: true,
       ),
       body: Container(

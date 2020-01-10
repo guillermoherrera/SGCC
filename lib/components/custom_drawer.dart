@@ -6,6 +6,7 @@ import 'package:sgcartera_app/pages/home.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes.dart';
 import 'package:sgcartera_app/pages/mis_solicitudes.dart';
 import 'package:sgcartera_app/pages/nuevas_solicitudes.dart';
+import 'package:sgcartera_app/pages/renovaciones.dart';
 import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -102,7 +103,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           ),
           Divider(),
           InkWell(
-            onTap: (){},
+            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Renovaciones() ));},
             child: ListTile(
               title: Text("Renovaciones"),
               leading: Icon(Icons.cached, color: widget.colorTema,),

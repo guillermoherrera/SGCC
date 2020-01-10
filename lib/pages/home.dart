@@ -18,6 +18,7 @@ import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/confia_shop.dart';
 import 'package:sgcartera_app/pages/grupos.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes.dart';
+import 'package:sgcartera_app/pages/renovaciones.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart' as grupoModel;
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart' as solicitudModel;
@@ -26,6 +27,8 @@ import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as path;
+
+import 'cartera.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({this.onSingIn, this.colorTema});
@@ -92,7 +95,7 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text("App Originación"),
+          title: Text("App Asesores"),
           centerTitle: true,
           leading: new IconButton(
                 icon: cantSolicitudesCambios > 0 ? Stack(children: <Widget>[
@@ -204,7 +207,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       )
                     ),
-                    onTap: (){},
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera() ));},
                   ),
                   InkWell(
                     child: Card(
@@ -223,7 +226,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       )
                     ),
-                    onTap: (){},
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Renovaciones() ));},
                   ),
                   Divider(),
                   InkWell(
