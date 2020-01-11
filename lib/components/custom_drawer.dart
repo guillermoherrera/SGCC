@@ -64,7 +64,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           InkWell(
-            onTap: (){widget.sincManual ? Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>HomePage(onSingIn: (){}, colorTema: widget.colorTema,)), (Route<dynamic> route) => false) : Navigator.pop(context); },//Navigator.popUntil(context, ModalRoute.withName('/'));},//Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));},
+            onTap: (){Navigator.pop(context);}, //widget.sincManual ? Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>HomePage(onSingIn: (){}, colorTema: widget.colorTema,)), (Route<dynamic> route) => false) : Navigator.pop(context); },//Navigator.popUntil(context, ModalRoute.withName('/'));},//Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));},
             child: ListTile(
               title: Text("Inicio", style: TextStyle(fontWeight: FontWeight.bold),),
               leading: Icon(Icons.home, color: widget.colorTema[900],),

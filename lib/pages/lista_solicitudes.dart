@@ -47,6 +47,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   Firestore _firestore = Firestore.instance;
   FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
   String mensaje = "Cargando ...🕔";
+  GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
 
   bool downloading = false;
   var progressString = "";
@@ -193,7 +194,15 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
               ],
             ),
           ),
-        )) :  Container(
+        )) :  RefreshIndicator(
+        key: refreshKey,
+        onRefresh: ()async{
+          solicitudes.clear(); 
+          gruposGuardados.clear(); 
+          gruposAbiertos.clear();
+          grupos.clear(); 
+          await getListDocumentos();
+        },
         child: Stack(
           children: <Widget>[
             Container(
@@ -204,7 +213,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 colors: [widget.colorTema[100], Colors.white])
               ),
             ),
-            solicitudes.length > 0 ? listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) 
+            solicitudes.length > 0 ? listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))),
+            ListView()
           ]
         )
       ),

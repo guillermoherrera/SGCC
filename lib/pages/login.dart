@@ -34,10 +34,10 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
+      /*appBar: AppBar(
         title: Text("Iniciar Sesión"),
         centerTitle: true,
-      ),
+      ),*/
       body: Form(
         key: formKey,
         child: Container(
@@ -48,14 +48,14 @@ class _LoginState extends State<Login> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [widget.colorTema[100], Colors.white])
+                  colors: [widget.colorTema[100], widget.colorTema])
                 ),
               ),
               Center(child: SingleChildScrollView(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(),
                   child: Card(
-                    color: Colors.white70,
+                    color: Colors.white54,
                     margin: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 100),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     elevation: 20.0,
@@ -83,7 +83,7 @@ class _LoginState extends State<Login> {
           controller: email,
           decoration: InputDecoration(
             icon: Icon(Icons.alternate_email),
-            labelText: "Correo"
+            labelText: "Usuario"
           ),
           autocorrect: false,
           keyboardType: TextInputType.emailAddress,

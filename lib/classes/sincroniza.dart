@@ -19,9 +19,12 @@ import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'auth_firebase.dart';
+
 class Sincroniza{
   List<Solicitud> solicitudes = List();
   Firestore _firestore = Firestore.instance;
+  AuthFirebase authFirebase = new AuthFirebase();
 
   sincronizaDatos()async{
     
@@ -31,12 +34,22 @@ class Sincroniza{
       if (!result.isNotEmpty || !result[0].rawAddress.isNotEmpty) return null;
     
       final pref = await SharedPreferences.getInstance();
+      
+      var _email = pref.getString("email");
+      var _pass = pref.getString("pass");
+
       pref.setBool("Sinc", false);
       pref.setString("fechaSinc", formatDate(DateTime.now(), [dd, '/', mm, '/', yyyy, " ", HH, ':', nn, ':', ss]));
       String userID = pref.getString("uid");
       
       await getSolcitudesespera(userID);
-      
+
+      if(solicitudes.length > 0){
+        var authRes = await authFirebase.signIn(_email, _pass);
+        print('connected');
+        if(!authRes.result) return null;
+      }
+
       List<String> gruposSinc = List();
       List<GrupoObj> gruposGuardados = List();
       List<Map> documentos;

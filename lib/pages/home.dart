@@ -45,8 +45,9 @@ class _HomePageState extends State<HomePage> {
   Sincroniza sincroniza = new Sincroniza();
   bool sincManual = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  int userType;
+  int userType = 0;
   int cantSolicitudesCambios = 0;
+  GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
 
   Future<void> getListDocumentos() async{
     final pref = await SharedPreferences.getInstance();
@@ -119,7 +120,20 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () => _scaffoldKey.currentState.openDrawer())
         ),
         drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), cantSolicitudesCambios: cantSolicitudesCambios, sincManual: sincManual ),
-        body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : Container(
+        body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : RefreshIndicator(
+            key: refreshKey,
+            onRefresh: ()async{
+              await Future.delayed(Duration(seconds:1));
+              if(sincManual){
+                sincManual = false;
+                await sincroniza.sincronizaDatos();
+                actualizaInfo();
+                sincManual = true;
+                print("Sincronización Realizada: "+DateTime.now().toString());
+              }else{
+                showSnackBar("Atención: El proceso de sincronizaición esta en curso, por favor espera un momento.", Colors.red);
+              }
+            },
             child: Stack(
               children: <Widget>[
                 Container(
