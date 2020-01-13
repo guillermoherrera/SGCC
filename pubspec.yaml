@@ -47,6 +47,13 @@ dependencies:
   #flutter_inappbrowser: ^2.0.2
   #html: ^0.14.0+3
 
+  flutter_launcher_icons: ^0.7.4
+
+flutter_icons:
+  image_path: 'images/adminconfiaicon.png'
+  android: true
+  ios: true
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

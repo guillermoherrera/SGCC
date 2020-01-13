@@ -214,7 +214,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
               ),
             ),
             solicitudes.length > 0 ? listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))),
-            ListView()
+            solicitudes.length > 0 ? Container() : ListView()
           ]
         )
       ),

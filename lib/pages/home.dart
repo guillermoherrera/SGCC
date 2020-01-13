@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   Sincroniza sincroniza = new Sincroniza();
   bool sincManual = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  int userType = 0;
+  int userType;
   int cantSolicitudesCambios = 0;
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
 
@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
     actualizaInfo();
     sincManual = true;
     print("Sincronización Realizada: "+DateTime.now().toString());
-    const oneSec = const Duration(seconds:300);
+    const oneSec = const Duration(seconds:600);
     new Timer.periodic(oneSec, (Timer t)async{
       if(this.mounted){
         sincManual = false;
@@ -120,7 +120,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () => _scaffoldKey.currentState.openDrawer())
         ),
         drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), cantSolicitudesCambios: cantSolicitudesCambios, sincManual: sincManual ),
-        body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : RefreshIndicator(
+        body: userType == null ? Container() : userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : RefreshIndicator(
             key: refreshKey,
             onRefresh: ()async{
               await Future.delayed(Duration(seconds:1));
