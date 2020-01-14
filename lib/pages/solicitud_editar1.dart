@@ -137,7 +137,7 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
               maxLength: 40,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "Colonia/Población"
+                labelText: "Colonia"
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {

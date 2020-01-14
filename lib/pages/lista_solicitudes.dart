@@ -14,6 +14,7 @@ import 'package:sgcartera_app/models/grupo.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/cambio_documento.dart';
+import 'package:sgcartera_app/pages/lista_solicitudes_grupo2.dart';
 import 'package:sgcartera_app/pages/solicitud_editar.dart';
 import 'package:sgcartera_app/sqlite_files/models/documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
@@ -135,19 +136,28 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         solicitudes.add(solicitud);
       }
 
-      Query q2 = _firestore.collection("Grupos").where('status', isEqualTo: 2).where('userID', isEqualTo:userID);
-      QuerySnapshot querySnapshot2 = await q2.getDocuments().timeout(Duration(seconds: 10));
-      gruposGuardados.clear();
-      for(DocumentSnapshot dato in querySnapshot2.documents){
-        Grupo grupo = new Grupo(
-          grupoID: dato.documentID,
-          nombreGrupo: dato.data['nombre'],
-          status: dato.data['status'],
-          userID: dato.data['userID'],
-          cantidad: dato.data['integrantes'],
-          importe: dato.data['importe']
-        );
-        gruposGuardados.add(grupo);
+      if(gruposGuardados.length <= 0){
+        Query q2;
+        if(status == 2){
+          q2 = _firestore.collection("Grupos").where('dictamen', isEqualTo: true).where('userID', isEqualTo:userID);    
+        }else if(status == 3){
+          q2 = _firestore.collection("Grupos").where('dictamen', isEqualTo: false).where('userID', isEqualTo:userID);
+        }else{
+          q2 = _firestore.collection("Grupos").where('status', isEqualTo: 2).where('userID', isEqualTo:userID);
+        }
+        QuerySnapshot querySnapshot2 = await q2.getDocuments().timeout(Duration(seconds: 10));
+        gruposGuardados.clear();
+        for(DocumentSnapshot dato in querySnapshot2.documents){
+          Grupo grupo = new Grupo(
+            grupoID: dato.documentID,
+            nombreGrupo: dato.data['nombre'],
+            status: dato.data['status'],
+            userID: dato.data['userID'],
+            cantidad: dato.data['integrantes'],
+            importe: dato.data['importe']
+          );
+          gruposGuardados.add(grupo);
+        }
       }
 
     }catch(e){
@@ -197,6 +207,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         )) :  RefreshIndicator(
         key: refreshKey,
         onRefresh: ()async{
+          await Future.delayed(Duration(seconds:1));
           solicitudes.clear(); 
           gruposGuardados.clear(); 
           gruposAbiertos.clear();
@@ -228,7 +239,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     );
   }
 
-  Widget listaSolicitudes(){     
+  Widget listaSolicitudes(){   
+    grupos.clear();  
     return ListView.builder(
       itemCount: solicitudes.length,
       itemBuilder: (context, index){
@@ -280,12 +292,12 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
 
   Widget getImpCant(Solicitud solicitud){
     Grupo grupo;
-    if(widget.status == 0){
+    //if(widget.status == 0){
       grupo = gruposGuardados.firstWhere((grupo)=>grupo.grupoID == solicitud.grupoID);
       return Text("Importe: "+grupo.importe.toString()+"\nIntegrantes: "+grupo.cantidad.toString());
-    }else{
-      return Text("");
-    }
+    //}else{
+    //  return Text("");
+    //}
   }
 
   Widget getLeyendaGrupo(int idGrupo){
@@ -397,15 +409,52 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   }
 
   Widget getIconoMenuGpal(Solicitud solicitud){
+    var solicitudesGrupo = solicitudes.where((sol)=>sol.grupoID == solicitud.grupoID);
     switch (widget.status) {
       case 1:
-        return Tooltip(message: "Los integrantes estan en proceso de aprobación.", child: Icon(Icons.done_all)); 
+        return Column(
+          //mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: 
+          <Widget>[
+            Row(mainAxisSize: MainAxisSize.min ,children: <Widget>[
+              Tooltip(message: "Los integrantes estan en proceso de aprobación.", child: Icon(Icons.done_all)),
+              Text("        "),
+              IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: ()async {
+                await Navigator.push(context, MaterialPageRoute(builder: (context) =>  ListaSolicitudesGrupoSinc(title: solicitud.nombreGrupo, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, solicitudes: solicitudesGrupo.toList())));
+              },) 
+            ],)
+          ]);
         break;
       case 3:
-        return Tooltip(message: "El grupo fue Aprobado.", child: Icon(Icons.done_all, color: Colors.green,)); 
+        return Column(
+          //mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: 
+          <Widget>[
+            Row(mainAxisSize: MainAxisSize.min ,children: <Widget>[
+              Tooltip(message: "El grupo fue Aprobado.", child: Icon(Icons.done_all, color: Colors.green,)),
+              Text("        "),
+              IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) =>  ListaSolicitudesGrupoSinc(title: solicitud.nombreGrupo, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, solicitudes: solicitudesGrupo.toList())));
+              },) 
+            ],)
+          ]);
         break;
       case 4:
-        return Tooltip(message: "El grupo fue Denegado.", child: Icon(Icons.done_all, color: Colors.red,)); 
+        return Column(
+          //mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: 
+          <Widget>[
+            Row(mainAxisSize: MainAxisSize.min ,children: <Widget>[
+              Tooltip(message: "El grupo fue Denegado.", child: Icon(Icons.done_all, color: Colors.red,)),
+              Text("        "),
+              IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) =>  ListaSolicitudesGrupoSinc(title: solicitud.nombreGrupo, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, solicitudes: solicitudesGrupo.toList())));
+              },) 
+            ],)
+          ]); 
         break;
       case 5:
         return Row(
@@ -431,7 +480,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
       default:
         return Tooltip(message: "Default .", child: Icon(Icons.done_all, color: Colors.black,));
         break;
-    }
+    } 
   }
 
   Widget getIconoRecuperar(Solicitud solicitud){

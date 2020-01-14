@@ -120,7 +120,7 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
               maxLength: 40,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "Colonia/Población"
+                labelText: "Colonia"
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {

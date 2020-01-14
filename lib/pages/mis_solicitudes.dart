@@ -140,10 +140,10 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Cambio de Documentos\n", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       case 4:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Aprobadas\n", style: TextStyle(fontWeight: FontWeight.bold))));
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Dictaminadas\n", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       case 5:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Denegadas\n", style: TextStyle(fontWeight: FontWeight.bold))));
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Rechazadas\n", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       default:
         return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("x_x")));
@@ -171,10 +171,10 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Cambio de Documentos", status: 2, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
       case 4:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Aprobadas", status: 3, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Dictaminadas", status: 3, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
       case 5:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Denegadas", status: 4, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Rechazadas", status: 4, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
       default:
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "x_x", status: 0, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
