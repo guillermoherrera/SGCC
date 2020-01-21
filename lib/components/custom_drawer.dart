@@ -95,7 +95,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           ),
           Divider(),
           InkWell(
-            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera() ));},
+            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera(colorTema: widget.colorTema,) ));},
             child: ListTile(
               title: Text("Mi Cartera"),
               leading: Icon(Icons.account_balance_wallet, color: widget.colorTema,),

@@ -54,6 +54,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   var progressString = "";
   
   Future<void> getListDocumentos() async{
+    await Future.delayed(Duration(seconds:1));
     final pref = await SharedPreferences.getInstance();
     String userID = pref.getString("uid");
     switch (widget.status) {
@@ -67,10 +68,10 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         mensaje = "Sin solicitudes por autorizar para mostrar 📦☹️";
         await getSolcitudesespera(userID,1);
         await getSolcitudesespera(userID,6);
-        await getSolcitudesespera(userID,7);
+        /*await getSolcitudesespera(userID,7);
         await getSolcitudesespera(userID,8);
         await getSolcitudesespera(userID,9);
-        await getSolcitudesespera(userID,10);
+        await getSolcitudesespera(userID,10);*/
         break;
       case 2:
         mensaje = "Sin Solicitudes con peticiones de cambio de documentos para mostrar 📦☹️";
@@ -108,8 +109,10 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         q = _firestore.collection("Solicitudes").where('dictamen', isEqualTo: true).where('userID', isEqualTo:userID);
       }else if(status == 3){
         q = _firestore.collection("Solicitudes").where('dictamen', isEqualTo: false).where('userID', isEqualTo:userID);
-      }else{
+      }else if(status == 1){
         q = _firestore.collection("Solicitudes").where('status', isEqualTo: status).where('userID', isEqualTo:userID);
+      }else{
+        q = _firestore.collection("Solicitudes").where('status', isGreaterThan: 3).where('userID', isEqualTo:userID);
       }
       QuerySnapshot querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
       if(status == 2 || status == 3) solicitudes.clear();
@@ -157,6 +160,33 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
             importe: dato.data['importe']
           );
           gruposGuardados.add(grupo);
+        }
+        for(Grupo grupo in gruposGuardados){
+          if(grupo.status == 2){
+            var solicitudesGrupo = solicitudes.where((sol)=>sol.grupoID == grupo.grupoID).toList();
+            if(solicitudesGrupo.length == 0){
+              Solicitud solicitud = new Solicitud(
+                apellidoPrimero: "",
+                apellidoSegundo: "",
+                curp: "",
+                fechaNacimiento: 0,
+                //idGrupo: dato.data['grupoId'],
+                grupoID: grupo.grupoID,
+                idSolicitud: null,
+                importe: 0,
+                nombrePrimero: "",
+                nombreSegundo: "",
+                rfc: "",
+                telefono: "",
+                nombreGrupo: grupo.nombreGrupo,
+                userID: grupo.userID,
+                status: 1,
+                tipoContrato: 2,
+                documentID: ""
+              );
+              solicitudes.add(solicitud);
+            }
+          }
         }
       }
 
@@ -380,7 +410,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           icono = Tooltip(message: "Por autorizar consulta de Buró", child: Icon(Icons.done_all));
           break;
         case 2:
-          icono = Tooltip(message: "Aprobado", child: Icon(Icons.done_all, color: Colors.green));
+          icono = Tooltip(message: "Aprobado", child: Icon(Icons.done_all, color: Colors.lightGreenAccent));
           break;
         case 3:
           icono = Tooltip(message: "Denegado", child: Icon(Icons.block, color: Colors.red));
@@ -433,7 +463,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           children: 
           <Widget>[
             Row(mainAxisSize: MainAxisSize.min ,children: <Widget>[
-              Tooltip(message: "El grupo fue Aprobado.", child: Icon(Icons.done_all, color: Colors.green,)),
+              Tooltip(message: "El grupo fue Aprobado.", child: Icon(Icons.done_all, color: Colors.lightGreenAccent,)),
               Text("        "),
               IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context) =>  ListaSolicitudesGrupoSinc(title: solicitud.nombreGrupo, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, solicitudes: solicitudesGrupo.toList())));
@@ -634,7 +664,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
             new PopupMenuItem<int>(
               child: Row(children: <Widget>[Icon(Icons.lock, color: accion ? Colors.blueGrey : Colors.grey),Text(" Cerrar Grupo", style: TextStyle(color: accion ? Colors.blueGrey : Colors.grey),)],), value: 3),
             new PopupMenuItem<int>(
-              child: Row(children: <Widget>[Icon(Icons.delete, color: Colors.red),Text(" Eliminar Grupo", style: TextStyle(color: Colors.red),)],), value: 4),
+              child: Row(children: <Widget>[Icon(Icons.delete, color: accion ? Colors.red : Colors.grey),Text(" Eliminar Grupo", style: TextStyle(color: accion ? Colors.red : Colors.grey),)],), value: 4),
           ],
           onSelected: (value)async{
             if(value == 1){
@@ -647,7 +677,9 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 cerrarGrupo(grupoId, grupoNombre);
               }
             }else if(value == 4){
-              eliminarGrupo(grupoId, grupoNombre);
+              if(accion){
+                eliminarGrupo(grupoId, grupoNombre);
+              }
             }
           }
         )

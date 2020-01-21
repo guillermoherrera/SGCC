@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 
@@ -15,10 +16,45 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
   List<Solicitud> solicitudes = List();
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
   String mensaje;
+  Firestore _firestore = Firestore.instance;
 
   Future<void> getListDocumentos() async{
-    mensaje = "Error al cargar los integrantes, por favor vuelva a intentarlo.";
-    solicitudes = widget.solicitudes;
+    mensaje = "Cargando ...🕔";
+    //solicitudes = widget.solicitudes;
+    await Future.delayed(Duration(seconds:1));
+    try{
+      Query q = _firestore.collection("Solicitudes").where('grupoID', isEqualTo: widget.solicitudes[0].grupoID);
+      
+      QuerySnapshot querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
+      
+      for(DocumentSnapshot dato in querySnapshot.documents){
+        Solicitud solicitud = new Solicitud(
+          apellidoPrimero: dato.data['persona']['apellido'],
+          apellidoSegundo: dato.data['persona']['apellidoSegundo'],
+          curp: dato.data['persona']['curp'],
+          fechaNacimiento: dato.data['persona']['fechaNacimiento'].millisecondsSinceEpoch,
+          //idGrupo: dato.data['grupoId'],
+          grupoID: dato.data['grupoID'],
+          idSolicitud: null,
+          importe: dato.data['importe'],
+          nombrePrimero: dato.data['persona']['nombre'],
+          nombreSegundo: dato.data['persona']['nombreSegundo'],
+          rfc: dato.data['persona']['rfc'],
+          telefono: dato.data['persona']['telefono'],
+          nombreGrupo: dato.data['grupoNombre'],
+          userID: dato.data['userID'],
+          status: dato.data['status'],
+          tipoContrato: dato.data['tipoContrato'],
+          documentID: dato.documentID
+        );
+        solicitudes.add(solicitud);
+      }
+      setState(() {});
+    }catch(e){
+      solicitudes.clear();
+      mensaje = "Error interno. Revisa tu conexión a internet 🚫☹️";
+      setState(() {});
+    }
   }
 
   @override
@@ -112,7 +148,7 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
         icono = Tooltip(message: "Por autorizar consulta de Buró", child: Icon(Icons.done_all));
         break;
       case 2:
-        icono = Tooltip(message: "Dictaminado", child: Icon(Icons.done_all, color: Colors.green));
+        icono = Tooltip(message: "Dictaminado", child: Icon(Icons.done_all, color: Colors.lightGreenAccent));
         break;
       case 3:
         icono = Tooltip(message: "Rechazado", child: Icon(Icons.block, color: Colors.red));
