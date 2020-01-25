@@ -113,8 +113,8 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
       Divider(),
       adjuntarId(),
       datosPrevios(),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      Column(
+        //mainAxisAlignment: MainAxisAlignment.center,
         children: buttonWidget(),
       ),
       Row(
@@ -297,12 +297,12 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
   }
 
   Widget styleButton(VoidCallback onPressed, String text){
-    return RaisedButton(
+    return SizedBox(width: double.infinity, child:RaisedButton(
       onPressed: buttonEnabled ? onPressed : (){},
       color: widget.colorTema,
       textColor: Colors.white,
       child: Text(text),
-    );
+    ));
   }
 
   void validaSubmit() async{

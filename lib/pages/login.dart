@@ -121,12 +121,12 @@ class _LoginState extends State<Login> {
   }
 
   Widget styleButton(String text, VoidCallback onPress){
-    return new RaisedButton(
+    return SizedBox(width: double.infinity, child: new RaisedButton(
       onPressed: buttonEnabled ? onPress : (){},
       color: widget.colorTema,
       textColor: Colors.white,
       child: Text(text),
-    );
+    ));
   }
 
   void validateSubmit() async{

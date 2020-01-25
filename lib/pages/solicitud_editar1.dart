@@ -280,12 +280,12 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
   }
 
   Widget styleButton(VoidCallback onPressed, String text){
-    return RaisedButton(
+    return SizedBox(width: double.infinity, child:RaisedButton(
       onPressed: buttonEnabled ? onPressed : (){},
       color: widget.colorTema,
       textColor: Colors.white,
       child: Text(text),
-    );
+    ));
   }
 
   void validaSubmit() async{

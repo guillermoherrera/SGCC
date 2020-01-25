@@ -372,7 +372,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Text("Paso 1 de 2", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10))
+          Text("Paso 1 de 3", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10))
         ],
       )
     ];
@@ -401,12 +401,12 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
   }
 
   Widget styleButton(VoidCallback onPressed, String text){
-    return RaisedButton(
+    return SizedBox(width: double.infinity, child:RaisedButton(
       onPressed: buttonEnabled ? onPressed : (){},
       color: widget.colorTema,
       textColor: Colors.white,
       child: Text(text),
-    );
+    ));
   }
 
   void validaSubmit() async{

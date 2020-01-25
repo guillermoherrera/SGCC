@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_container/responsive_container.dart';
 import 'package:sgcartera_app/pages/carteraDetalle.dart';
 
 class Cartera extends StatefulWidget {
@@ -23,10 +24,15 @@ class _CarteraState extends State<Cartera> {
     for(var i = 0; i <= 5; i++){
       listaCartera.add(i.toString());
     }
+    setState(() {
+      
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    final bool isLandscape = orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(
         title: Text("Mi Cartera"),
@@ -48,7 +54,16 @@ class _CarteraState extends State<Cartera> {
                 colors: [Colors.green[100], Colors.white])
               ),
             ),
-            listaCartera.length > 0 ? carteraLista() : ListView()
+            Column(children: <Widget>[
+              ResponsiveContainer(
+                heightPercent: 30.0,
+                widthPercent: 100.0,
+                child: Container(color: widget.colorTema[700], child: Center(
+                  child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[Icon(Icons.assignment,color: Colors.white60, size: isLandscape ? 50.0 : 150.0), Text("CONTRATOS DE CARTERA: "+ listaCartera.length.toString(), style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),)]),
+                )),
+              ),
+              listaCartera.length > 0 ? Expanded(child:carteraLista()) : Expanded(child: ListView())
+            ],)
           ]
         )
       ),
@@ -77,7 +92,7 @@ class _CarteraState extends State<Cartera> {
               ),
             )
           ),
-          onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> CarteraDetalle(colorTema: widget.colorTema, title: "Item " + listaCartera[index])));},
+          onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> CarteraDetalle(colorTema: widget.colorTema, title: "Detalle Item " + listaCartera[index])));},
         );
       }
     );

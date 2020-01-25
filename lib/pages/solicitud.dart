@@ -409,12 +409,12 @@ class _SolicitudState extends State<Solicitud> {
   }
 
   Widget styleButton(VoidCallback onPressed, String text){
-    return RaisedButton(
+    return SizedBox(width: double.infinity, child: RaisedButton(
       onPressed: buttonEnabled ? onPressed : (){},
       color: widget.colorTema,
       textColor: Colors.white,
       child: Text(text),
-    );
+    ));
   }
 
   void validaSubmit(){
@@ -489,7 +489,7 @@ class _SolicitudState extends State<Solicitud> {
       curpStr = curpStr + fechaNacimiento.text[0] +fechaNacimiento.text [1];
     }
 
-    curp.text = curpStr;
+    if(curp.text.length < 18) curp.text = curpStr;
     rfc.text = curpStr;
   }
 

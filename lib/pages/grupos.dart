@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_container/responsive_container.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes_grupo.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
@@ -26,11 +27,13 @@ class _GroupState extends State<Group> {
   final _formKey = new GlobalKey<FormState>();
   var _nombre = TextEditingController();
   AuthFirebase authFirebase = new AuthFirebase();
+  int gruposCant = 0;
 
   Future<void> getListGrupos() async{
     final pref = await SharedPreferences.getInstance();
     userID = pref.getString("uid");
-    grupos = await ServiceRepositoryGrupos.getAllGrupos(userID);    
+    grupos = await ServiceRepositoryGrupos.getAllGrupos(userID);
+    gruposCant = grupos.length;    
     setState(() {});
   }
 
@@ -43,6 +46,8 @@ class _GroupState extends State<Group> {
 
   @override
   Widget build(BuildContext context) {
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    final bool isLandscape = orientation == Orientation.landscape;
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -63,7 +68,17 @@ class _GroupState extends State<Group> {
                 colors: [widget.colorTema[100], Colors.white])
               ),
             ),
-            grupos.length > 0 ? listaGrupos() :  Padding(padding: EdgeInsets.all(20.0),child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Sin grupos en captura 📦☹️", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)), Row(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Presiona ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)), Icon(Icons.group_add, size: 30.0,), Text(" para agregar un nuevo grupo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema))],)],))) 
+            Column(children: <Widget>[
+              ResponsiveContainer(
+                heightPercent: 30.0,
+                widthPercent: 100.0,
+                child: Container(color: widget.colorTema[700], child: Center(
+                  child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[Icon(Icons.group,color: Colors.white60, size: isLandscape ? 50.0 : 150.0), Text("GRUPOS EN CAPTURA: "+gruposCant.toString(), style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),)]),
+                )),
+              ),
+              grupos.length > 0 ? Expanded(child:listaGrupos()) :  Padding(padding: EdgeInsets.all(20.0),child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Sin grupos en captura ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)), Row(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Presiona ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)), Icon(Icons.group_add, size: 30.0,), Text(" para agregar un nuevo grupo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema))],)],))), 
+              grupos.length > 0 ? Container() : Expanded(child:ListView())
+            ])
           ]
         )
       ),
@@ -187,14 +202,14 @@ class _GroupState extends State<Group> {
                   validator: (value){return value.isEmpty ? "Ingresa el nombre" : null;},
                 ),
               ),
-              RaisedButton(
+              SizedBox(width: double.infinity, child:RaisedButton(
                 onPressed: (){
                   crearGrupo();
                 },
                 color: widget.colorTema,
                 textColor: Colors.white,
                 child: Text("Crear Grupo"),
-              )
+              ))
             ],
           ),
         ),
@@ -230,14 +245,14 @@ class _GroupState extends State<Group> {
                   validator: (value){return value.isEmpty ? "Ingresa el nombre" : null;},
                 ),
               ),
-              RaisedButton(
+              SizedBox(width: double.infinity, child:RaisedButton(
                 onPressed: (){
                   editarGrupo(grupo);
                 },
                 color: widget.colorTema,
                 textColor: Colors.white,
                 child: Text("Actualizar Grupo"),
-              )
+              ))
             ],
           ),
         ),

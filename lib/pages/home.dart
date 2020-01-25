@@ -151,28 +151,29 @@ class _HomePageState extends State<HomePage> {
                       child: Container(
                         child: ListTile(
                         leading: getIcono(),
-                        title: Text(getMensaje(), style: TextStyle(fontWeight: FontWeight.bold)),
+                        title: Text(getMensaje(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white70)),
                         subtitle: getLeyenda(),
                         trailing: getAcciones(),
+                        isThreeLine: true,
                         ),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                           begin: Alignment.topRight,
                           end: Alignment.bottomLeft,
-                          colors: [widget.colorTema[400], Colors.white])
+                          colors: [widget.colorTema[400], widget.colorTema[400]])
                         ),
                       )
                     ),
                     onTap: (){},
                   ),
                   Divider(),
-                  userType == 2 ? Text("") : InkWell(
+                  userType == 2 ? Container() : InkWell(
                     child: Card(
                       child: Container(
                         child: ListTile(
                         leading: Icon(Icons.person_add, color: widget.colorTema,size: 40.0,),
                         title: Text("Nueva Solicitud Individual", style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("Captura solicitudes de credito individual en 3 pasos."),
+                        subtitle: Text("Captura solicitudes de crédito individual en 3 pasos."),
                         trailing: Icon(Icons.arrow_forward_ios),
                         ),
                         decoration: BoxDecoration(
@@ -185,13 +186,13 @@ class _HomePageState extends State<HomePage> {
                     ),
                     onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Individual", colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo(),)));},
                   ),
-                  userType == 1 ? Text("") :InkWell(
+                  userType == 1 ? Container() :InkWell(
                     child: Card(
                       child: Container(
                         child: ListTile(
                         leading: Icon(Icons.group_add, color: widget.colorTema,size: 40.0,),
-                        title: Text("Nueva solicitud de credito Grupal", style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("Captura solicitudes de Credito Grupal."),
+                        title: Text("Nueva solicitud de crédito Grupal", style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("Captura solicitudes de Crédito Grupal."),
                         trailing: Icon(Icons.arrow_forward_ios),
                         ),
                         decoration: BoxDecoration(
@@ -221,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       )
                     ),
-                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera() ));},
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera(colorTema: widget.colorTema,) ));},
                   ),
                   InkWell(
                     child: Card(
@@ -240,7 +241,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       )
                     ),
-                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Renovaciones() ));},
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Renovaciones(colorTema: widget.colorTema,) ));},
                   ),
                   Divider(),
                   InkWell(
@@ -285,29 +286,29 @@ class _HomePageState extends State<HomePage> {
           }
         }
       }
-      mensaje = "Tienes "+(solicitudesGrupos.length+solicitudesIndividuales.length).toString()+" solicitud(es) por sincronizar";
+      mensaje = "\nEN ESPERA POR SINCRONIZAR: "+(solicitudesGrupos.length+solicitudesIndividuales.length).toString();
     }else{
-      mensaje = "Sin solicitudes por sincronizar.";
+      mensaje = "\nSIN SOLICITUDES POR SINCRONIZAR.";
     }
     return mensaje;
   }
 
   Icon getIcono(){
     if(solicitudes.length > 0)
-      return Icon(Icons.error_outline, color: Colors.red ,size: 40.0,);
+      return Icon(Icons.error_outline, color: Colors.redAccent ,size: 40.0,);
     else 
-      return Icon(Icons.tag_faces, color: widget.colorTema ,size: 40.0,);
+      return Icon(Icons.check_circle, color: Colors.blueAccent ,size: 40.0,);
   }
 
   Widget getLeyenda(){
     if(solicitudes.length > 0)
       return Row(children: <Widget>[
-        Text("Da clic en "),
-        Icon(Icons.more_vert, size: 13.0,),
-        Text(" para tomar acciones.")
+        Text("Da clic en", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70)),
+        Icon(Icons.more_vert, size: 15.0), 
+        Text("para tomar acciones.", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))
       ],);
     else 
-      return Text("Todo marcha bien.");
+      return Text("No hay solicitudes de crédito en espera.", style: TextStyle(fontWeight: FontWeight.bold));
   }
 
   Widget getAcciones(){
@@ -334,7 +335,7 @@ class _HomePageState extends State<HomePage> {
           }
         }
       }
-    ) : Icon(Icons.check_circle, color: Colors.blue ,size: 40.0,);
+    ) : null;//Icon(Icons.check_circle, color: Colors.blue ,size: 40.0,);
   }
 
   showDialogo() async{

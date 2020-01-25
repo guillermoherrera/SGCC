@@ -54,6 +54,7 @@ class _ConfiaShopViewState extends State<ConfiaShopView> {
       appBar: AppBar(
         title: Text("ConfiaShop"),
         centerTitle: true,
+        leading: new IconButton(icon: Icon(Icons.close), onPressed: () => Navigator.of(context).pop(),),
         actions: <Widget>[
           //IconButton(icon: const Icon(Icons.arrow_back_ios), onPressed: (){ flutterWebViewPlugin != null  ? flutterWebViewPlugin.goBack() : null;}),
           //IconButton(icon: const Icon(Icons.arrow_forward_ios), onPressed: (){ flutterWebViewPlugin != null ? flutterWebViewPlugin.goForward() : null;}),

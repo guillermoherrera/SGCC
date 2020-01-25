@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:responsive_container/responsive_container.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/models/direccion.dart';
 import 'package:sgcartera_app/models/documento.dart';
@@ -47,7 +48,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   List<String> grupos = List();
   Firestore _firestore = Firestore.instance;
   FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
-  String mensaje = "Cargando ...🕔";
+  String mensaje = "Por favor espere.", msjEncabezado = "🕔 CARGANDO ... ";
+  int solicitudesCant;
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
 
   bool downloading = false;
@@ -62,10 +64,12 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         gruposGuardados = await ServiceRepositoryGrupos.getAllGruposEspera(userID);
         gruposAbiertos = await ServiceRepositoryGrupos.getAllGrupos(userID);
         solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);  
-        mensaje = "Sin solicitudes en espera para mostrar 📦☹️";
+        msjEncabezado = "SOLICITUDES EN ESPERA: ";
+        mensaje = "Sin solicitudes en espera para mostrar.";
         break;
       case 1:
-        mensaje = "Sin solicitudes por autorizar para mostrar 📦☹️";
+        msjEncabezado = "SOLICITUDES POR AUTORIZAR: ";
+        mensaje = "Sin solicitudes por autorizar para mostrar.";
         await getSolcitudesespera(userID,1);
         await getSolcitudesespera(userID,6);
         /*await getSolcitudesespera(userID,7);
@@ -74,26 +78,38 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         await getSolcitudesespera(userID,10);*/
         break;
       case 2:
-        mensaje = "Sin Solicitudes con peticiones de cambio de documentos para mostrar 📦☹️";
+      msjEncabezado = "CAMBIO DE DOCUMENTOS: ";
+        mensaje = "Sin Solicitudes con peticiones de cambio de documentos para mostrar.";
         solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesCambio(userID);
         break;
       case 3:
-        mensaje = "Sin solicitudes Aprobadas para mostrar 📦☹️";
+        msjEncabezado = "SOLICITUDES APROBADAS: ";
+        mensaje = "Sin solicitudes Aprobadas para mostrar.";
         await getSolcitudesespera(userID,2);
         break;
       case 4:
-        mensaje = "Sin solicitudes Denegadas para mostrar 📦☹️";
+        msjEncabezado = "SOLICITUDES RECHAZADAS: ";
+        mensaje = "Sin solicitudes Rechazadas para mostrar.";
         await getSolcitudesespera(userID,3);
         break;
       case 5:
         gruposGuardados = await ServiceRepositoryGrupos.getAllGruposSync(userID);
         //gruposAbiertos = await ServiceRepositoryGrupos.getAllGrupos(userID);
-        solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesSync(userID);  
-        mensaje = "Sin historial para mostrar 📦☹️";
+        solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesSync(userID);
+        msjEncabezado = "SOLICITUDES HISTORIAL: ";
+        mensaje = "Sin historial para mostrar.";
         break;
       default:
-        mensaje = "Error en la busqueda, vuelve a intentarlo 📦☹️";
+        msjEncabezado = "HALGO SALIO MAL";
+        mensaje = "Error en la busqueda, vuelve a intentarlo.";
         break;
+    }
+    solicitudesCant = 0;
+    for(Solicitud solicitud in solicitudes){
+      if(!grupos.contains(solicitud.nombreGrupo)){
+        solicitudesCant += 1;
+        if(solicitud.grupoID != null || solicitud.idGrupo != null) grupos.add(solicitud.nombreGrupo);
+      }
     }
     try{
       setState(() {});
@@ -205,6 +221,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   
   @override
   Widget build(BuildContext context) {
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    final bool isLandscape = orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -254,7 +272,21 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 colors: [widget.colorTema[100], Colors.white])
               ),
             ),
-            solicitudes.length > 0 ? listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))),
+            Column(children: <Widget>[
+              ResponsiveContainer(
+                heightPercent: 30.0,
+                widthPercent: 100.0,
+                child: Container(decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [widget.colorTema[300], widget.colorTema[900]])
+                  ), child: Center(
+                  child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[Icon(Icons.assignment,color: Colors.white60, size: isLandscape ? 50.0 : 150.0), Text(solicitudesCant != null ? msjEncabezado+solicitudesCant.toString() : msjEncabezado, style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),)]),
+                )),
+              ),
+              solicitudes.length > 0 ? Expanded(child: listaSolicitudes()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))),
+            ]),
             solicitudes.length > 0 ? Container() : ListView()
           ]
         )
@@ -448,11 +480,11 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           children: 
           <Widget>[
             Row(mainAxisSize: MainAxisSize.min ,children: <Widget>[
-              Tooltip(message: "Los integrantes estan en proceso de aprobación.", child: Icon(Icons.done_all)),
-              Text("        "),
               IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: ()async {
                 await Navigator.push(context, MaterialPageRoute(builder: (context) =>  ListaSolicitudesGrupoSinc(title: solicitud.nombreGrupo, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, solicitudes: solicitudesGrupo.toList())));
-              },) 
+              },),
+              Text("        "),
+              Tooltip(message: "Los integrantes estan en proceso de aprobación.", child: Icon(Icons.done_all)),
             ],)
           ]);
         break;

@@ -94,7 +94,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           Divider(),
-          InkWell(
+          /*InkWell(
             onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera(colorTema: widget.colorTema,) ));},
             child: ListTile(
               title: Text("Mi Cartera"),
@@ -103,13 +103,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
           ),
           Divider(),
           InkWell(
-            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Renovaciones() ));},
+            onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Renovaciones(colorTema: widget.colorTema,) ));},
             child: ListTile(
               title: Text("Renovaciones"),
               leading: Icon(Icons.cached, color: widget.colorTema,),
             ),
           ),
-          Divider(),
+          Divider(),*/
           InkWell(
             onTap: (){
               _logOut();

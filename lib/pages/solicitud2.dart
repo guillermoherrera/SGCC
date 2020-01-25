@@ -103,8 +103,8 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       Divider(),
       adjuntarId(),
       datosPrevios(),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      Column(
+        //mainAxisAlignment: MainAxisAlignment.center,
         children: buttonWidget(),
       ),
       Row(
@@ -285,12 +285,12 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
   }
 
   Widget styleButton(VoidCallback onPressed, String text){
-    return RaisedButton(
+    return SizedBox(width: double.infinity, child:RaisedButton(
       onPressed: buttonEnabled ? onPressed : (){},
       color: widget.colorTema,
       textColor: Colors.white,
       child: Text(text),
-    );
+    ));
   }
 
   void validaSubmit() async{
