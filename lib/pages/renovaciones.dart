@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:responsive_container/responsive_container.dart';
+import 'package:sgcartera_app/models/grupo_renovacion.dart';
 import 'package:sgcartera_app/pages/renovacionesDetalle.dart';
 
 class Renovaciones extends StatefulWidget {
@@ -13,7 +14,7 @@ class Renovaciones extends StatefulWidget {
 }
 
 class _RenovacionesState extends State<Renovaciones> {
-  List<String> listaCartera = List();
+  List<GrupoRenovacion> listaRenovacion = List();
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now().add(Duration(days: 7));
@@ -29,9 +30,10 @@ class _RenovacionesState extends State<Renovaciones> {
     );
     if (picked != null && picked.length == 2) {
       print(picked);
-      setState(() {
+      setState((){
         startDate = picked[0];
-        endDate = picked[1];  
+        endDate = picked[1];
+        getListDocumentos();
       });
     }
   }
@@ -43,9 +45,14 @@ class _RenovacionesState extends State<Renovaciones> {
   }
 
   getListDocumentos()async{
-    listaCartera.clear();
+    listaRenovacion.clear();
     for(var i = 0; i <= 5; i++){
-      listaCartera.add(i.toString());
+      GrupoRenovacion grupoRenovacion = new GrupoRenovacion(
+        nombre: "GpoRenovacion"+ i.toString(),
+        fechaTermino: startDate,
+        grupoID: i 
+      );
+      listaRenovacion.add(grupoRenovacion);
     }
   }
 
@@ -84,7 +91,7 @@ class _RenovacionesState extends State<Renovaciones> {
                   end: Alignment.bottomLeft,
                   colors: [widget.colorTema[300], widget.colorTema[900]])
                 ), child: Center(
-                child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[Icon(Icons.assignment,color: Colors.white60, size: isLandscape ? 50.0 : 150.0), Text("CONTRATOS PROXIMOS A LIQUIDAR: "+listaCartera.length.toString(), style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),)]),
+                child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[Icon(Icons.assignment,color: Colors.white60, size: isLandscape ? 50.0 : 150.0), Text("CONTRATOS PROXIMOS A LIQUIDAR: "+listaRenovacion.length.toString(), style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),)]),
               )),
             ),
             SizedBox(width: double.infinity, child: Container(padding: EdgeInsets.all(10.0), child: Text("Consulta del día "+formatDate(startDate, [dd, '/', mm, '/', yyyy])+" al día "+formatDate(endDate, [dd, '/', mm, '/', yyyy]), style: TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.bold),), color: Colors.blueAccent,),),
@@ -93,7 +100,7 @@ class _RenovacionesState extends State<Renovaciones> {
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("SELECCIONA LAS FECHAS PARA LA CONSULTA", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), Icon(Icons.touch_app, color: Colors.white,)]),
               color: widget.colorTema,
             ))),
-            listaCartera.length > 0 ? Expanded(child: renovacionLista()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))),
+            listaRenovacion.length > 0 ? Expanded(child: renovacionLista()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))),
             ]
           )
           ]
@@ -104,15 +111,15 @@ class _RenovacionesState extends State<Renovaciones> {
 
   Widget renovacionLista(){
     return ListView.builder(
-      itemCount: listaCartera.length,
+      itemCount: listaRenovacion.length,
       itemBuilder: (context, index){
         return InkWell(
           child: Card(
             child: Container(
               child: ListTile(
                 leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
-                title: Text("Item " + listaCartera[index], style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text("Subtitulo: Item " + listaCartera[index]),
+                title: Text(listaRenovacion[index].nombre, style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text("Fecha termino: " + formatDate(listaRenovacion[index].fechaTermino, [dd, '/', mm, '/', yyyy])),
                 isThreeLine: true,
                 trailing: Column(children: <Widget>[ Icon(Icons.arrow_forward_ios)], mainAxisAlignment: MainAxisAlignment.center,),
               ),
@@ -124,7 +131,7 @@ class _RenovacionesState extends State<Renovaciones> {
               ),
             )
           ),
-          onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> RenovacionesDetalle(colorTema: widget.colorTema, title: "Detalle Item " + listaCartera[index])));},
+          onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> RenovacionesDetalle(colorTema: widget.colorTema, title: listaRenovacion[index].nombre)));},
         );
       }
     );
