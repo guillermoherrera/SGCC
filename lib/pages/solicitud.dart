@@ -17,12 +17,13 @@ import 'home.dart';
 //import 'package:intl/intl.dart';
 
 class Solicitud extends StatefulWidget {
-  Solicitud({this.title, this.colorTema, this.grupoId, this.grupoNombre, this.actualizaHome});
+  Solicitud({this.title, this.colorTema, this.grupoId, this.grupoNombre, this.actualizaHome, this.esRenovacion});
   final String title;
   final MaterialColor colorTema;
   final int grupoId;
   final String grupoNombre;
   final VoidCallback actualizaHome;
+  bool esRenovacion;
   @override
   _SolicitudState createState() => _SolicitudState();
 }
@@ -76,6 +77,7 @@ class _SolicitudState extends State<Solicitud> {
 
   @override
   void initState() {
+    if(widget.esRenovacion == null){widget.esRenovacion = false;} 
     getEstados();
     //formatted = formatter.format(selectedDate);
     //fechaNacimiento.text = formatted;
@@ -87,7 +89,7 @@ class _SolicitudState extends State<Solicitud> {
   Widget build(BuildContext context) {
     return WillPopScope(
       //onWillPop: ()=> Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: authFirebase, colorTema: widget.colorTema,))),
-      onWillPop: ()=> Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>HomePage(onSingIn: (){}, colorTema: widget.colorTema,)), (Route<dynamic> route) => false),
+      onWillPop: ()async=> widget.esRenovacion ? true : Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>HomePage(onSingIn: (){}, colorTema: widget.colorTema,)), (Route<dynamic> route) => false),
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -444,7 +446,7 @@ class _SolicitudState extends State<Solicitud> {
       _buttonStatus();
       //Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome)));
       estados.sort((a, b) => a.estado.compareTo(b.estado));
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDireccion(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, estados: estados)));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDireccion(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, estados: estados, esRenovacion: widget.esRenovacion)));
     }else{
       final snackBar = SnackBar(
         content: Text("Error al guardar. Revisa el formulario para más información.", style: TextStyle(fontWeight: FontWeight.bold),),

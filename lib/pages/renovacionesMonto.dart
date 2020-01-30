@@ -4,17 +4,22 @@ import 'package:sgcartera_app/models/renovacion.dart';
 import 'confia_shop.dart';
 
 class RenovacionMonto extends StatefulWidget {
-  RenovacionMonto({this.renovacion, this.colorTema, this.index});
+  RenovacionMonto({this.renovacion, this.colorTema, this.index, this.montoChange});
   Renovacion renovacion;
   final MaterialColor colorTema;
   final int index;
+  //final VoidCallback montoChange;
+  final void Function(int, double) montoChange;
   @override
   _RenovacionMontoState createState() => _RenovacionMontoState();
 }
 
 class _RenovacionMontoState extends State<RenovacionMonto> {
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   var importe = TextEditingController();
+  final formKey = new GlobalKey<FormState>();
+  bool importeActualiza = false;
 
   @override
   void initState() {
@@ -24,16 +29,14 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(widget.renovacion.nombre),
         centerTitle: true,
       ),
-      body: RefreshIndicator(
-        key: refreshKey,
-        onRefresh: ()async{
-          await Future.delayed(Duration(seconds:1));
-          //await getListDocumentos();
-        },
+      body: Form(
+        key: formKey,
+        child: Container(
         child: Stack(
           children: <Widget>[
             Container(
@@ -61,7 +64,7 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
           ]
         )
       ),
-    );
+    ));
   }
 
   List<Widget> vista(){
@@ -74,7 +77,6 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
           decoration: InputDecoration(
             labelText: "Importe Capital",
             prefixIcon: Icon(Icons.attach_money, size: 40.0,),
-            
           ),
           keyboardType: TextInputType.number,
           validator: (value){
@@ -93,14 +95,17 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
       ),
       Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
         onPressed: ()async{
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ConfiaShopView()));
+          validaSubmit();
+          //widget.montoChange(3, 10.0);
+          //Navigator.push(context, MaterialPageRoute(builder: (context) => ConfiaShopView()));
         },
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("EDITAR IMPORTE", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("ACTUALIZAR IMPORTE", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
         color: widget.colorTema,
       ))),
       Divider(),
       datos(),
       Divider(),
+      Image.asset("images/confiaShop.png", height: 70,),
       confiaShop()
     ];
   }
@@ -118,7 +123,7 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
         Container(child:Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text("DATOS DEL CLIENTE", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("DATOS DEL CLIENTE", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0)),
           ],
         ), margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0)),
         Table(
@@ -127,50 +132,50 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
             TableRow(
               children: [
                 Icon(Icons.person, size: 15.0, color: widget.colorTema,),
-                Text("NOMBRE: ", style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(widget.renovacion.nombre),
+                Text("NOMBRE: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
+                Text(widget.renovacion.nombre, style: TextStyle(fontSize: 15.0)),
               ]
             ),
             TableRow(
               children: [
                 Icon(Icons.attach_money, size: 15.0, color: widget.colorTema,),
-                Text("IMPORTE: ", style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(widget.renovacion.importe.toStringAsFixed(2)),
+                Text("IMPORTE: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
+                Text(widget.renovacion.importe.toStringAsFixed(2), style: TextStyle(fontSize: 15.0, color: importeActualiza ? Colors.green : Colors.black, fontWeight: importeActualiza ? FontWeight.bold : null)),
               ]
             ),
             TableRow(
               children: [
                 Icon(Icons.attach_money, size: 15.0, color: widget.colorTema,),
-                Text("CAPITAL: ", style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(widget.renovacion.capital.toStringAsFixed(2)),
+                Text("CAPITAL: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
+                Text(widget.renovacion.capital.toStringAsFixed(2), style: TextStyle(fontSize: 15.0)),
               ]
             ),
             TableRow(
               children: [
                 Icon(Icons.calendar_today, size: 15.0, color: widget.colorTema,),
-                Text("DÍAS DE ATRASO: ", style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(widget.renovacion.diasAtraso.toString()),
+                Text("DÍAS DE ATRASO: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
+                Text(widget.renovacion.diasAtraso.toString(), style: TextStyle(fontSize: 15.0)),
               ]
             ),
             TableRow(
               children: [
                 Icon(Icons.format_list_numbered, size: 15.0, color: widget.colorTema,),
-                Text("CLIENTE ID: ", style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(widget.renovacion.clienteID.toString()),
+                Text("CLIENTE ID: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
+                Text(widget.renovacion.clienteID.toString(), style: TextStyle(fontSize: 15.0)),
               ]
             ),
             TableRow(
               children: [
                 Icon(Icons.format_list_numbered, size: 15.0, color: widget.colorTema,),
-                Text("CRÉDITO ID: ", style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(widget.renovacion.creditoID.toString()),
+                Text("CRÉDITO ID: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
+                Text(widget.renovacion.creditoID.toString(), style: TextStyle(fontSize: 15.0)),
               ]
             ),
             TableRow(
               children: [
                 Icon(Icons.shopping_cart, size: 15.0, color: widget.colorTema,),
-                Text("BENEFICIO: ", style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(widget.renovacion.beneficios != null ? widget.renovacion.beneficios[0]['cveBeneficio'] : "N/A"),
+                Text("BENEFICIO CONFIASHOP: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
+                Text(widget.renovacion.beneficios != null ? widget.renovacion.beneficios[0]['cveBeneficio'] : "N/A", style: TextStyle(fontSize: 15.0)),
               ]
             ),
           ],
@@ -179,18 +184,41 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
     );
   }
 
-  Widget confiaShop(){
-    if(widget.renovacion.beneficios != null){
-      return Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
-        onPressed: ()async{
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ConfiaShopView()));
-        },
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.shopping_cart, color: Colors.white) ,Text("ConfiaShop", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
-        color: Colors.purple,
-      ))); 
+  Widget confiaShop(){    
+    return Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
+      onPressed: ()async{
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ConfiaShopView()));
+      },
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.shopping_cart, color: Colors.white) ,Text("ConfiaShop", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
+      color: Colors.purple,
+    )));
+  }
+
+  void validaSubmit(){
+    FocusScope.of(context).requestFocus(FocusNode());
+    var snackBar;
+
+    if(formKey.currentState.validate()){
+      if(double.parse(importe.text) != widget.renovacion.importe){      
+        widget.montoChange(widget.index, double.parse(importe.text));
+        setState(() {
+          importeActualiza = true;
+          widget.renovacion.importe = double.parse(importe.text);
+        });
+        snackBar = SnackBar(
+          content: Text("Importe Capital Actualizado.", style: TextStyle(fontWeight: FontWeight.bold),),
+          backgroundColor: Colors.green[300],
+          duration: Duration(seconds: 3),
+        );
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+      }
     }else{
-      return Container();
+      snackBar = SnackBar(
+        content: Text("Error al actualizar. Revisa el formulario para más información.", style: TextStyle(fontWeight: FontWeight.bold),),
+        backgroundColor: Colors.red[300],
+        duration: Duration(seconds: 3),
+      );
+      _scaffoldKey.currentState.showSnackBar(snackBar);
     }
-    
   }
 }

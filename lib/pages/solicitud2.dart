@@ -26,11 +26,12 @@ import 'lista_solicitudes.dart';
 import 'lista_solicitudes_grupo.dart';
 
 class SolicitudDocumentos extends StatefulWidget {
-  SolicitudDocumentos({this.title, this.datos, this.colorTema, this.actualizaHome});
+  SolicitudDocumentos({this.title, this.datos, this.colorTema, this.actualizaHome, this.esRenovacion});
   final String title;
   final SolicitudObj datos;
   final MaterialColor colorTema;
   final VoidCallback actualizaHome;
+  bool esRenovacion;
   @override
   _SolicitudDocumentosState createState() => _SolicitudDocumentosState();
 }
@@ -47,7 +48,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    if(widget.esRenovacion == null){widget.esRenovacion = false;}
     getCatDocumentos();
     super.initState();
   }
@@ -335,20 +336,27 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
                         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>HomePage(onSingIn: (){}, colorTema: widget.colorTema,)), (Route<dynamic> route) => false);
                         //Navigator.popUntil(context, ModalRoute.withName('/'));
                       }else{
-                        widget.actualizaHome();
-                        Navigator.pop(context);
-                        Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(widget.datos.grupoId); 
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo, actualizaHome: widget.actualizaHome, grupo: grupo)));
-                        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: widget.datos.grupoNombre, actualizaHome: widget.actualizaHome)));
+                        if(widget.esRenovacion){
+                          widget.actualizaHome();
+                          int count = 0;
+                          Navigator.of(context).popUntil((_) => count++ >= 4);
+                        }else{
+                          widget.actualizaHome();
+                          Navigator.pop(context);
+                          Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(widget.datos.grupoId); 
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: grupo.nombreGrupo, actualizaHome: widget.actualizaHome, grupo: grupo)));
+                          //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListaSolicitudesGrupo(colorTema: widget.colorTema,title: widget.datos.grupoNombre, actualizaHome: widget.actualizaHome)));
+                        }
                       }
                     }
                   ),
-                  widget.datos.grupoId != null ? new FlatButton(
+                  widget.esRenovacion ? null : widget.datos.grupoId != null ? new FlatButton(
                     child: Text("AGREGAR OTRA"),
                     onPressed: (){
                         widget.actualizaHome();
                         Navigator.pop(context);
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PageSolicitud.Solicitud(title: "Solicitud Grupal: "+widget.datos.grupoNombre, colorTema: widget.colorTema, grupoId: widget.datos.grupoId , grupoNombre: widget.datos.grupoNombre , actualizaHome: widget.actualizaHome)));
+                        String title = widget.esRenovacion ? "Grupo Renovación:" : "Solicitud Grupal: ";
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PageSolicitud.Solicitud(title: title+widget.datos.grupoNombre, colorTema: widget.colorTema, grupoId: widget.datos.grupoId , grupoNombre: widget.datos.grupoNombre , actualizaHome: widget.actualizaHome, esRenovacion: widget.esRenovacion,)));
                       }
                   ) : null,
                 ],
@@ -414,9 +422,11 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       await ServiceRepositorySolicitudes.addSolicitud(solicitud).then((_) async{
 
         if(widget.datos.grupoId != null){
-          Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(widget.datos.grupoId);
-          Grupo grupoAux = new Grupo(idGrupo: grupo.idGrupo, cantidad: grupo.cantidad + 1, importe: grupo.importe + widget.datos.importe);
-          await ServiceRepositoryGrupos.updateGrupoImpCant(grupoAux);
+          if(!widget.esRenovacion){
+            Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(widget.datos.grupoId);
+            Grupo grupoAux = new Grupo(idGrupo: grupo.idGrupo, cantidad: grupo.cantidad + 1, importe: grupo.importe + widget.datos.importe);
+            await ServiceRepositoryGrupos.updateGrupoImpCant(grupoAux);
+          }
         }
         for(var doc in listaDocs){
           final int _idD = await ServiceRepositoryDocumentosSolicitud.documentosSolicitudCount();

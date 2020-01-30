@@ -6,12 +6,13 @@ import 'package:sgcartera_app/pages/solicitud2.dart';
 import 'package:sgcartera_app/sqlite_files/models/cat_estado.dart';
 
 class SolicitudDireccion extends StatefulWidget {
-  SolicitudDireccion({this.actualizaHome, this.colorTema, this.datos,this.title,this.estados});
+  SolicitudDireccion({this.actualizaHome, this.colorTema, this.datos,this.title,this.estados, this.esRenovacion});
   final String title;
   final SolicitudObj datos;
   final MaterialColor colorTema;
   final VoidCallback actualizaHome;
   final List<CatEstado> estados;
+  bool esRenovacion;
   @override
   _SolicitudDireccionState createState() => _SolicitudDireccionState();
 }
@@ -33,6 +34,7 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
 
   @override
   void initState() {
+    if(widget.esRenovacion == null){widget.esRenovacion = false;}
     paisCod.text = "MX";
     super.initState();
   }
@@ -287,7 +289,7 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
       );
       widget.datos.direccion = direccion.toJson();
       _buttonStatus();
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: widget.datos, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome)));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: widget.datos, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, esRenovacion: widget.esRenovacion)));
       
     }else{
       final snackBar = SnackBar(

@@ -7,8 +7,9 @@ import 'package:sgcartera_app/models/grupo_renovacion.dart';
 import 'package:sgcartera_app/pages/renovacionesDetalle.dart';
 
 class Renovaciones extends StatefulWidget {
-  Renovaciones({this.colorTema});
+  Renovaciones({this.colorTema, this.actualizaHome});
   final MaterialColor colorTema;
+  final VoidCallback actualizaHome;
   @override
   _RenovacionesState createState() => _RenovacionesState();
 }
@@ -48,9 +49,9 @@ class _RenovacionesState extends State<Renovaciones> {
     listaRenovacion.clear();
     for(var i = 0; i <= 5; i++){
       GrupoRenovacion grupoRenovacion = new GrupoRenovacion(
-        nombre: "GpoRenovacion"+ i.toString(),
+        nombre: "Grupo Renovacion"+ (i+1).toString(),
         fechaTermino: startDate,
-        grupoID: i 
+        grupoID: 400+i 
       );
       listaRenovacion.add(grupoRenovacion);
     }
@@ -131,7 +132,7 @@ class _RenovacionesState extends State<Renovaciones> {
               ),
             )
           ),
-          onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> RenovacionesDetalle(colorTema: widget.colorTema, title: listaRenovacion[index].nombre)));},
+          onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> RenovacionesDetalle(colorTema: widget.colorTema, grupoInfo: listaRenovacion[index], actualizaHome: widget.actualizaHome)));},
         );
       }
     );

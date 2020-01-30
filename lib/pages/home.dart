@@ -222,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       )
                     ),
-                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera(colorTema: widget.colorTema,) ));},
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera(colorTema: widget.colorTema) ));},
                   ),
                   InkWell(
                     child: Card(
@@ -241,9 +241,9 @@ class _HomePageState extends State<HomePage> {
                         ),
                       )
                     ),
-                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Renovaciones(colorTema: widget.colorTema,) ));},
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Renovaciones(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo()) ));},
                   ),
-                  Divider(),
+                  /*Divider(),
                   InkWell(
                     child: Card(
                       child: Container(
@@ -262,7 +262,7 @@ class _HomePageState extends State<HomePage> {
                       )
                     ),
                     onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => ConfiaShopView()));},
-                  ),
+                  ),*/
                 ],
               )
             ]
