@@ -4,7 +4,12 @@ import 'package:sgcartera_app/models/grupo_renovacion.dart';
 import 'package:sgcartera_app/models/renovacion.dart';
 import 'package:sgcartera_app/pages/renovacionesMonto.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
-import 'package:sgcartera_app/sqlite_files/models/solicitud.dart' as SolicitudModel; 
+import 'package:sgcartera_app/sqlite_files/models/renovaciones.dart' as SqliteRenovaciones;
+import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
+import 'package:sgcartera_app/sqlite_files/models/solicitud.dart' as SolicitudModel;
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catIntegrantes.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_renovacion.dart'; 
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,13 +24,17 @@ class RenovacionesDetalle extends StatefulWidget {
 
 class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   List<Renovacion> listaRenovacion = List();
   List<Renovacion> listaRenEnviar = List();
+  List<SqliteRenovaciones.Renovacion> listaRenEspera = List();
   List<SolicitudModel.Solicitud> solicitudes = List(); 
   String mensaje = "Cargando ...🕔";
   int integrantes = 0;
   double importe = 0.0;
   List<bool> inputs = new List<bool>();
+  bool solicitable = true;
+  String userID;
 
   @override
   void initState() {
@@ -34,30 +43,51 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
   }
 
   getListDocumentos()async{
-    listaRenovacion.clear();
-    inputs.clear();
-    for(var i = 0; i <= 5; i++){
-      Renovacion renovacion = new Renovacion(
-        creditoID: 100+i, 
-        clienteID: 1000+i,
-        nombre: "Nombre Cliente " + (i+1).toString(),
-        importe: 1000.0 + i,
-        capital: 100.0 + i,
-        diasAtraso: i, 
-        beneficios: i%2 == 0 ? [{"cveBeneficio":"A"}] : null
-      );
-      listaRenovacion.add(renovacion);
-      listaRenEnviar.add(renovacion);
-      inputs.add(true);
+    final pref = await SharedPreferences.getInstance();
+    userID = pref.getString("uid");
+    await Future.delayed(Duration(seconds:1));
+    listaRenEspera = await ServiceRepositoryRenovaciones.getRenovacionesFromGrupo(widget.grupoInfo.grupoID);
+    if(listaRenEspera.length > 0){
+      solicitable = false;
+      listaRenovacion.clear();
+      listaRenEnviar.clear();
+      listaRenEspera.forEach((f){
+        Renovacion renovacion = new Renovacion(
+          creditoID: f.creditoID, 
+          clienteID: f.clienteID,
+          nombre: f.nombreCompleto,
+          importe: f.importe,
+          capital: f.capital,
+          diasAtraso: f.diasAtraso, 
+          beneficios: f.beneficio == "null" ? null : [{"cveBeneficio":f.beneficio}]
+        );
+        listaRenovacion.add(renovacion);
+        listaRenEnviar.add(renovacion);
+      });
+    }else{
+      listaRenovacion.clear();
+      inputs.clear();
+      for(var i = 0; i <= 5; i++){
+        Renovacion renovacion = new Renovacion(
+          creditoID: 100+i, 
+          clienteID: 1000+i,
+          nombre: "Nombre Cliente " + (i+1).toString(),
+          importe: 1000.0 + i,
+          capital: 100.0 + i,
+          diasAtraso: i, 
+          beneficios: i%2 == 0 ? [{"cveBeneficio":"A"}] : null
+        );
+        listaRenovacion.add(renovacion);
+        listaRenEnviar.add(renovacion);
+        inputs.add(true);
+      }
+      await getListNewDocumentos();
     }
-    await getListNewDocumentos();
     await getSuma();
     setState(() {});
   }
 
   Future<void> getListNewDocumentos() async{
-    final pref = await SharedPreferences.getInstance();
-    String userID = pref.getString("uid");
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, widget.grupoInfo.nombre);
     solicitudes.forEach((f){
       Renovacion renovacion = new Renovacion(
@@ -77,7 +107,6 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
         inputs.add(true);
       }
     });
-    print("object"); 
   }
 
   getSuma(){
@@ -96,14 +125,15 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isLandscape = orientation == Orientation.landscape;
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(widget.grupoInfo.nombre),
         centerTitle: true,
-        actions: <Widget>[
+        actions: listaRenovacion.length == 0 ? null : solicitable ? <Widget>[
           IconButton(icon: Icon(Icons.person_add), onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Grupo Renovación: "+ widget.grupoInfo.nombre, colorTema: widget.colorTema, grupoId: widget.grupoInfo.grupoID, grupoNombre: widget.grupoInfo.nombre, actualizaHome: ()=>actualizaRenovacion(), esRenovacion: true,)));
           })
-        ],
+        ] : null,
       ),
       body: RefreshIndicator(
         key: refreshKey,
@@ -133,10 +163,16 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
                   child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[Icon(Icons.group,color: Colors.white60, size: isLandscape ? 50.0 : 150.0), Text("INTEGRANTES: "+integrantes.toString()+"\nIMPORTE: "+importe.toStringAsFixed(2), style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),)]),
                 )),
               ),
-              Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
-                onPressed: ()async{ },
+              listaRenovacion.length == 0 ? Container() :  solicitable ? Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
+                onPressed: ()async{
+                  await solicitarRenovacion();
+                },
                 child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("SOLICITAR RENOVACIÓN", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
                 color: widget.colorTema,
+              ))) : Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
+                onPressed: ()async{},
+                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("RENOVACIÓN SOLICITADA", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
+                color: Colors.blue,
               ))),
               listaRenovacion.length > 0 ? Expanded(child: renovacionLista()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))),
             ])
@@ -156,15 +192,15 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
               child: ListTile(
                 title: Text(listaRenovacion[index].nombre),
                 subtitle: subtitleLista(listaRenovacion[index]),
-                trailing: listaRenovacion[index].clienteID == null ? IconButton(icon: Icon(Icons.fiber_new), onPressed: (){}) : listaRenEnviar[index] == null ? IconButton(icon: Icon(Icons.close), onPressed: (){}) : IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: ()async {
+                trailing: !solicitable ? null : listaRenovacion[index].clienteID == null ? IconButton(icon: Icon(Icons.fiber_new), onPressed: (){}) : listaRenEnviar[index] == null ? IconButton(icon: Icon(Icons.close), onPressed: (){}) : IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: ()async {
                   await Navigator.push(context, MaterialPageRoute(builder: (context) =>  RenovacionMonto(renovacion: listaRenovacion[index], colorTema: widget.colorTema, index: index, montoChange: montoChange)));
                 },),
-                leading: Checkbox(
+                leading: solicitable ? Checkbox(
                   value: inputs[index],
                   onChanged: (bool val){
                     itemChange(val, index);
                   },
-                ),
+                ) : IconButton(icon: Icon(Icons.done), onPressed: (){}),
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -197,6 +233,103 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
       }
       getSuma();
     });
+  }
+
+  solicitarRenovacion()async{
+    showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Center(child: Text("Solicitar Renovación")),
+        content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.error, color: Colors.yellow, size: 100.0,),
+                Text(".\n\n¿Desea solicitar la renovación del grupo "+widget.grupoInfo.nombre+"?"),
+              ],
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: const Text("No"),
+                onPressed: (){Navigator.pop(context);}
+              ),
+              new FlatButton(
+                child: const Text("Sí, solicitar Renovacion."),
+                onPressed: ()async{
+                  Navigator.pop(context);
+                  var result = await RepositoryServiceCatIntegrantes.getAllCatIntegrantes();
+                  int cantidad = result[0].cantidad;
+                  if(integrantes >= cantidad){
+                    setState(() {solicitable = false;});
+                    if(await saveSqfliteRenovacion()){
+                      await getListDocumentos();
+                      showSnackBar("Renovación Solicitada", Colors.green);
+                    }else{
+                      setState(() {solicitable = true;});
+                      showSnackBar("Error al guardar la renovación", Colors.red);
+                    }
+                  }else{
+                    setState(() {solicitable = true;});
+                    showSnackBar("No pudo solicitarse la renovación del grupo. Debe tener al menos "+cantidad.toString()+" integrantes", Colors.red);
+                  }
+                }
+              )
+            ],
+      );
+    });
+  }
+
+  Future<bool> saveSqfliteRenovacion() async{
+    bool result = false;
+    try{
+      
+      final Grupo grupo = new Grupo(
+        idGrupo: widget.grupoInfo.grupoID ,
+        nombreGrupo: widget.grupoInfo.nombre,
+        status: 4,
+        userID: userID,
+        cantidad: integrantes,
+        importe: importe
+      );
+
+      if(await ServiceRepositoryGrupos.validaGrupo(grupo)){
+        await ServiceRepositoryGrupos.addGrupoRenovacion(grupo);
+        int idRenov = await ServiceRepositoryRenovaciones.renovacionesCount();
+        listaRenEnviar.forEach((f)async{
+          if(f!=null){
+            idRenov = idRenov + 1;
+            final SqliteRenovaciones.Renovacion renovacion = new SqliteRenovaciones.Renovacion(
+              idRenovacion: idRenov,
+              idGrupo: widget.grupoInfo.grupoID,
+              nombreGrupo: widget.grupoInfo.nombre,
+              creditoID: f.creditoID,
+              clienteID: f.clienteID == null ? null : f.clienteID,
+              nombreCompleto: f.nombre,
+              importe: f.importe,
+              capital: f.capital,
+              diasAtraso: f.diasAtraso,
+              beneficio: f.beneficios == null ? null : f.beneficios[0]['cveBeneficio']
+            );
+
+            await ServiceRepositoryRenovaciones.addRenovacion(renovacion);
+          }
+        });
+
+        result = true;
+      }      
+    }catch(e){
+
+    }
+    return result;
+  }
+
+  showSnackBar(String texto, MaterialColor color){
+    final snackBar = SnackBar(
+      content: Text(texto, style: TextStyle(fontWeight: FontWeight.bold),),
+      backgroundColor: color[300],
+      duration: Duration(seconds: 3),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
   montoChange(int index, double monto){

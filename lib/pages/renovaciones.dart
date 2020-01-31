@@ -30,6 +30,9 @@ class _RenovacionesState extends State<Renovaciones> {
       lastDate: new DateTime(DateTime.now().year + 1)
     );
     if (picked != null && picked.length == 2) {
+      setState(() {
+        listaRenovacion.clear();
+      });
       print(picked);
       setState((){
         startDate = picked[0];
@@ -46,6 +49,7 @@ class _RenovacionesState extends State<Renovaciones> {
   }
 
   getListDocumentos()async{
+    await Future.delayed(Duration(seconds:1));
     listaRenovacion.clear();
     for(var i = 0; i <= 5; i++){
       GrupoRenovacion grupoRenovacion = new GrupoRenovacion(
@@ -55,6 +59,7 @@ class _RenovacionesState extends State<Renovaciones> {
       );
       listaRenovacion.add(grupoRenovacion);
     }
+    setState(() {});
   }
 
   @override

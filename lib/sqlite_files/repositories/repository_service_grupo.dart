@@ -89,6 +89,27 @@ class ServiceRepositoryGrupos{
     DataBaseCreator.dataBaseLog("agregar Grupo", sql, null, result);
   }
 
+  static Future<void> addGrupoRenovacion(Grupo grupo) async{
+    final sql = '''INSERT INTO ${DataBaseCreator.gruposTable}(
+      ${DataBaseCreator.idGrupo},
+      ${DataBaseCreator.nombreGrupo},
+      ${DataBaseCreator.status},
+      ${DataBaseCreator.userID},
+      ${DataBaseCreator.importe_grupo},
+      ${DataBaseCreator.cantidad}
+    )values(
+      ${grupo.idGrupo},
+      "${grupo.nombreGrupo}",
+      ${grupo.status},
+      "${grupo.userID}",
+      ${grupo.importe},
+      ${grupo.cantidad}
+    )''';
+
+    final result = await db.rawInsert(sql);
+    DataBaseCreator.dataBaseLog("agregar Grupo", sql, null, result);
+  }
+
   static Future<void> updateGrupoNombre(Grupo grupo)async{
     final sql = '''UPDATE ${DataBaseCreator.gruposTable}
       SET ${DataBaseCreator.nombreGrupo} = "${grupo.nombreGrupo}"

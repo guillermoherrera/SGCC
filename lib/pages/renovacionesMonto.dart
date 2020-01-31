@@ -195,7 +195,7 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
   }
 
   void validaSubmit(){
-    FocusScope.of(context).requestFocus(FocusNode());
+    //FocusScope.of(context).requestFocus(FocusNode());
     var snackBar;
 
     if(formKey.currentState.validate()){

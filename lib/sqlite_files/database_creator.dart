@@ -60,6 +60,16 @@ class DataBaseCreator{
   static const status = 'status';
   static const documentID = 'documentID';
 
+  static const renovacionesTable = "renovaciones";
+  static const idRenovacion = "idRenovacion";
+  static const creditoID = "creditoID";
+  static const clienteID = "clienteID";
+  static const nombreCompleto = "nombreCompleto";
+  static const capital = "capital";
+  static const diasAtraso = "diasAtraso";
+  static const beneficio = "beneficio";
+  static const ticket = "ticket";
+
   static void dataBaseLog(String functionName, String sql, [List<Map<String, dynamic>> selectedQueryResult, int insertAndUpdateQueryResult]){
     print(functionName);
     print(sql);
@@ -155,6 +165,24 @@ class DataBaseCreator{
     await db.execute(solicitudesSql);
   }
 
+  Future<void> createRenovacionesTable(Database db) async{
+    final solicitudesSql = '''CREATE TABLE $renovacionesTable(
+      $idRenovacion INTEGER PRIMARY KEY,
+      $idGrupo INTEGER,
+      $nombre_Grupo TEXT,
+      $importe DOUBLE,
+      $nombreCompleto TEXT,
+      $creditoID INT,
+      $clienteID INT,
+      $capital DOUBLE,
+      $diasAtraso INT,
+      $beneficio TEXT,
+      $ticket TEXT
+    )''';
+
+    await db.execute(solicitudesSql);
+  }
+
   Future<String> getDataBasePath(String dbName)async{
     final dataBasePath = await getDatabasesPath();
     final path = join(dataBasePath, dbName);
@@ -180,6 +208,7 @@ class DataBaseCreator{
     await createGruposTable(db);
     await createCatIntegrantesTable(db);
     await createCatEstadosTable(db);
+    await createRenovacionesTable(db);
   }
 
 }
