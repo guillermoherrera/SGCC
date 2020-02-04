@@ -448,7 +448,9 @@ class _HomePageState extends State<HomePage> {
             grupoModel.Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitud.idGrupo);
             grupoObj = new GrupoObj(nombre: solicitud.nombreGrupo, status: 2, userID: solicitud.userID, importe: grupo.importe, integrantes: grupo.cantidad);
             if(grupo.grupoID == null || grupo.grupoID == "null"){
-              var result = await _firestore.collection("Grupos").add(grupoObj.toJson());
+              Map grupoFirebase = grupoObj.toJson();
+              grupoFirebase.removeWhere((key, value)=>key=='grupo_id');
+              var result = await _firestore.collection("Grupos").add(grupoFirebase);
               await ServiceRepositoryGrupos.updateGrupoStatus(2, result.documentID, solicitud.idGrupo);
               grupoObj.grupoID = result.documentID;
             }else{
@@ -473,7 +475,9 @@ class _HomePageState extends State<HomePage> {
 
           solicitudObj.documentos = lista;   
           solicitudObj.fechaCaputra = DateTime.now();
-          var result = await _firestore.collection("Solicitudes").add(solicitudObj.toJson());
+          Map solicitudFirebase = solicitudObj.toJson();
+          solicitudFirebase.removeWhere((key, value)=>key=='grupo_Id');
+          var result = await _firestore.collection("Solicitudes").add(solicitudFirebase);
           await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
           //if(solicitudObj.grupoId != null) ServiceRepositoryGrupos.updateGrupoStatus(2, grupoObj.grupoID, solicitudObj.grupoId);
           print(result);

@@ -3,6 +3,29 @@ import 'package:sgcartera_app/sqlite_files/models/renovaciones.dart';
 import '../database_creator.dart';
 
 class ServiceRepositoryRenovaciones{
+
+  static Future<List<Renovacion>> getAllRenovaciones(String userID) async{
+    final sql = ''' SELECT * FROM ${DataBaseCreator.renovacionesTable}
+      WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.status} = 0''';
+
+    final data = await db.rawQuery(sql);
+    List<Renovacion> solicitudes = List();
+
+    for(final node in data){
+      final solicitud = Renovacion.fromjson(node);
+      solicitudes.add(solicitud);
+    }
+    return solicitudes;
+  }
+
+  static Future<void> updateRenovacionStatus(int status, int renovacionID) async{
+    final sql = '''UPDATE ${DataBaseCreator.renovacionesTable}
+      SET ${DataBaseCreator.status} = $status
+      WHERE ${DataBaseCreator.idRenovacion} = $renovacionID ''';
+
+    final result = await db.rawUpdate(sql);
+    DataBaseCreator.dataBaseLog("actualizar Renovacion Status", sql, null, result);
+  }
   
   static Future<List<Renovacion>> getRenovacionesFromGrupo(int idGrupo)async{
     final sql = '''SELECT * FROM ${DataBaseCreator.renovacionesTable}
@@ -31,7 +54,9 @@ class ServiceRepositoryRenovaciones{
         ${DataBaseCreator.capital},
         ${DataBaseCreator.diasAtraso},
         ${DataBaseCreator.beneficio},
-        ${DataBaseCreator.ticket}
+        ${DataBaseCreator.ticket},
+        ${DataBaseCreator.status},
+        ${DataBaseCreator.userID}
       )values(
         ${renovacion.idRenovacion},
         ${renovacion.idGrupo},
@@ -43,7 +68,9 @@ class ServiceRepositoryRenovaciones{
         ${renovacion.capital},
         ${renovacion.diasAtraso},
         "${renovacion.beneficio}",
-        "${renovacion.ticket}"
+        "${renovacion.ticket}",
+        0,
+        "${renovacion.userID}"
       )''';
 
     final result = await db.rawInsert(sql);

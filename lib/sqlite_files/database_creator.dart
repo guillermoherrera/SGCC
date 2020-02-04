@@ -177,7 +177,9 @@ class DataBaseCreator{
       $capital DOUBLE,
       $diasAtraso INT,
       $beneficio TEXT,
-      $ticket TEXT
+      $ticket TEXT,
+      $status INT,
+      $userID TEXT
     )''';
 
     await db.execute(solicitudesSql);

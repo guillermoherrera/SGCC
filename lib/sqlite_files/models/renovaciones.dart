@@ -12,6 +12,8 @@ class Renovacion{
   int diasAtraso;
   String beneficio;
   String ticket;
+  int status;
+  String userID;
 
   Renovacion({
     this.beneficio,
@@ -24,7 +26,9 @@ class Renovacion{
     this.importe,
     this.nombreCompleto,
     this.nombreGrupo,
-    this.ticket
+    this.ticket,
+    this.status,
+    this.userID
   });
 
   Renovacion.fromjson(Map<String, dynamic> json){
@@ -39,5 +43,7 @@ class Renovacion{
     this.nombreCompleto = json[DataBaseCreator.nombreCompleto];
     this.nombreGrupo = json[DataBaseCreator.nombreGrupo];
     this.ticket = json[DataBaseCreator.ticket];
+    this.status = json[DataBaseCreator.status];
+    this.userID = json[DataBaseCreator.userID];
   }
 }

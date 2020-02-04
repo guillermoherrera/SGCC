@@ -9,13 +9,16 @@ import 'package:sgcartera_app/models/direccion.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/grupo.dart';
 import 'package:sgcartera_app/models/persona.dart';
+import 'package:sgcartera_app/models/renovacion.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
+import 'package:sgcartera_app/sqlite_files/models/renovaciones.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_documentoSolicitud.dart';
 import 'package:path/path.dart' as path;
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_renovacion.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,6 +26,7 @@ import 'auth_firebase.dart';
 
 class Sincroniza{
   List<Solicitud> solicitudes = List();
+  List<Renovacion> renovaciones = List();
   Firestore _firestore = Firestore.instance;
   AuthFirebase authFirebase = new AuthFirebase();
 
@@ -98,7 +102,9 @@ class Sincroniza{
               Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitud.idGrupo);
               grupoObj = new GrupoObj(nombre: solicitud.nombreGrupo, status: 2, userID: solicitud.userID, importe: grupo.importe, integrantes: grupo.cantidad);
               if(grupo.grupoID == null || grupo.grupoID == "null"){
-                var result = await _firestore.collection("Grupos").add(grupoObj.toJson());
+                Map grupoFirebase = grupoObj.toJson();
+                grupoFirebase.removeWhere((key, value)=>key=='grupo_id');
+                var result = await _firestore.collection("Grupos").add(grupoFirebase);
                 await ServiceRepositoryGrupos.updateGrupoStatus(2, result.documentID, solicitud.idGrupo);
                 grupoObj.grupoID = result.documentID;
               }else{
@@ -123,7 +129,9 @@ class Sincroniza{
 
             solicitudObj.documentos = lista;   
             solicitudObj.fechaCaputra = DateTime.now();
-            var result = await _firestore.collection("Solicitudes").add(solicitudObj.toJson());
+            Map solicitudFirebase = solicitudObj.toJson();
+            solicitudFirebase.removeWhere((key, value)=>key=='grupo_Id');
+            var result = await _firestore.collection("Solicitudes").add(solicitudFirebase);
             await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
             //if(solicitudObj.grupoId != null) ServiceRepositoryGrupos.updateGrupoStatus(2, grupoObj.grupoID, solicitudObj.grupoId);
             print(result);
@@ -138,6 +146,8 @@ class Sincroniza{
       await getCambios(userID);
       //Sincroniza Cambios de Documentos
       await sincCambios();
+      //Sincroniza Renovaciones
+      await sincRenovacion(userID);
       
       pref.setBool("Sinc", true);
       pref.setString("fechaSinc", formatDate(DateTime.now(), [dd, '/', mm, '/', yyyy, " ", HH, ':', nn, ':', ss]));
@@ -146,6 +156,131 @@ class Sincroniza{
       return null;
     }
     
+  }
+
+  sincRenovacion(userID)async{
+    
+    await getRenovacionesEspera(userID);
+    
+    List<String> gruposSinc = List();
+    List<GrupoObj> gruposGuardados = List();
+    List<Map> beneficios;
+    List<Map> documentos;
+    Persona persona;
+    Direccion direccion;
+    
+    for(final solicitudR in renovaciones){
+      
+      GrupoObj grupoObj = new GrupoObj();
+      if(solicitudR.idGrupo != null && !gruposSinc.contains(solicitudR.nombreGrupo)){
+        Grupo grupo = await ServiceRepositoryGrupos.getOneGrupo(solicitudR.idGrupo);
+        grupoObj = new GrupoObj(nombre: solicitudR.nombreGrupo, status: 2, userID: userID, importe: grupo.importe, integrantes: grupo.cantidad, grupo_id: solicitudR.idGrupo);
+        if(grupo.grupoID == null || grupo.grupoID == "null"){
+          var result = await _firestore.collection("GruposRenovacion").add(grupoObj.toJson());
+          await ServiceRepositoryGrupos.updateGrupoStatus(2, result.documentID, solicitudR.idGrupo);
+          grupoObj.grupoID = result.documentID;
+        }else{
+          grupoObj.grupoID = grupo.grupoID;
+        }
+        gruposSinc.add(grupoObj.nombre);
+        gruposGuardados.add(grupoObj);
+      }else if(solicitudR.idGrupo != null && gruposSinc.contains(solicitudR.nombreGrupo)){
+        grupoObj.grupoID = gruposGuardados.firstWhere((grupo)=> grupo.nombre == solicitudR.nombreGrupo).grupoID;
+      }
+
+      if(solicitudR.clienteID != null){
+
+        BeneficioObj beneficio = new BeneficioObj(
+          claveBeneficio: solicitudR.beneficio
+        );
+        beneficios= [];
+        beneficios.add(beneficio.toJson());
+        RenovacionObj renovacion = new RenovacionObj(
+          creditoID: solicitudR.creditoID,
+          clienteID: solicitudR.clienteID,
+          nombre: solicitudR.nombreCompleto,
+          importe: solicitudR.importe,
+          capital: solicitudR.capital,
+          diasAtraso: solicitudR.diasAtraso,
+          beneficios: beneficios,
+          grupoID: grupoObj.grupoID,
+          grupoNombre: solicitudR.nombreGrupo,
+          ticket: solicitudR.ticket,
+          status: 1,
+          userID: solicitudR.userID,
+          fechaCaptura: DateTime.now(),
+          grupo_Id: solicitudR.idGrupo
+        );
+        var result = await _firestore.collection("Renovaciones").add(renovacion.toJson());
+        await ServiceRepositoryRenovaciones.updateRenovacionStatus(1, solicitudR.idRenovacion);
+        print(result);
+      }else{
+        Solicitud solicitud = await ServiceRepositorySolicitudes.getOneSolicitud(solicitudR.creditoID);
+        persona = new Persona(
+          nombre: solicitud.nombrePrimero,
+          nombreSegundo: solicitud.nombreSegundo,
+          apellido: solicitud.apellidoPrimero,
+          apellidoSegundo: solicitud.apellidoSegundo,
+          curp: solicitud.curp,
+          rfc: solicitud.rfc,
+          fechaNacimiento: DateTime.fromMillisecondsSinceEpoch(solicitud.fechaNacimiento).toUtc(),
+          telefono: solicitud.telefono
+        );
+      
+        direccion = new Direccion(
+          ciudad: solicitud.ciudad,
+          coloniaPoblacion: solicitud.coloniaPoblacion,
+          cp: solicitud.cp,
+          delegacionMunicipio: solicitud.delegacionMunicipio,
+          direccion1: solicitud.direccion1,
+          estado: solicitud.estado,
+          pais: solicitud.pais
+        );
+
+        documentos = [];
+        await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(solicitud.idSolicitud).then((listaDocs){
+          for(final doc in listaDocs){
+            Documento documento = new Documento(tipo: doc.tipo, documento: doc.documento, version: doc.version);
+            //documentos.add(documento.toJson());
+            Map docMap = documento.toJson();
+            docMap.removeWhere((key, value) => key == "idDocumentoSolicitud");
+            docMap.removeWhere((key, value) => key == "observacionCambio");
+            documentos.add(docMap);
+          }
+        });
+
+        await saveFireStore(documentos).then((lista) async{
+          if(lista.length > 0){
+            SolicitudObj solicitudObj = new SolicitudObj(
+              persona: persona.toJson(),
+              direccion: direccion.toJson(),
+              importe: solicitud.importe,
+              tipoContrato: solicitud.tipoContrato,
+              userID: solicitud.userID,
+              status: 1,
+              grupoID: solicitud.idGrupo == null ? null : grupoObj.grupoID,
+              grupoNombre: solicitud.idGrupo == null ? null : solicitud.nombreGrupo,
+              grupo_Id: solicitudR.idGrupo
+            );
+
+            solicitudObj.documentos = lista;   
+            solicitudObj.fechaCaputra = DateTime.now();
+            var result = await _firestore.collection("Renovaciones").add(solicitudObj.toJson());
+            await ServiceRepositorySolicitudes.updateSolicitudStatus(1, solicitud.idSolicitud);
+            await ServiceRepositoryRenovaciones.updateRenovacionStatus(1, solicitudR.idRenovacion);
+            //if(solicitudObj.grupoId != null) ServiceRepositoryGrupos.updateGrupoStatus(2, grupoObj.grupoID, solicitudObj.grupoId);
+            print(result);
+
+          }else{
+            print("Class Sincroniza sincronizaDatos: Sin internet");
+          }
+        });
+      }
+    }
+  }
+
+  getRenovacionesEspera(userID)async{
+    renovaciones = await ServiceRepositoryRenovaciones.getAllRenovaciones(userID);
   }
 
   Future<List<Map>> saveFireStore(List<Map> listaDocs) async{

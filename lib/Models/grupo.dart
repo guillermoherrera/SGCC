@@ -5,6 +5,7 @@ class GrupoObj {
   double importe;
   int integrantes;
   String grupoID;
+  int grupo_id;
 
   GrupoObj({
     this.nombre,
@@ -12,7 +13,8 @@ class GrupoObj {
     this.userID,
     this.importe,
     this.integrantes,
-    this.grupoID
+    this.grupoID,
+    this.grupo_id
   });
 
   Map<String, dynamic> toJson()=>{
@@ -20,6 +22,7 @@ class GrupoObj {
     'status': status,
     'userID': userID,
     'importe': importe,
-    'integrantes': integrantes
+    'integrantes': integrantes,
+    'grupo_id': grupo_id
   };
 }

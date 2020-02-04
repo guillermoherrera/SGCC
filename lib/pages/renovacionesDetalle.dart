@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_container/responsive_container.dart';
 import 'package:sgcartera_app/models/grupo_renovacion.dart';
@@ -25,8 +26,8 @@ class RenovacionesDetalle extends StatefulWidget {
 class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  List<Renovacion> listaRenovacion = List();
-  List<Renovacion> listaRenEnviar = List();
+  List<RenovacionObj> listaRenovacion = List();
+  List<RenovacionObj> listaRenEnviar = List();
   List<SqliteRenovaciones.Renovacion> listaRenEspera = List();
   List<SolicitudModel.Solicitud> solicitudes = List(); 
   String mensaje = "Cargando ...🕔";
@@ -35,6 +36,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
   List<bool> inputs = new List<bool>();
   bool solicitable = true;
   String userID;
+  Firestore _firestore = Firestore.instance;
 
   @override
   void initState() {
@@ -52,7 +54,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
       listaRenovacion.clear();
       listaRenEnviar.clear();
       listaRenEspera.forEach((f){
-        Renovacion renovacion = new Renovacion(
+        RenovacionObj renovacion = new RenovacionObj(
           creditoID: f.creditoID, 
           clienteID: f.clienteID,
           nombre: f.nombreCompleto,
@@ -64,33 +66,50 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
         listaRenovacion.add(renovacion);
         listaRenEnviar.add(renovacion);
       });
+      await getSuma();
     }else{
-      listaRenovacion.clear();
-      inputs.clear();
-      for(var i = 0; i <= 5; i++){
-        Renovacion renovacion = new Renovacion(
-          creditoID: 100+i, 
-          clienteID: 1000+i,
-          nombre: "Nombre Cliente " + (i+1).toString(),
-          importe: 1000.0 + i,
-          capital: 100.0 + i,
-          diasAtraso: i, 
-          beneficios: i%2 == 0 ? [{"cveBeneficio":"A"}] : null
-        );
-        listaRenovacion.add(renovacion);
-        listaRenEnviar.add(renovacion);
-        inputs.add(true);
+      Query q;
+      QuerySnapshot querySnapshot;
+      q = _firestore.collection("GruposRenovacion").where('grupo_id', isEqualTo: widget.grupoInfo.grupoID);
+      try{
+        querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
+      }catch(e){
+        solicitable = false;
+        mensaje = "Revisa tu conexión.";
       }
-      await getListNewDocumentos();
+      if(querySnapshot.documents.length > 0){
+        importe = querySnapshot.documents[0].data['importe'];
+        integrantes = querySnapshot.documents[0].data['integrantes'];
+        mensaje = "Renovacion solicitada previamente";
+        solicitable = false;
+      }else{
+        listaRenovacion.clear();
+        inputs.clear();
+        for(var i = 0; i <= 5; i++){
+          RenovacionObj renovacion = new RenovacionObj(
+            creditoID: 100+i, 
+            clienteID: 1000+i,
+            nombre: "Nombre Cliente " + (i+1).toString(),
+            importe: 1000.0 + i,
+            capital: 100.0 + i,
+            diasAtraso: i, 
+            beneficios: i%2 == 0 ? [{"cveBeneficio":"A"}] : null
+          );
+          listaRenovacion.add(renovacion);
+          listaRenEnviar.add(renovacion);
+          inputs.add(true);
+        }
+        await getListNewDocumentos();
+        await getSuma();
+      }
     }
-    await getSuma();
     setState(() {});
   }
 
   Future<void> getListNewDocumentos() async{
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, widget.grupoInfo.nombre);
     solicitudes.forEach((f){
-      Renovacion renovacion = new Renovacion(
+      RenovacionObj renovacion = new RenovacionObj(
         creditoID: f.idSolicitud, 
         clienteID: null,
         nombre: f.nombrePrimero + " " + f.nombreSegundo + " " + f.apellidoPrimero + " " + f.apellidoSegundo ,
@@ -215,7 +234,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
     );
   }
 
-  Widget subtitleLista(Renovacion renovacion){
+  Widget subtitleLista(RenovacionObj renovacion){
     if(renovacion.beneficios != null){
       return Row(children: <Widget>[Text("IMPORTE: "+renovacion.importe.toString(), style: TextStyle(fontWeight: FontWeight.bold)), renovacion.beneficios == null ? null : Text("   CONFIASHOP: "+renovacion.beneficios[0]['cveBeneficio'], style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple))]) ;
     }else{
@@ -308,7 +327,8 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
               importe: f.importe,
               capital: f.capital,
               diasAtraso: f.diasAtraso,
-              beneficio: f.beneficios == null ? null : f.beneficios[0]['cveBeneficio']
+              beneficio: f.beneficios == null ? null : f.beneficios[0]['cveBeneficio'],
+              userID: userID
             );
 
             await ServiceRepositoryRenovaciones.addRenovacion(renovacion);
