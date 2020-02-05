@@ -8,7 +8,7 @@ import 'package:sgcartera_app/pages/renovacionesDetalle.dart';
 
 class Renovaciones extends StatefulWidget {
   Renovaciones({this.colorTema, this.actualizaHome});
-  final MaterialColor colorTema;
+  final Color colorTema;
   final VoidCallback actualizaHome;
   @override
   _RenovacionesState createState() => _RenovacionesState();
@@ -95,7 +95,7 @@ class _RenovacionesState extends State<Renovaciones> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [widget.colorTema[300], widget.colorTema[900]])
+                  colors: [widget.colorTema, widget.colorTema])
                 ), child: Center(
                 child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[Icon(Icons.assignment,color: Colors.white60, size: isLandscape ? 50.0 : 150.0), Text("CONTRATOS PROXIMOS A LIQUIDAR: "+listaRenovacion.length.toString(), style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),)]),
               )),
@@ -133,7 +133,7 @@ class _RenovacionesState extends State<Renovaciones> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema[400], Colors.white])
+                colors: [widget.colorTema, Colors.white])
               ),
             )
           ),

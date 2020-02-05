@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class About extends StatefulWidget {
   About({this.colorTema});
-  MaterialColor colorTema;
+  Color colorTema;
   @override
   _AboutState createState() => _AboutState();
 }
@@ -23,7 +23,7 @@ class _AboutState extends State<About> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema[100], Colors.white])
+                colors: [widget.colorTema, Colors.white])
               ),
             ),
             Center(child: SingleChildScrollView(

@@ -6,6 +6,7 @@ import 'package:date_format/date_format.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:mime_type/mime_type.dart';
+import 'package:responsive_container/responsive_container.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/classes/sincroniza.dart';
 import 'package:sgcartera_app/components/custom_drawer.dart';
@@ -29,11 +30,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as path;
 
 import 'cartera.dart';
+import 'nuevas_solicitudes.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({this.onSingIn, this.colorTema});
   final VoidCallback onSingIn;
-  final MaterialColor colorTema;
+  final Color colorTema;
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -96,11 +98,12 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text("App Asesores"),
+          title: Image.asset('images/adminconfia.png', color: Colors.white, fit: BoxFit.cover),
           centerTitle: true,
+          elevation: 0.0,
           leading: new IconButton(
                 icon: cantSolicitudesCambios > 0 ? Stack(children: <Widget>[
-                        Icon(Icons.menu),
+                        Icon(Icons.menu, color: Colors.white),
                         Positioned(
                             bottom: -5.0,
                             left: 8.0,
@@ -116,8 +119,11 @@ class _HomePageState extends State<HomePage> {
                               ),
                             )),
                           ],
-                        ) : Icon(Icons.menu),
-                onPressed: () => _scaffoldKey.currentState.openDrawer())
+                        ) : Icon(Icons.menu, color: Colors.white),
+                onPressed: () => _scaffoldKey.currentState.openDrawer()),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.person_add, color: Colors.white), onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo()) ));},)
+          ],
         ),
         drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), cantSolicitudesCambios: cantSolicitudesCambios, sincManual: sincManual ),
         body: userType == null ? Container() : userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : RefreshIndicator(
@@ -141,17 +147,18 @@ class _HomePageState extends State<HomePage> {
                     gradient: LinearGradient(
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
-                    colors: [widget.colorTema[100], Colors.white])
+                    colors: [widget.colorTema, widget.colorTema])
                   ),
                 ),
-                ListView(
+                Column(
                 children: <Widget>[
                   InkWell(
                     child: Card(
+                      elevation: 0.0,
                       child: Container(
                         child: ListTile(
                         leading: getIcono(),
-                        title: Text(getMensaje(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white70)),
+                        title: Text(getMensaje(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
                         subtitle: getLeyenda(),
                         trailing: getAcciones(),
                         isThreeLine: true,
@@ -160,13 +167,23 @@ class _HomePageState extends State<HomePage> {
                           gradient: LinearGradient(
                           begin: Alignment.topRight,
                           end: Alignment.bottomLeft,
-                          colors: [widget.colorTema[400], widget.colorTema[400]])
+                          colors: [widget.colorTema, widget.colorTema])
                         ),
                       )
                     ),
                     onTap: (){},
                   ),
-                  Divider(),
+                  Expanded(child: Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    child: Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
+                      ),
+                    )
+                  )),
+                  /*Divider(),
                   userType == 2 ? Container() : InkWell(
                     child: Card(
                       child: Container(
@@ -180,7 +197,7 @@ class _HomePageState extends State<HomePage> {
                           gradient: LinearGradient(
                           begin: Alignment.topRight,
                           end: Alignment.bottomLeft,
-                          colors: [widget.colorTema[400], Colors.white])
+                          colors: [widget.colorTema, Colors.white])
                         ),
                       )
                     ),
@@ -199,7 +216,7 @@ class _HomePageState extends State<HomePage> {
                           gradient: LinearGradient(
                           begin: Alignment.topRight,
                           end: Alignment.bottomLeft,
-                          colors: [widget.colorTema[400], Colors.white])
+                          colors: [widget.colorTema, Colors.white])
                         ),
                       )
                     ),
@@ -218,7 +235,7 @@ class _HomePageState extends State<HomePage> {
                           gradient: LinearGradient(
                           begin: Alignment.topRight,
                           end: Alignment.bottomLeft,
-                          colors: [widget.colorTema[400], Colors.white])
+                          colors: [widget.colorTema, Colors.white])
                         ),
                       )
                     ),
@@ -237,12 +254,12 @@ class _HomePageState extends State<HomePage> {
                           gradient: LinearGradient(
                           begin: Alignment.topRight,
                           end: Alignment.bottomLeft,
-                          colors: [widget.colorTema[400], Colors.white])
+                          colors: [widget.colorTema, Colors.white])
                         ),
                       )
                     ),
                     onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Renovaciones(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo()) ));},
-                  ),
+                  ),*/
                   /*Divider(),
                   InkWell(
                     child: Card(
@@ -297,7 +314,7 @@ class _HomePageState extends State<HomePage> {
     if(solicitudes.length > 0)
       return Icon(Icons.error_outline, color: Colors.redAccent ,size: 40.0,);
     else 
-      return Icon(Icons.check_circle, color: Colors.blueAccent ,size: 40.0,);
+      return Icon(Icons.check_circle, color: Colors.white ,size: 40.0,);
   }
 
   Widget getLeyenda(){
@@ -308,7 +325,7 @@ class _HomePageState extends State<HomePage> {
         Text("para tomar acciones.", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))
       ],);
     else 
-      return Text("No hay solicitudes de crédito en espera.", style: TextStyle(fontWeight: FontWeight.bold));
+      return Text("No hay solicitudes de crédito en espera.", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70));
   }
 
   Widget getAcciones(){

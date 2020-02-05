@@ -16,7 +16,7 @@ class CambioDocumento extends StatefulWidget {
   CambioDocumento({this.title, this.idSolicitud, this.colorTema});
   final String title;
   final int idSolicitud;
-  final MaterialColor colorTema;
+  final Color colorTema;
   @override
   _CambioDocumentoState createState() => _CambioDocumentoState();
 }
@@ -67,7 +67,7 @@ class _CambioDocumentoState extends State<CambioDocumento> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema[100], Colors.white])
+                colors: [widget.colorTema, Colors.white])
               ),
             ),
             !withData ? Text("cargando ...") : SingleChildScrollView(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CarteraDetalle extends StatefulWidget {
   CarteraDetalle({this.colorTema, this.title});
-  final MaterialColor colorTema;
+  final Color colorTema;
   final String title;
   @override
   _CarteraDetalleState createState() => _CarteraDetalleState();

@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ListaSolicitudesGrupo extends StatefulWidget {
   ListaSolicitudesGrupo({this.title, this.colorTema, this.actualizaHome, this.grupo});
-  final MaterialColor colorTema;
+  final Color colorTema;
   final String title;
   final VoidCallback actualizaHome;
   final Grupo grupo;
@@ -76,7 +76,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [widget.colorTema[100], Colors.white])
+                  colors: [widget.colorTema, Colors.white])
                 ),
               ),
               solicitudes.length > 0 ? listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text("Grupo sin solicitudes para mostrar 📦☹️", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema))))//Center(child: Text("Sin solicitudes para este Grupo"),) 
@@ -116,7 +116,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema[400], Colors.white])
+                colors: [widget.colorTema, Colors.white])
               ),
             ),
           )

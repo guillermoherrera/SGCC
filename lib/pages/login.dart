@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:responsive_container/responsive_container.dart';
 import 'package:sgcartera_app/Models/auth_res.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/sqlite_files/database_creator.dart';
@@ -15,7 +16,7 @@ class Login extends StatefulWidget {
   Login({this.auth, this.onSingIn, this.colorTema});
   final AuthFirebase auth;
   final VoidCallback onSingIn;
-  final MaterialColor colorTema;
+  final Color colorTema;
   @override
   _LoginState createState() => _LoginState();
 }
@@ -37,6 +38,7 @@ class _LoginState extends State<Login> {
       /*appBar: AppBar(
         title: Text("Iniciar Sesión"),
         centerTitle: true,
+        backgroundColor: Color(0xff76BD21),
       ),*/
       body: Form(
         key: formKey,
@@ -48,26 +50,37 @@ class _LoginState extends State<Login> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [widget.colorTema[100], widget.colorTema])
+                  colors: [widget.colorTema, widget.colorTema])
                 ),
               ),
-              Center(child: SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(),
-                  child: Card(
-                    color: Colors.white54,
-                    margin: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 100),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    elevation: 20.0,
-                    child: Padding(
-                      padding: EdgeInsets.all(25),
-                      child: Column(
-                        children: formLogin(),
-                      ),
+              SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    ResponsiveContainer(
+                      heightPercent: 40.0,
+                      widthPercent: 100.0,
+                      child: Container(decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: [widget.colorTema, widget.colorTema])
+                        ), child: Image.asset("images/adminconfia.png", color: Colors.white),
+                      )
                     ),
-                  )
+                    ResponsiveContainer(
+                      heightPercent: 60.0,
+                      widthPercent: 100.0,
+                      child: Container(decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: [Colors.white, Colors.white])
+                        ), child: Column(children: formLogin())
+                      )
+                    ),
+                  ]
                 )
-              ))
+              )
             ],
           ),
         ),
@@ -77,13 +90,20 @@ class _LoginState extends State<Login> {
 
   List<Widget> formLogin(){
     return [
-      Image.asset("images/adminconfia.png"),
+      //Image.asset("images/adminconfia.png"),
       padded(
         childs: TextFormField(
           controller: email,
           decoration: InputDecoration(
-            icon: Icon(Icons.alternate_email),
-            labelText: "Usuario"
+            prefixIcon: Icon(Icons.account_circle),
+            labelText: "Usuario o correo",
+            fillColor: Color(0xfff2f2f2),
+            filled: true,
+            border: new OutlineInputBorder(
+              borderRadius: const BorderRadius.all(
+                const Radius.circular(10.0),
+              ),
+            ),
           ),
           autocorrect: false,
           keyboardType: TextInputType.emailAddress,
@@ -95,8 +115,15 @@ class _LoginState extends State<Login> {
           controller: pass,
           obscureText: true,
           decoration: InputDecoration(
-            icon: Icon(Icons.lock),
-            labelText: "Contraseña"
+            prefixIcon: Icon(Icons.lock),
+            labelText: "Contraseña",
+            fillColor: Color(0xfff2f2f2),
+            filled: true,
+            border: new OutlineInputBorder(
+              borderRadius: const BorderRadius.all(
+                const Radius.circular(10.0),
+              ),
+            ),
           ),
           validator: (value){return value.isEmpty ? "Por favor ingresa tu contraseña" : null;},
         )
@@ -109,24 +136,25 @@ class _LoginState extends State<Login> {
 
   Widget padded({Widget childs}){
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.0),
+      padding: EdgeInsets.fromLTRB(20, 50, 20, 20),//EdgeInsets.symmetric(vertical: 8.0),
       child: childs,
     );
   }
 
   List<Widget> buttonWidget(){
     return[
-      styleButton(buttonEnabled ? "Iniciar Sesión" : "Cargando, por favor espera ...", validateSubmit),
+      styleButton(buttonEnabled ? "INICIAR SESIÓN" : "VERIFICANDO, POR FAVOR ESPERE ...", validateSubmit),
     ];
   }
 
   Widget styleButton(String text, VoidCallback onPress){
-    return SizedBox(width: double.infinity, child: new RaisedButton(
+    return Padding(padding: EdgeInsets.fromLTRB(10, 50, 20, 0),child: SizedBox(width: double.infinity, child: new RaisedButton(
       onPressed: buttonEnabled ? onPress : (){},
-      color: widget.colorTema,
-      textColor: Colors.white,
-      child: Text(text),
-    ));
+      color: Color(0xfff2f2f2),
+      textColor: widget.colorTema,
+      child: Text(text, style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+      shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0))
+    )));
   }
 
   void validateSubmit() async{

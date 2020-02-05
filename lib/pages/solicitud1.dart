@@ -9,7 +9,7 @@ class SolicitudDireccion extends StatefulWidget {
   SolicitudDireccion({this.actualizaHome, this.colorTema, this.datos,this.title,this.estados, this.esRenovacion});
   final String title;
   final SolicitudObj datos;
-  final MaterialColor colorTema;
+  final Color colorTema;
   final VoidCallback actualizaHome;
   final List<CatEstado> estados;
   bool esRenovacion;
@@ -57,7 +57,7 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [widget.colorTema[100], Colors.white])
+                  colors: [widget.colorTema, Colors.white])
                 ),
               ),
               SingleChildScrollView(

@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Group extends StatefulWidget {
   Group({this.colorTema, this.actualizaHome});
-  MaterialColor colorTema;
+  Color colorTema;
   final VoidCallback actualizaHome;
   @override
   _GroupState createState() => _GroupState();
@@ -65,14 +65,14 @@ class _GroupState extends State<Group> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema[100], Colors.white])
+                colors: [widget.colorTema, Colors.white])
               ),
             ),
             Column(children: <Widget>[
               ResponsiveContainer(
                 heightPercent: 30.0,
                 widthPercent: 100.0,
-                child: Container(color: widget.colorTema[700], child: Center(
+                child: Container(color: widget.colorTema, child: Center(
                   child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[Icon(Icons.group,color: Colors.white60, size: isLandscape ? 50.0 : 150.0), Text("GRUPOS EN CAPTURA: "+gruposCant.toString(), style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),)]),
                 )),
               ),
@@ -103,7 +103,7 @@ class _GroupState extends State<Group> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema[400], Colors.white])
+                colors: [widget.colorTema, Colors.white])
               ),
             ),
           )

@@ -13,7 +13,8 @@ void main() async{
 }
 
 class MyApp extends StatelessWidget {
-  final colorTema = Colors.green;
+  //const PrimaryColor = const Color(0xFF151026);
+  final colorTema = Color(0xff76BD21);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,7 +33,8 @@ class MyApp extends StatelessWidget {
           // ... other locales the app supports
       ],
       theme: ThemeData(
-        primarySwatch: colorTema,
+        primaryColor: colorTema,
+        //primarySwatch: colorTema,
       ),
       home: RootPage(authFirebase: new AuthFirebase(), colorTema: colorTema,),
     );

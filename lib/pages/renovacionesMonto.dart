@@ -6,7 +6,7 @@ import 'confia_shop.dart';
 class RenovacionMonto extends StatefulWidget {
   RenovacionMonto({this.renovacion, this.colorTema, this.index, this.montoChange});
   RenovacionObj renovacion;
-  final MaterialColor colorTema;
+  final Color colorTema;
   final int index;
   //final VoidCallback montoChange;
   final void Function(int, double) montoChange;

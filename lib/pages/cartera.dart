@@ -4,7 +4,7 @@ import 'package:sgcartera_app/pages/carteraDetalle.dart';
 
 class Cartera extends StatefulWidget {
   Cartera({this.colorTema});
-  final MaterialColor colorTema;
+  final Color colorTema;
   @override
   _CarteraState createState() => _CarteraState();
 }
@@ -58,7 +58,7 @@ class _CarteraState extends State<Cartera> {
               ResponsiveContainer(
                 heightPercent: 30.0,
                 widthPercent: 100.0,
-                child: Container(color: widget.colorTema[700], child: Center(
+                child: Container(color: widget.colorTema, child: Center(
                   child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[Icon(Icons.assignment,color: Colors.white60, size: isLandscape ? 50.0 : 150.0), Text("CONTRATOS DE CARTERA: "+ listaCartera.length.toString(), style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),)]),
                 )),
               ),
@@ -88,7 +88,7 @@ class _CarteraState extends State<Cartera> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema[400], Colors.white])
+                colors: [widget.colorTema, Colors.white])
               ),
             )
           ),

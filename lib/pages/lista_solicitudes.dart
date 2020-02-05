@@ -32,7 +32,7 @@ import 'lista_solicitudes_grupo.dart';
 
 class ListaSolicitudes extends StatefulWidget {
   ListaSolicitudes({this.title, this.status, this.colorTema, this.actualizaHome});
-  final MaterialColor colorTema;
+  final Color colorTema;
   final String title;
   final int status;
   final VoidCallback actualizaHome;
@@ -269,7 +269,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema[100], Colors.white])
+                colors: [widget.colorTema, Colors.white])
               ),
             ),
             Column(children: <Widget>[
@@ -280,7 +280,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                     gradient: LinearGradient(
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
-                    colors: [widget.colorTema[300], widget.colorTema[900]])
+                    colors: [widget.colorTema, widget.colorTema])
                   ), child: Center(
                   child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[Icon(Icons.assignment,color: Colors.white60, size: isLandscape ? 50.0 : 150.0), Text(solicitudesCant != null ? msjEncabezado+solicitudesCant.toString() : msjEncabezado, style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),)]),
                 )),
@@ -333,7 +333,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema[400], Colors.white])
+                colors: [widget.colorTema, Colors.white])
               ),
             ),
           )

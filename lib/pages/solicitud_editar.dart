@@ -17,7 +17,7 @@ class SolicitudEditar extends StatefulWidget {
   SolicitudEditar({this.title, this.colorTema, this.idSolicitud});
   final String title;
   final int idSolicitud;
-  final MaterialColor colorTema;
+  final Color colorTema;
   @override
   _SolicitudEditarState createState() => _SolicitudEditarState();
 }
@@ -133,7 +133,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [widget.colorTema[100], Colors.white])
+                  colors: [widget.colorTema, Colors.white])
                 ),
               ),
               SingleChildScrollView(

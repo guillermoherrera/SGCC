@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class NuevasSolicitudes extends StatefulWidget {
   NuevasSolicitudes({this.colorTema, this.actualizaHome});
-  final MaterialColor colorTema;
+  final Color colorTema;
   final VoidCallback actualizaHome;
   @override
   _NuevasSolicitudesState createState() => _NuevasSolicitudesState();
@@ -44,14 +44,14 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [widget.colorTema[100], Colors.white])
+                  colors: [widget.colorTema, Colors.white])
                 ),
               ),
               Column(children: <Widget>[
                 ResponsiveContainer(
                   heightPercent: 30.0,
                   widthPercent: 100.0,
-                  child: Container(color: widget.colorTema[700], child: Center(
+                  child: Container(color: widget.colorTema, child: Center(
                     child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[Icon(Icons.create_new_folder,color: Colors.white60, size: 150.0), Text("CREA NUEVAS SOLICITUDES DE CREDITO", style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),)]),
                   )),
                 ),
@@ -70,7 +70,7 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                             gradient: LinearGradient(
                             begin: Alignment.topRight,
                             end: Alignment.bottomLeft,
-                            colors: [widget.colorTema[400], Colors.white])
+                            colors: [widget.colorTema, Colors.white])
                           ),
                         )
                       ),
@@ -89,7 +89,7 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                             gradient: LinearGradient(
                             begin: Alignment.topRight,
                             end: Alignment.bottomLeft,
-                            colors: [widget.colorTema[400], Colors.white])
+                            colors: [widget.colorTema, Colors.white])
                           ),
                         )
                       ),

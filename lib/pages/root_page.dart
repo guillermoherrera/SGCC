@@ -7,7 +7,7 @@ import 'login.dart';
 class RootPage extends StatefulWidget {
   RootPage({this.authFirebase, this.colorTema});
   final AuthFirebase authFirebase;
-  final MaterialColor colorTema;
+  final Color colorTema;
   @override
   _RootPageState createState() => _RootPageState();
 }

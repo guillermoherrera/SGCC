@@ -4,7 +4,7 @@ import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 
 class ListaSolicitudesGrupoSinc extends StatefulWidget {
   ListaSolicitudesGrupoSinc({this.title, this.colorTema, this.actualizaHome, this.solicitudes});
-  final MaterialColor colorTema;
+  final Color colorTema;
   final String title;
   final VoidCallback actualizaHome;
   final List<Solicitud> solicitudes;
@@ -87,7 +87,7 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema[100], Colors.white])
+                colors: [widget.colorTema, Colors.white])
               ),
             ),
             solicitudes.length > 0 ? listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))),
@@ -122,7 +122,7 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema[400], Colors.white])
+                colors: [widget.colorTema, Colors.white])
               ),
             ),
           )

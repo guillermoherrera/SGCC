@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class MisSolicitudes extends StatefulWidget {
   MisSolicitudes({this.colorTema, this.actualizaHome});
-  MaterialColor colorTema;
+  Color colorTema;
   final VoidCallback actualizaHome;
   @override
   _MisSolicitudesState createState() => _MisSolicitudesState();
@@ -43,7 +43,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema[100], Colors.white])
+                colors: [widget.colorTema, Colors.white])
               ),
             ),
             GridView.builder(
@@ -72,7 +72,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
             gradient: LinearGradient(
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
-            colors: [widget.colorTema[400], Colors.white])
+            colors: [widget.colorTema, Colors.white])
           ),
           child: InkWell(
             onTap: () => _accionItem(i) ,

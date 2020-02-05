@@ -29,7 +29,7 @@ class SolicitudDocumentosEditar extends StatefulWidget {
   final String title;
   final int solicitudId;
   final SolicitudObj datos;
-  final MaterialColor colorTema;
+  final Color colorTema;
   @override
   _SolicitudDocumentosEditarState createState() => _SolicitudDocumentosEditarState();
 }
@@ -78,7 +78,7 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema[100], Colors.white])
+                colors: [widget.colorTema, Colors.white])
               ),
             ),
             SingleChildScrollView(

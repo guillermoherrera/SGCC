@@ -19,7 +19,7 @@ import 'home.dart';
 class Solicitud extends StatefulWidget {
   Solicitud({this.title, this.colorTema, this.grupoId, this.grupoNombre, this.actualizaHome, this.esRenovacion});
   final String title;
-  final MaterialColor colorTema;
+  final Color colorTema;
   final int grupoId;
   final String grupoNombre;
   final VoidCallback actualizaHome;
@@ -106,7 +106,7 @@ class _SolicitudState extends State<Solicitud> {
                     gradient: LinearGradient(
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
-                    colors: [widget.colorTema[100], Colors.white])
+                    colors: [widget.colorTema, Colors.white])
                   ),
                 ),
                 SingleChildScrollView(
