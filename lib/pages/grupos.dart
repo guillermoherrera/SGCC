@@ -51,8 +51,10 @@ class _GroupState extends State<Group> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Captura de Grupos"),
+        title: Text("Captura de Grupos", style: TextStyle(color: Colors.white),),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
+        elevation: 0.0,
         actions: <Widget>[
           IconButton(icon: Icon(Icons.group_add), onPressed: () {showFormGrupo();},)
         ],
@@ -65,10 +67,48 @@ class _GroupState extends State<Group> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema, Colors.white])
+                colors: [widget.colorTema, widget.colorTema])
               ),
             ),
             Column(children: <Widget>[
+                InkWell(
+                  child: Card(
+                    elevation: 0.0,
+                    child: Container(
+                      child: ListTile(
+                      leading: Icon(Icons.group,color: Colors.white, size: 40.0,),
+                      title: Text("\nGRUPOS EN CAPTURA: "+gruposCant.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
+                      subtitle: Text("", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70)),
+                      //trailing: Text(""),
+                      isThreeLine: true,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
+                        colors: [widget.colorTema, widget.colorTema])
+                      ),
+                    )
+                  ),
+                  onTap: (){},
+                ),
+                Expanded(child: Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  child: Card(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
+                    ),
+                    child:  Padding(
+                      padding: EdgeInsets.all(5.0),
+                      child: grupos.length > 0 ? Padding(padding: EdgeInsets.all(5.0), child: listaGrupos()) :  Padding(padding: EdgeInsets.all(20.0),child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Sin grupos en captura ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)), Row(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Presiona ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)), Icon(Icons.group_add, size: 30.0), Text(" para agregar un nuevo grupo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))],)],)), 
+                    ),
+                  )
+                ))),
+              ]),
+              grupos.length > 0 ? Container() : ListView()
+            /*Column(children: <Widget>[
               ResponsiveContainer(
                 heightPercent: 30.0,
                 widthPercent: 100.0,
@@ -76,9 +116,9 @@ class _GroupState extends State<Group> {
                   child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[Icon(Icons.group,color: Colors.white60, size: isLandscape ? 50.0 : 150.0), Text("GRUPOS EN CAPTURA: "+gruposCant.toString(), style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),)]),
                 )),
               ),
-              grupos.length > 0 ? Expanded(child:listaGrupos()) :  Padding(padding: EdgeInsets.all(20.0),child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Sin grupos en captura ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)), Row(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Presiona ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)), Icon(Icons.group_add, size: 30.0,), Text(" para agregar un nuevo grupo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema))],)],))), 
+              grupos.length > 0 ? Expanded(child:listaGrupos()) :  Padding(padding: EdgeInsets.all(20.0),child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Sin grupos en captura ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)), Row(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Presiona ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)), Icon(Icons.group_add, size: 30.0,color: Colors.white,), Text(" para agregar un nuevo grupo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white))],)],))), 
               grupos.length > 0 ? Container() : Expanded(child:ListView())
-            ])
+            ])*/
           ]
         )
       ),
@@ -91,6 +131,15 @@ class _GroupState extends State<Group> {
       itemBuilder: (context, index){
         return InkWell(
           child: Card(
+            shape: RoundedRectangleBorder(
+              side: BorderSide(color:widget.colorTema, width:3.0),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(50.0),
+                topRight: Radius.circular(50.0),
+                bottomLeft: Radius.circular(50.0),
+                bottomRight: Radius.circular(50.0)
+              ),
+            ),
             child: Container(
               child: ListTile(
                 leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
@@ -103,7 +152,7 @@ class _GroupState extends State<Group> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema, Colors.white])
+                colors: [Colors.white, Colors.white])
               ),
             ),
           )
@@ -180,7 +229,8 @@ class _GroupState extends State<Group> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Center(child: Text("Agregar Grupo")),
+        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
+        title: Center(child: Text("AGREGAR GRUPO")),
         content: Form(
           key: _formKey,
           child: Column(
@@ -193,7 +243,14 @@ class _GroupState extends State<Group> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                   decoration: InputDecoration(
                     labelText: "Nombre del Grupo",
-                    prefixIcon: Icon(Icons.group)
+                    prefixIcon: Icon(Icons.group),
+                    fillColor: Color(0xfff2f2f2),
+                    filled: true,
+                    border: new OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(
+                        const Radius.circular(10.0),
+                      ),
+                    ),
                   ),
                   onChanged: (value) {
                     if (_nombre.text != value.toUpperCase())
@@ -206,9 +263,10 @@ class _GroupState extends State<Group> {
                 onPressed: (){
                   crearGrupo();
                 },
-                color: widget.colorTema,
-                textColor: Colors.white,
-                child: Text("Crear Grupo"),
+                color: Color(0xfff2f2f2),
+                textColor: widget.colorTema,
+                child: Text("CREAR GRUPO", style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0))
               ))
             ],
           ),
@@ -223,7 +281,8 @@ class _GroupState extends State<Group> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Center(child: Text("Cambiar Nombre del Grupo")),
+        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
+        title: Center(child: Text("CAMBIAR NOMBRE DEL GRUPO")),
         content: Form(
           key: _formKey,
           child: Column(
@@ -236,7 +295,14 @@ class _GroupState extends State<Group> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                   decoration: InputDecoration(
                     labelText: "Nombre del Grupo",
-                    prefixIcon: Icon(Icons.group)
+                    prefixIcon: Icon(Icons.group),
+                    fillColor: Color(0xfff2f2f2),
+                    filled: true,
+                    border: new OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(
+                        const Radius.circular(10.0),
+                      ),
+                    ),
                   ),
                   onChanged: (value) {
                     if (_nombre.text != value.toUpperCase())
@@ -249,9 +315,10 @@ class _GroupState extends State<Group> {
                 onPressed: (){
                   editarGrupo(grupo);
                 },
-                color: widget.colorTema,
-                textColor: Colors.white,
-                child: Text("Actualizar Grupo"),
+                color: Color(0xfff2f2f2),
+                textColor: widget.colorTema,
+                child: Text("ACTUALIZAR NOMBRE DEL GRUPO"),
+                shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0))
               ))
             ],
           ),
@@ -332,7 +399,8 @@ class _GroupState extends State<Group> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Center(child: Text("Cerrar Grupo")),
+        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
+        title: Center(child: Text("CERRAR GRUPO")),
         content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -379,7 +447,8 @@ class _GroupState extends State<Group> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Center(child: Text("Elminar Solicitud")),
+        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
+        title: Center(child: Text("ELIMINAR GRUPO")),
         content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
