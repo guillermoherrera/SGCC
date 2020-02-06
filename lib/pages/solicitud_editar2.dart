@@ -67,8 +67,10 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title, style: TextStyle(color: Colors.white)),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
+        elevation: 0.0,
       ),
       body: Container(
         child: Stack(
@@ -78,25 +80,41 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema, Colors.white])
+                colors: [widget.colorTema, widget.colorTema])
               ),
             ),
-            SingleChildScrollView(
-              child: Container(
-                child: Card(
-                  color: Colors.white70,
-                  margin: EdgeInsets.all(10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  elevation: 8.0,
-                  child: Padding(
-                    padding: EdgeInsets.all(15),
-                    child: Column(
-                      children: formSolicitud(),
+            LayoutBuilder(
+              builder: (context, constraint){
+              return SingleChildScrollView(
+                child: ConstrainedBox( constraints: BoxConstraints(minHeight: constraint.maxHeight),
+                  child: Card(
+                    color: Colors.white,
+                    margin: EdgeInsets.all(4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                     ),
+                    elevation: 8.0,
+                    child: IntrinsicHeight( child:Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(15),
+                            child: Column(
+                              children: formSolicitud(),
+                            ),
+                          ),
+                          Expanded(child:  
+                            Align(
+                              alignment: FractionalOffset.bottomCenter,
+                              child: styleButton(validaSubmit, buttonEnabled ? "FINALIZAR" : "GUARDANDO ..."),
+                            ),
+                          )
+                        ]
+                      )
+                    )
                   ),
                 ),
-              ),
-            )
+              );
+            })
           ]
         )
       ),
@@ -112,11 +130,17 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
       ),
       Divider(),
       adjuntarId(),
-      datosPrevios(),
-      Column(
+      Container(
+        child: datosPrevios(),
+        padding: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          color: Color(0xfff2f2f2)
+        ),
+      ),
+      /*Column(
         //mainAxisAlignment: MainAxisAlignment.center,
         children: buttonWidget(),
-      ),
+      ),*/
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
@@ -155,17 +179,17 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
   TableRow itemsFiles(titulo, tipo){
     return TableRow(
       children: [
-        Container(child:  Text(titulo), padding: EdgeInsets.all(5),),
+        Container(child:  Text(titulo, style: TextStyle(fontWeight: FontWeight.bold),), padding: EdgeInsets.all(5),),
         Column(children: <Widget>[
           ButtonTheme(
             minWidth: 50.0,
             height: 30.0,
-            child:RaisedButton(onPressed: ()=> imageSelectorGallery(1,tipo), child: Icon(Icons.add_photo_alternate),color: widget.colorTema,textColor: Colors.white,)
+            child:RaisedButton(onPressed: ()=> imageSelectorGallery(1,tipo), child: Icon(Icons.add_photo_alternate),color: Colors.white,textColor: widget.colorTema,)
           ),
           ButtonTheme(
             minWidth: 50.0,
             height: 30.0,
-            child:RaisedButton(onPressed: ()=> imageSelectorGallery(2,tipo), child: Icon(Icons.add_a_photo),color: widget.colorTema,textColor: Colors.white)
+            child:RaisedButton(onPressed: ()=> imageSelectorGallery(2,tipo), child: Icon(Icons.add_a_photo),color: Colors.white,textColor: widget.colorTema)
           ),
         ],),
         Padding(
@@ -212,13 +236,13 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
     if(catDocumentos.length == docArchivos.length) auxFile = docArchivos.singleWhere((archivo) => archivo.tipo == tipo).archivo;
     
     if(auxFile != null)
-      return Hero(
+      return Container(color: Colors.black,child:  Hero(
         tag: "image"+tipo.toString(),
         child: GestureDetector(
           onTap: ()=> Navigator.push(context, MaterialPageRoute(builder: (context)=> ImageDetail(tipo: tipo,image: auxFile))),
           child: Image.file(auxFile)
         ),
-      );
+      ));
     else
       return Image.asset("images/noImage.png");
   }
@@ -229,58 +253,52 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
         Container(child:Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text("DATOS DEL CLIENTE", style: TextStyle(fontWeight: FontWeight.bold)),
+            Icon(Icons.person, color: widget.colorTema,),
+            Text("DATOS DEL CLIENTE", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
           ],
         ), margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0)),
         Table(
-          columnWidths: {0: FractionColumnWidth(.1)},
+          columnWidths: {1: FractionColumnWidth(.5)},
           children: [
             TableRow(
               children: [
-                Icon(Icons.attach_money, size: 15.0, color: widget.colorTema,),
-                Text("IMPORTE CAPITAL: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("IMPORTE CAPITAL: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(widget.datos.importe.toStringAsFixed(2)),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.person, size: 15.0, color: widget.colorTema,),
-                Text("NOMBRE: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("NOMBRE: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(widget.datos.persona['nombre'] +" "+ widget.datos.persona['nombreSegundo'] +" "+ widget.datos.persona['apellido'] +" "+ widget.datos.persona['apellidoSegundo']),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.calendar_today, size: 15.0, color: widget.colorTema,),
-                Text("FECHA DE NACIMIENTO: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("FECHA DE NACIMIENTO: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(formatDate(widget.datos.persona['fechaNacimiento'], [dd, '/', mm, '/', yyyy])),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.assignment_ind, size: 15.0, color: widget.colorTema,),
-                Text("CURP: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("CURP: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(widget.datos.persona['curp']),
               ],
             ),
             TableRow(
               children: [
-                Icon(Icons.assignment_ind, size: 15.0, color: widget.colorTema,),
-                Text("RFC: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("RFC: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(widget.datos.persona['rfc']),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.phone, size: 15.0, color: widget.colorTema,),
-                Text("TELÉFONO: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("TELÉFONO: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(widget.datos.persona['telefono']),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.home, size: 15.0, color: widget.colorTema,),
-                Text("DIRECCIÖN: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("DIRECCIÖN: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(widget.datos.direccion['direccion1']+" "+widget.datos.direccion['coloniaPoblacion']+" C.P. "+widget.datos.direccion['cp'].toString()+" "+widget.datos.direccion['delegacionMunicipio']+" "+widget.datos.direccion['ciudad']+", "+widget.datos.direccion['estado']+" "+widget.datos.direccion['pais']),
               ]
             )
@@ -299,9 +317,10 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
   Widget styleButton(VoidCallback onPressed, String text){
     return SizedBox(width: double.infinity, child:RaisedButton(
       onPressed: buttonEnabled ? onPressed : (){},
-      color: widget.colorTema,
+      color: Color(0xff1A9CFF),
       textColor: Colors.white,
-      child: Text(text),
+      padding: EdgeInsets.all(12),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Icon(Icons.arrow_forward),Text(text, style: TextStyle(fontSize: 20),)]),
     ));
   }
 
@@ -435,7 +454,8 @@ class ImageDetail extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.black,
         centerTitle: true,
-        title: Text(tipo == 1 ? "IDENTIFICACÓN" : tipo == 2 ? "COMPROBANTE DE DOMICILIO" : "AUTORIZACIÓN DE BURO")
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(tipo == 1 ? "IDENTIFICACÓN" : tipo == 2 ? "COMPROBANTE DE DOMICILIO" : "AUTORIZACIÓN DE BURO", style: TextStyle(color: Colors.white),)
       ),
       body: Center(
         child: Hero(

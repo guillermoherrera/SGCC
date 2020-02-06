@@ -120,8 +120,10 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title, style: TextStyle(color: Colors.white)),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
+        elevation: 0.0,
       ),
       body: Form(
         key: formKey,
@@ -133,25 +135,39 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [widget.colorTema, Colors.white])
+                  colors: [widget.colorTema, widget.colorTema])
                 ),
               ),
-              SingleChildScrollView(
-                child: Container(
-                  child: Card(
-                    color: Colors.white70,
-                    margin: EdgeInsets.all(10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    elevation: 8.0,
-                    child: Padding(
-                      padding: EdgeInsets.all(15),
-                      child: Column(
-                        children: formSolicitud(),
+              LayoutBuilder(
+                builder: (context, constraint){
+                  return SingleChildScrollView(
+                  child: ConstrainedBox( constraints: BoxConstraints(minHeight: constraint.maxHeight), child: Card(
+                      color: Colors.white,
+                      margin: EdgeInsets.all(4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                       ),
+                      elevation: 0.0,
+                      child: IntrinsicHeight( child:Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(15),
+                            child: Column(
+                              children: formSolicitud(),
+                            ),
+                          ),
+                          Expanded(child:  
+                            Align(
+                              alignment: FractionalOffset.bottomCenter,
+                              child: styleButton(validaSubmit, buttonEnabled ? "GUARDAR Y CONTINUAR" : "CARGANDO ..."),
+                            ),
+                          )
+                        ]
+                      ))
                     ),
                   ),
-                ),
-              )
+                );
+              })
             ],
           ),
         ),
@@ -174,7 +190,14 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
           style: TextStyle(fontWeight: FontWeight.bold),
           decoration: InputDecoration(
             labelText: "Importe Capital",
-            prefixIcon: Icon(Icons.attach_money)
+            prefixIcon: Icon(Icons.attach_money),
+            fillColor: Color(0xfff2f2f2),
+            filled: true,
+            border: new OutlineInputBorder(
+              borderRadius: const BorderRadius.all(
+                const Radius.circular(10.0),
+              ),
+            ),
           ),
           keyboardType: TextInputType.number,
           //enabled: false,
@@ -201,7 +224,14 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
               maxLength: 50,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "Nombre"
+                labelText: "Nombre",
+                fillColor: Color(0xfff2f2f2),
+                filled: true,
+                border: new OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(10.0),
+                  ),
+                ),
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
@@ -217,7 +247,14 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
               maxLength: 50,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "Segundo Nombre"
+                labelText: "Segundo Nombre",
+                fillColor: Color(0xfff2f2f2),
+                filled: true,
+                border: new OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(10.0),
+                  ),
+                ),
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
@@ -238,7 +275,14 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
               maxLength: 50,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "Primer Apellido"
+                labelText: "Primer Apellido",
+                fillColor: Color(0xfff2f2f2),
+                filled: true,
+                border: new OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(10.0),
+                  ),
+                ),
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
@@ -254,7 +298,14 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
               maxLength: 50,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "Segundo Apellido"
+                labelText: "Segundo Apellido",
+                fillColor: Color(0xfff2f2f2),
+                filled: true,
+                border: new OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(10.0),
+                  ),
+                ),
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
@@ -279,7 +330,14 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
                 decoration: InputDecoration(
                   labelText: "Fecha de Nacimiento",
                   //icon: Icon(Icons.calendar_today)
-                  helperText: "dia/mes/año"
+                  helperText: "dia/mes/año",
+                  fillColor: Color(0xfff2f2f2),
+                  filled: true,
+                  border: new OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(10.0),
+                    ),
+                  ),
                 ),
                 textCapitalization: TextCapitalization.sentences,
                 keyboardType: TextInputType.datetime,
@@ -301,7 +359,14 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
               maxLength: 18,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "CURP"
+                labelText: "CURP",
+                fillColor: Color(0xfff2f2f2),
+                filled: true,
+                border: new OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(10.0),
+                  ),
+                ),
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
@@ -329,7 +394,14 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
               maxLength: 13,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "RFC"
+                labelText: "RFC",
+                fillColor: Color(0xfff2f2f2),
+                filled: true,
+                border: new OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(10.0),
+                  ),
+                ),
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
@@ -351,7 +423,14 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
               maxLength: 10,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "Teléfono"
+                labelText: "Teléfono",
+                fillColor: Color(0xfff2f2f2),
+                filled: true,
+                border: new OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(10.0),
+                  ),
+                ),
               ),
               keyboardType: TextInputType.number,
               validator: (value){
@@ -366,9 +445,9 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
           ),
         ]
       ),
-      Column(
+      /*Column(
         children: buttonWidget(),
-      ),
+      ),*/
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
@@ -403,9 +482,10 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
   Widget styleButton(VoidCallback onPressed, String text){
     return SizedBox(width: double.infinity, child:RaisedButton(
       onPressed: buttonEnabled ? onPressed : (){},
-      color: widget.colorTema,
+      color: Color(0xff1A9CFF),
       textColor: Colors.white,
-      child: Text(text),
+      padding: EdgeInsets.all(12),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Icon(Icons.arrow_forward),Text(text, style: TextStyle(fontSize: 20),)]),
     ));
   }
 

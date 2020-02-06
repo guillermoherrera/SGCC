@@ -59,8 +59,10 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title, style: TextStyle(color: Colors.white)),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
+        elevation: 0.0,
       ),
       body: Form(
         key: formKey,
@@ -72,24 +74,40 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [widget.colorTema, Colors.white])
+                  colors: [widget.colorTema, widget.colorTema])
                 ),
               ),
-              SingleChildScrollView(
-                child: Container(
-                  child: Card(
-                    color: Colors.white70,
-                    margin: EdgeInsets.all(10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    elevation: 8.0,
-                    child: Padding(
-                      padding: EdgeInsets.all(15),
-                      child: Column(
-                        children: formSolicitudD(),
+              LayoutBuilder(
+                builder: (context, constraint){
+                  return SingleChildScrollView(
+                    child: ConstrainedBox( constraints: BoxConstraints(minHeight: constraint.maxHeight), 
+                      child: Card(
+                        color: Colors.white,
+                        margin: EdgeInsets.all(4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
+                        ),
+                        elevation: 0.0,
+                        child: IntrinsicHeight( child:Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(15),
+                              child: Column(
+                                children: formSolicitudD(),
+                              ),
+                            ),
+                            Expanded(child:  
+                              Align(
+                                alignment: FractionalOffset.bottomCenter,
+                                child: styleButton(validaSubmit, buttonEnabled ? "GUARDAR Y CONTINUAR" : "CARGANDO ..."),
+                              ),
+                            )
+                          ]
+                        ))
                       ),
                     ),
-                  ),
-                ),
+                  );
+                }
               )
             ],
           ),
@@ -113,6 +131,13 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
           style: TextStyle(fontWeight: FontWeight.bold),
           decoration: InputDecoration(
             labelText: "Calle y numero",
+            fillColor: Color(0xfff2f2f2),
+            filled: true,
+            border: new OutlineInputBorder(
+              borderRadius: const BorderRadius.all(
+                const Radius.circular(10.0),
+              ),
+            ),
             //prefixIcon: Icon(Icons.attach_money)
           ),
           onChanged: (value) {
@@ -137,7 +162,14 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
               maxLength: 40,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "Colonia"
+                labelText: "Colonia",
+                fillColor: Color(0xfff2f2f2),
+                filled: true,
+                border: new OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(10.0),
+                  ),
+                ),
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
@@ -152,7 +184,14 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
               maxLength: 40,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "Delegación/Municipio"
+                labelText: "Delegación/Municipio",
+                fillColor: Color(0xfff2f2f2),
+                filled: true,
+                border: new OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(10.0),
+                  ),
+                ),
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
@@ -172,7 +211,14 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
               maxLength: 40,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "Ciudad"
+                labelText: "Ciudad",
+                fillColor: Color(0xfff2f2f2),
+                filled: true,
+                border: new OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(10.0),
+                  ),
+                ),
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
@@ -231,7 +277,14 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
               maxLength: 5,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "Código Postal"
+                labelText: "Código Postal",
+                fillColor: Color(0xfff2f2f2),
+                filled: true,
+                border: new OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(10.0),
+                  ),
+                ),
               ),
               keyboardType: TextInputType.number,
               validator: (value){
@@ -248,7 +301,14 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
               maxLength: 4,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "País"
+                labelText: "País",
+                fillColor: Color(0xfff2f2f2),
+                filled: true,
+                border: new OutlineInputBorder(
+                  borderRadius: const BorderRadius.all(
+                    const Radius.circular(10.0),
+                  ),
+                ),
               ),
               textCapitalization: TextCapitalization.characters,
               onChanged: (value) {
@@ -260,10 +320,16 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
           )
         ]
       ),
-      datosPrevios(),
-      Column(
-        children: buttonWidget(),
+      Container(
+        child: datosPrevios(),
+        padding: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          color: Color(0xfff2f2f2)
+        ),
       ),
+      /*Column(
+        children: buttonWidget(),
+      ),*/
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
@@ -282,9 +348,10 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
   Widget styleButton(VoidCallback onPressed, String text){
     return SizedBox(width: double.infinity, child:RaisedButton(
       onPressed: buttonEnabled ? onPressed : (){},
-      color: widget.colorTema,
+      color: Color(0xff1A9CFF),
       textColor: Colors.white,
-      child: Text(text),
+      padding: EdgeInsets.all(12),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Icon(Icons.arrow_forward),Text(text, style: TextStyle(fontSize: 20),)]),
     ));
   }
 
@@ -372,51 +439,46 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
         Container(child:Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text("DATOS DEL CLIENTE", style: TextStyle(fontWeight: FontWeight.bold)),
+            Icon(Icons.person, color: widget.colorTema,),
+            Text("DATOS DEL CLIENTE", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
           ],
         ), margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0)),
         Table(
-          columnWidths: {0: FractionColumnWidth(.1)},
+          columnWidths: {1: FractionColumnWidth(.5)},
           children: [
             TableRow(
               children: [
-                Icon(Icons.attach_money, size: 15.0, color: widget.colorTema,),
-                Text("IMPORTE CAPITAL: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("IMPORTE CAPITAL: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(widget.datos.importe.toStringAsFixed(2)),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.person, size: 15.0, color: widget.colorTema,),
-                Text("NOMBRE: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("NOMBRE: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(widget.datos.persona['nombre'] +" "+ widget.datos.persona['nombreSegundo'] +" "+ widget.datos.persona['apellido'] +" "+ widget.datos.persona['apellidoSegundo']),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.calendar_today, size: 15.0, color: widget.colorTema,),
-                Text("FECHA DE NACIMIENTO: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("FECHA DE NACIMIENTO: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(formatDate(widget.datos.persona['fechaNacimiento'], [dd, '/', mm, '/', yyyy])),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.assignment_ind, size: 15.0, color: widget.colorTema,),
-                Text("CURP: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("CURP: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(widget.datos.persona['curp']),
               ],
             ),
             TableRow(
               children: [
-                Icon(Icons.assignment_ind, size: 15.0, color: widget.colorTema,),
-                Text("RFC: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("RFC: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(widget.datos.persona['rfc']),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.phone, size: 15.0, color: widget.colorTema,),
-                Text("TELÉFONO: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("TELÉFONO: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(widget.datos.persona['telefono']),
               ]
             )

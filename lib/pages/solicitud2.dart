@@ -308,7 +308,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       onPressed: buttonEnabled ? onPressed : (){},
       color: Color(0xff1A9CFF),
       textColor: Colors.white,
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.all(12),
       child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Icon(Icons.arrow_forward),Text(text, style: TextStyle(fontSize: 20),)]),
     ));
   }
@@ -499,6 +499,7 @@ class ImageDetail extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.black,
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
         title: Text(tipo == 1 ? "IDENTIFICACÓN" : tipo == 2 ? "COMPROBANTE DE DOMICILIO" : "AUTORIZACIÓN DE BURO")
       ),
       body: Center(

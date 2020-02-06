@@ -496,7 +496,7 @@ class _SolicitudState extends State<Solicitud> {
       onPressed: buttonEnabled ? onPressed : (){},
       color: Color(0xff1A9CFF),
       textColor: Colors.white,
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.all(12),
       child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Icon(Icons.arrow_forward),Text(text, style: TextStyle(fontSize: 20),)]),
     ));
   }
