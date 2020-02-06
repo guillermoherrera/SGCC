@@ -56,8 +56,10 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text(widget.title, style: TextStyle(color: Colors.white)),
           centerTitle: true,
+          iconTheme: IconThemeData(color: Colors.white),
+          elevation: 0.0,
           actions: status ? <Widget>[
             IconButton(icon: Icon(Icons.lock), onPressed: () {
               cerrarGrupo(widget.grupo);
@@ -76,10 +78,47 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [widget.colorTema, Colors.white])
+                  colors: [widget.colorTema, widget.colorTema])
                 ),
               ),
-              solicitudes.length > 0 ? listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text("Grupo sin solicitudes para mostrar 📦☹️", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema))))//Center(child: Text("Sin solicitudes para este Grupo"),) 
+              Column(children:<Widget>[
+                InkWell(
+                  child: Card(
+                    elevation: 0.0,
+                    child: Container(
+                      child: ListTile(
+                      //leading: Icon(Icons.assignment,color: Colors.white, size: 40.0,),
+                      title: Text("\n", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
+                      subtitle: Center(child: Icon(Icons.group,color: Colors.white, size: 40.0,)),
+                      //trailing: Text(""),
+                      isThreeLine: true,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
+                        colors: [widget.colorTema, widget.colorTema])
+                      ),
+                    )
+                  ),
+                  onTap: (){},
+                ),
+                Expanded(child: Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  child: Card(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
+                    ),
+                    child:  Padding(
+                      padding: EdgeInsets.all(5.0),
+                      child: solicitudes.length > 0 ? Padding(padding: EdgeInsets.all(5.0), child: listaSolicitudes()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text("Grupo sin solicitudes para mostrar 📦☹️", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema))))//Center(child: Text("Sin solicitudes para este Grupo"),) 
+                    ),
+                  ))
+                )
+              ])
+              //solicitudes.length > 0 ? listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text("Grupo sin solicitudes para mostrar 📦☹️", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema))))//Center(child: Text("Sin solicitudes para este Grupo"),) 
             ]
           )
         ),
@@ -87,8 +126,8 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
           child:  Container(
               child: ListTile(
                 leading: Icon(Icons.group, color: Colors.white,size: 40.0,),
-                title: Row(children: <Widget>[Icon(Icons.error, color: status ? Colors.yellow : Colors.green,),Text(" Este grupo esta en status "+(status ? "Abierto" : "Cerrado") )],),
-                subtitle: status ? Row(children: <Widget>[Text("Da click en "), Icon(Icons.lock, color: Colors.white,), Text(" para cerrar el grupo")],) : Text(""),
+                title: Row(children: <Widget>[Icon(Icons.error, color: status ? Colors.yellow : Colors.green,),Text(" Este grupo esta en status "+(status ? "Abierto" : "Cerrado"), style: TextStyle(color: Colors.white))],),
+                subtitle: status ? Row(children: <Widget>[Text("Da click en ", style: TextStyle(color: Colors.white)), Icon(Icons.lock, color: Colors.white,), Text(" para cerrar el grupo", style: TextStyle(color: Colors.white))],) : Text(""),
               ),
               color: widget.colorTema
             ),
@@ -104,6 +143,15 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
       itemBuilder: (context, index){
         return InkWell(
           child: Card(
+            shape: RoundedRectangleBorder(
+              side: BorderSide(color:widget.colorTema, width:3.0),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(50.0),
+                topRight: Radius.circular(50.0),
+                bottomLeft: Radius.circular(50.0),
+                bottomRight: Radius.circular(50.0)
+              ),
+            ),
             child: Container(
               child: ListTile(
                 leading: Icon(Icons.person, color: widget.colorTema,size: 40.0,),
@@ -116,7 +164,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema, Colors.white])
+                colors: [Colors.white, Colors.white])
               ),
             ),
           )

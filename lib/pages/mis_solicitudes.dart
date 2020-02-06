@@ -32,8 +32,10 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mis Solicitudes"),
+        title: Text("Mis Solicitudes", style: TextStyle(color: Colors.white),),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
+        elevation: 0.0,
       ),
       body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : Container(
         child: Stack(
@@ -43,10 +45,47 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema, Colors.white])
+                colors: [widget.colorTema, widget.colorTema])
               ),
             ),
-            GridView.builder(
+            Column(children: <Widget>[
+              InkWell(
+                child: Card(
+                  elevation: 0.0,
+                  child: Container(
+                    child: ListTile(
+                    //leading: Icon(Icons.assignment,color: Colors.white, size: 40.0,),
+                    title: Text("\n", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
+                    subtitle: Center(child: Icon(Icons.assignment,color: Colors.white, size: 40.0,)),
+                    //trailing: Text(""),
+                    isThreeLine: true,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                      colors: [widget.colorTema, widget.colorTema])
+                    ),
+                  )
+                ),
+                onTap: (){},
+              ),
+              Expanded(child: Container(
+                height: double.infinity,
+                width: double.infinity,
+                child: Card(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: listaOpciones()
+                  ),
+                )
+              )),
+            ]),
+            /*GridView.builder(
               itemCount: 6,//userType == 1 ? 5 : 6,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
               itemBuilder: (context, index){
@@ -56,10 +95,47 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
                   child: itemSolicitudes(iter),
                 );
               }
-            )
+            )*/
           ]
         )
       ),
+    );
+  }
+
+  Widget listaOpciones(){
+    return ListView.builder(
+      itemCount: 6,
+      itemBuilder: (context, index){
+        return InkWell(
+          onTap: ()=>_accionItem(index),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              side: BorderSide(color:widget.colorTema, width:3.0),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(50.0),
+                topRight: Radius.circular(50.0),
+                bottomLeft: Radius.circular(50.0),
+                bottomRight: Radius.circular(50.0)
+              ),
+            ),
+            child: Container(
+              child: ListTile(
+                leading: iconoItem(index),
+                title: textoItem(index),
+                subtitle: Text(""),//Text(getImporte(grupos[index])),
+                isThreeLine: true,
+                //trailing: getIcono(grupos[index])
+              ),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [Colors.white, Colors.white])
+              ),
+            ),
+          )
+        );
+      },
     );
   }
 
@@ -93,25 +169,25 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
     switch(i){
       case 0:
         if(userType == 1){
-          return Icon(Icons.format_align_justify, size: 90,);
+          return Icon(Icons.format_align_justify, size: 40,);
         }else{
-          return Icon(Icons.group, size: 90,color: Colors.black54);
+          return Icon(Icons.group, size: 40,color: Colors.black54);
         }
         break;
       case 1:
-        return Icon(Icons.access_time, size: 90,color: Colors.yellow[700],);
+        return Icon(Icons.access_time, size: 40,color: Colors.yellow[700],);
         break;
       case 2:
-        return Icon(Icons.done_all, size: 90, color: Colors.grey);
+        return Icon(Icons.done_all, size: 40, color: Colors.grey);
         break;
       case 3:
-        return Icon(Icons.autorenew, size: 90, color: Colors.blue);
+        return Icon(Icons.autorenew, size: 40, color: Colors.blue);
         break;
       case 4:
-        return Icon(Icons.done_all, size: 90,color: Colors.green,);
+        return Icon(Icons.done_all, size: 40,color: Colors.green,);
         break;
       case 5:
-        return Icon(Icons.block, size: 90, color: Colors.red);
+        return Icon(Icons.block, size: 40, color: Colors.red);
         break;
       default:
         return Icon(Icons.add_call, size: 90);
@@ -123,30 +199,30 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
     switch(i){
       case 0:
         if(userType == 1){
-          return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("MIS SOLICITUDES ...\n", style: TextStyle(fontWeight: FontWeight.bold),)),);
+          return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nMIS SOLICITUDES ...", style: TextStyle(fontWeight: FontWeight.bold),)),);
         }
         else{
-          return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Grupos Capturados\n(grupos abiertos)", style: TextStyle(fontWeight: FontWeight.bold),)),);
+          return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nGrupos Capturados (grupos abiertos)", style: TextStyle(fontWeight: FontWeight.bold),)),);
         }
         break;
       case 1:
-        String texto = userType == 1 ? "En Espera (no\nsincronizado)" : userType == 2 ? "En Espera\n(grupos cerrados)" : "En Espera (solicitudes\ny grupos cerrados)";
+        String texto = userType == 1 ? "\nEn Espera (no sincronizado)" : userType == 2 ? "\nEn Espera (grupos cerrados)" : "\nEn Espera (solicitudes y grupos cerrados)";
         return Padding(padding: EdgeInsets.all(10),child: Center(child:Text(texto, style: TextStyle(fontWeight: FontWeight.bold),)),);
         break;
       case 2:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Por autorizar\n", style: TextStyle(fontWeight: FontWeight.bold))));
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nPor autorizar", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       case 3:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Cambio de Documentos\n", style: TextStyle(fontWeight: FontWeight.bold))));
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nCambio de Documentos", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       case 4:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Dictaminadas\n", style: TextStyle(fontWeight: FontWeight.bold))));
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nDictaminadas", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       case 5:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("Rechazadas\n", style: TextStyle(fontWeight: FontWeight.bold))));
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nRechazadas", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       default:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("x_x")));
+        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nx_x")));
         break;
     }
   }

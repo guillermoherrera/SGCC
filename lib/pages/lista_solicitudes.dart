@@ -225,13 +225,15 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     final bool isLandscape = orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title, style: TextStyle(color: Colors.white)),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
+        elevation: 0.0,
         actions: <Widget>[
           //widget.status == 0 ? IconButton(icon: Icon(Icons.cached), color: Colors.white, onPressed: () {showDialogo();},) : Text("")
         ],
       ),
-      body: downloading ? Center(child: Container(
+      body: /*downloading ? Center(child: Container(
           height: 120.0,
           width: 200.0,
           child: Card(
@@ -252,7 +254,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
               ],
             ),
           ),
-        )) :  RefreshIndicator(
+        )) :*/  RefreshIndicator(
         key: refreshKey,
         onRefresh: ()async{
           await Future.delayed(Duration(seconds:1));
@@ -269,11 +271,46 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema, Colors.white])
+                colors: [widget.colorTema, widget.colorTema])
               ),
             ),
             Column(children: <Widget>[
-              ResponsiveContainer(
+              InkWell(
+                child: Card(
+                  elevation: 0.0,
+                  child: Container(
+                    child: ListTile(
+                    leading: Icon(Icons.assignment,color: Colors.white, size: 40.0,),
+                    title: Text(solicitudesCant != null ? "\n" + msjEncabezado+solicitudesCant.toString() : "\n" + msjEncabezado, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
+                    subtitle: Text("", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70)),
+                    //trailing: Text(""),
+                    isThreeLine: true,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                      colors: [widget.colorTema, widget.colorTema])
+                    ),
+                  )
+                ),
+                onTap: (){},
+              ),
+              Expanded(child: Container(
+                height: double.infinity,
+                width: double.infinity,
+                child: Card(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
+                  ),
+                  child:  Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: solicitudes.length > 0 ? Padding(padding: EdgeInsets.all(5.0), child:  listaSolicitudes()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
+                  ),
+                )
+              )),
+              /*ResponsiveContainer(
                 heightPercent: 30.0,
                 widthPercent: 100.0,
                 child: Container(decoration: BoxDecoration(
@@ -285,19 +322,19 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                   child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[Icon(Icons.assignment,color: Colors.white60, size: isLandscape ? 50.0 : 150.0), Text(solicitudesCant != null ? msjEncabezado+solicitudesCant.toString() : msjEncabezado, style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),)]),
                 )),
               ),
-              solicitudes.length > 0 ? Expanded(child: listaSolicitudes()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))),
+              solicitudes.length > 0 ? Expanded(child: listaSolicitudes()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),*/
             ]),
             solicitudes.length > 0 ? Container() : ListView()
           ]
         )
       ),
-      bottomNavigationBar: widget.status == 0 ? InkWell(
+      /*bottomNavigationBar: widget.status == 0 ? InkWell(
           child:  Container(
             child: ListTile(
               trailing: InkWell(onTap: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Historial", status: 5, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome,) ));}, child: Text("Historial", style: TextStyle(color: Colors.black12))),
             ),
           ), 
-        ) : Text("-"),
+        ) : Text("-"),*/
     );
   }
 
@@ -310,8 +347,16 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         if(solicitudes[index].grupoID != null || solicitudes[index].idGrupo != null) grupos.add(solicitudes[index].nombreGrupo);
         return InkWell(
           child: Card(
+            shape: RoundedRectangleBorder(
+              side: BorderSide(color:widget.colorTema, width:3.0),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(50.0),
+                topRight: Radius.circular(50.0),
+                bottomLeft: Radius.circular(50.0),
+                bottomRight: Radius.circular(50.0)
+              ),
+            ),
             child: Container(
-
               child: solicitudes[index].grupoID == null && solicitudes[index].idGrupo == null ?
               InkWell(child:  ListTile(
                 leading: Icon(Icons.person, color: widget.colorTema,size: 40.0,),
@@ -333,7 +378,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema, Colors.white])
+                colors: [Colors.white, Colors.white])
               ),
             ),
           )
@@ -457,7 +502,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           icono = Tooltip(message: "En proceso de consulta de Buró", child: Icon(Icons.done_all, color: Colors.blue));
           break;
         case 9:
-          icono = Tooltip(message: "Por dictaminar (consulta de buró exitosa)", child: Icon(Icons.done_all, color: Colors.white));
+          icono = Tooltip(message: "Por dictaminar (consulta de buró exitosa)", child: Icon(Icons.done_all, color: Colors.black));
           break;
         case 10:
           icono = Tooltip(message: "Error en consulta de Buró", child: Icon(Icons.done_all, color: Colors.red));
@@ -466,7 +511,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           icono = Tooltip(message: "Sin estatus, contactar a soporte", child: Icon(Icons.close, color: Colors.red));
           break;
       }
-      return icono;
+      return Column(children: <Widget>[icono], mainAxisAlignment: MainAxisAlignment.center) ;
     }
   }
 

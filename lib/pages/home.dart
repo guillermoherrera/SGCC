@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
@@ -50,6 +51,9 @@ class _HomePageState extends State<HomePage> {
   int userType;
   int cantSolicitudesCambios = 0;
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
+  List<String> nombres = ["Carlos", "Pedro", "Maria"];
+  List<String> apellidos = ["Herrera", "Lopez", "Morales"];
+  Random rnd = new Random();
 
   Future<void> getListDocumentos() async{
     final pref = await SharedPreferences.getInstance();
@@ -181,111 +185,61 @@ class _HomePageState extends State<HomePage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                       ),
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: listaOpciones()
+                      ),
                     )
                   )),
-                  /*Divider(),
-                  userType == 2 ? Container() : InkWell(
-                    child: Card(
-                      child: Container(
-                        child: ListTile(
-                        leading: Icon(Icons.person_add, color: widget.colorTema,size: 40.0,),
-                        title: Text("Nueva Solicitud Individual", style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("Captura solicitudes de crédito individual en 3 pasos."),
-                        trailing: Icon(Icons.arrow_forward_ios),
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                          begin: Alignment.topRight,
-                          end: Alignment.bottomLeft,
-                          colors: [widget.colorTema, Colors.white])
-                        ),
-                      )
-                    ),
-                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Solicitud Individual", colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo(),)));},
-                  ),
-                  userType == 1 ? Container() :InkWell(
-                    child: Card(
-                      child: Container(
-                        child: ListTile(
-                        leading: Icon(Icons.group_add, color: widget.colorTema,size: 40.0,),
-                        title: Text("Nueva solicitud de crédito Grupal", style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("Captura solicitudes de Crédito Grupal."),
-                        trailing: Icon(Icons.arrow_forward_ios),
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                          begin: Alignment.topRight,
-                          end: Alignment.bottomLeft,
-                          colors: [widget.colorTema, Colors.white])
-                        ),
-                      )
-                    ),
-                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Group(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo())));},
-                  ),
-                  InkWell(
-                    child: Card(
-                      child: Container(
-                        child: ListTile(
-                        leading: Icon(Icons.account_balance_wallet, color: widget.colorTema ,size: 40.0),
-                        title: Text("Mi cartera", style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("Revisa tu cartera"),
-                        trailing: Icon(Icons.arrow_forward_ios),
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                          begin: Alignment.topRight,
-                          end: Alignment.bottomLeft,
-                          colors: [widget.colorTema, Colors.white])
-                        ),
-                      )
-                    ),
-                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera(colorTema: widget.colorTema) ));},
-                  ),
-                  InkWell(
-                    child: Card(
-                      child: Container(
-                        child: ListTile(
-                        leading: Icon(Icons.cached, color: widget.colorTema ,size: 40.0),
-                        title: Text("Renovaciones", style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("Consulta y Solicita renovaciones"),
-                        trailing: Icon(Icons.arrow_forward_ios),
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                          begin: Alignment.topRight,
-                          end: Alignment.bottomLeft,
-                          colors: [widget.colorTema, Colors.white])
-                        ),
-                      )
-                    ),
-                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> Renovaciones(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo()) ));},
-                  ),*/
-                  /*Divider(),
-                  InkWell(
-                    child: Card(
-                      child: Container(
-                        child: ListTile(
-                        leading: Icon(Icons.shopping_cart, color: Colors.purple ,size: 40.0),
-                        title: Text("ConfiaShop", style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("Tu tienda de confianza"),
-                        trailing: Icon(Icons.arrow_forward_ios),
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                          begin: Alignment.topRight,
-                          end: Alignment.bottomLeft,
-                          colors: [widget.colorTema[400], Colors.white])
-                        ),
-                      )
-                    ),
-                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => ConfiaShopView()));},
-                  ),*/
                 ],
               )
             ]
           )
         )
       ),
+    );
+  }
+
+  Widget listaOpciones(){
+    return ListView.builder(
+      itemCount: 10,
+      itemBuilder: (context, index){
+        return index == 0 ? Container(child:Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(Icons.watch_later, color: Colors.grey,),
+              Text("ÚLTIMOS REGISTROS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+            ],
+          ), margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0)) : InkWell(
+          onTap: (){},
+          child: Card(
+            shape: RoundedRectangleBorder(
+              side: BorderSide(color:widget.colorTema, width:3.0),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(50.0),
+                topRight: Radius.circular(50.0),
+                bottomLeft: Radius.circular(50.0),
+                bottomRight: Radius.circular(50.0)
+              ),
+            ),
+            child: Container(
+              child: ListTile(
+                leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.person, color: widget.colorTema, size: 40)]),
+                title: Text(nombres[rnd.nextInt(3-0)]+" "+apellidos[rnd.nextInt(3-0)], style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text("12/03/20 02:56 AM\nIMPORTE: \$1000"),
+                isThreeLine: true,
+                trailing:  Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("Estatus", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),Text(index < 4 ? "En espera" : "Sincronizado", style: TextStyle(color: index < 4 ? Colors.yellow[700] : widget.colorTema, fontWeight: FontWeight.bold))])
+              ),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [Colors.white, Colors.white])
+              ),
+            ),
+          )
+        );
+      },
     );
   }
 
