@@ -146,8 +146,10 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(widget.grupoInfo.nombre),
+        title: Text(widget.grupoInfo.nombre, style: TextStyle(color: Colors.white)),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
+        elevation: 0.0,
         actions: listaRenovacion.length == 0 ? null : solicitable ? <Widget>[
           IconButton(icon: Icon(Icons.person_add), onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Grupo Renovación: "+ widget.grupoInfo.nombre, colorTema: widget.colorTema, grupoId: widget.grupoInfo.grupoID, grupoNombre: widget.grupoInfo.nombre, actualizaHome: ()=>actualizaRenovacion(), esRenovacion: true,)));
@@ -166,11 +168,46 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [Colors.green[100], Colors.white])
+                colors: [widget.colorTema, widget.colorTema])
               ),
             ),
             Column(children: <Widget>[
-              ResponsiveContainer(
+              InkWell(
+                child: Card(
+                  elevation: 0.0,
+                  child: Container(
+                    child: ListTile(
+                    leading: Icon(Icons.group,color: Colors.white, size: 40.0,),
+                    title: Text("\nINTEGRANTES: "+integrantes.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
+                    subtitle: Text("IMPORTE: "+importe.toStringAsFixed(2), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70)),
+                    //trailing: Text(""),
+                    isThreeLine: true,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                      colors: [widget.colorTema, widget.colorTema])
+                    ),
+                  )
+                ),
+                onTap: (){},
+              ),
+              Expanded(child: Container(
+                height: double.infinity,
+                width: double.infinity,
+                child: Card(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
+                  ),
+                  child:  Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: listaRenovacion.length > 0 ? Padding(padding: EdgeInsets.all(5.0), child:  renovacionLista()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
+                  ),
+                )
+              )),
+              /*ResponsiveContainer(
                 heightPercent: 30.0,
                 widthPercent: 100.0,
                 child: Container(decoration: BoxDecoration(
@@ -193,7 +230,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
                 child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("RENOVACIÓN SOLICITADA", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
                 color: Colors.blue,
               ))),
-              listaRenovacion.length > 0 ? Expanded(child: renovacionLista()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))),
+              listaRenovacion.length > 0 ? Expanded(child: renovacionLista()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))),*/
             ])
           ]
         )
@@ -207,6 +244,15 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
       itemBuilder: (context, index){
         return InkWell(
           child: Card(
+            shape: RoundedRectangleBorder(
+              side: BorderSide(color:widget.colorTema, width:3.0),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(50.0),
+                topRight: Radius.circular(50.0),
+                bottomLeft: Radius.circular(50.0),
+                bottomRight: Radius.circular(50.0)
+              ),
+            ),
             child: Container(
               child: ListTile(
                 title: Text(listaRenovacion[index].nombre),
@@ -225,7 +271,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema, Colors.white])
+                colors: [Colors.white, Colors.white])
               ),
             )
           )

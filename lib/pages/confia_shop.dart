@@ -52,8 +52,10 @@ class _ConfiaShopViewState extends State<ConfiaShopView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("ConfiaShop"),
+        title: Text("ConfiaShop", style: TextStyle(color: Colors.white)),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
+        elevation: 0.0,
         leading: new IconButton(icon: Icon(Icons.close), onPressed: (){
           flutterWebViewPlugin.close();
           //print("destroy");

@@ -56,8 +56,10 @@ class _CambioDocumentoState extends State<CambioDocumento> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title, style: TextStyle(color: Colors.white)),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
+        elevation: 0.0,
       ),
       body: Container(
         child: Stack(
@@ -67,25 +69,40 @@ class _CambioDocumentoState extends State<CambioDocumento> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [widget.colorTema, Colors.white])
+                colors: [widget.colorTema, widget.colorTema])
               ),
             ),
-            !withData ? Text("cargando ...") : SingleChildScrollView(
-              child: Container(
-                child: Card(
-                  color: Colors.white70,
-                  margin: EdgeInsets.all(10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  elevation: 8.0,
-                  child: Padding(
-                    padding: EdgeInsets.all(15),
-                    child: Column(
-                      children: formSolicitud(),
+            !withData ? Text("cargando ...") : LayoutBuilder(
+              builder: (context, constraint){
+              return SingleChildScrollView(
+                child: ConstrainedBox( constraints: BoxConstraints(minHeight: constraint.maxHeight),
+                  child: Card(
+                    color: Colors.white,
+                    margin: EdgeInsets.all(4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                     ),
+                    elevation: 0.0,
+                    child: IntrinsicHeight( child:Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(15),
+                          child: Column(
+                            children: formSolicitud(),
+                          ),
+                        ),
+                        Expanded(child:  
+                          Align(
+                            alignment: FractionalOffset.bottomCenter,
+                            child: styleButton(validaSubmit, buttonEnabled ? "FINALIZAR" : "GUARDANDO ..."),
+                          ),
+                        )
+                      ]
+                    ))
                   ),
                 ),
-              ),
-            ) 
+              );
+            }) 
           ]
         )
       )
@@ -99,14 +116,20 @@ class _CambioDocumentoState extends State<CambioDocumento> {
           child: Text("ACTUALIZAR DOCUMENTO(S)", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         ),
       ),
-      tipoContrato(),
       Divider(),
+      tipoContrato(),
       adjuntarId(),
-      datosPrevios(),
-      Row(
+      Container(
+        child: datosPrevios(),
+        padding: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          color: Color(0xfff2f2f2)
+        ),
+      ),
+      /*Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: buttonWidget(),
-      ),
+      ),*/
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
@@ -123,7 +146,7 @@ class _CambioDocumentoState extends State<CambioDocumento> {
       if(docArchivos.singleWhere((archivo) => archivo.tipo == catDoc.tipo, orElse: () => null) != null){
         tablesRows.add(itemsFiles(catDoc.descDocumento,catDoc.tipo));
         tablesRows.add(observCambio(docArchivos.singleWhere((archivo) => archivo.tipo == catDoc.tipo).observacionCambio));
-        tablesRows.add(TableRow(children: [Divider(),Divider(),Divider()]));
+        tablesRows.add(TableRow(children: [Divider(color: widget.colorTema),Divider(color: widget.colorTema),Divider(color: widget.colorTema)]));
       }
     }
     
@@ -136,17 +159,17 @@ class _CambioDocumentoState extends State<CambioDocumento> {
   TableRow itemsFiles(titulo, tipo){
     return TableRow(
       children: [
-        Container(child:  Text(titulo), padding: EdgeInsets.all(5),),
+        Container(child:  Text(titulo, style: TextStyle(fontWeight: FontWeight.bold)), padding: EdgeInsets.all(5),),
         Column(children: <Widget>[
           ButtonTheme(
             minWidth: 50.0,
             height: 30.0,
-            child:RaisedButton(onPressed: ()=> imageSelectorGallery(1,tipo), child: Icon(Icons.add_photo_alternate),color: widget.colorTema,textColor: Colors.white,)
+            child:RaisedButton(onPressed: ()=> imageSelectorGallery(1,tipo), child: Icon(Icons.add_photo_alternate),color: Colors.white,textColor: widget.colorTema,)
           ),
           ButtonTheme(
             minWidth: 50.0,
             height: 30.0,
-            child:RaisedButton(onPressed: ()=> imageSelectorGallery(2,tipo), child: Icon(Icons.add_a_photo),color: widget.colorTema,textColor: Colors.white)
+            child:RaisedButton(onPressed: ()=> imageSelectorGallery(2,tipo), child: Icon(Icons.add_a_photo),color: Colors.white,textColor: widget.colorTema)
           ),
         ],),
         Padding(
@@ -201,13 +224,13 @@ class _CambioDocumentoState extends State<CambioDocumento> {
     auxFile = docArchivos.singleWhere((archivo) => archivo.tipo == tipo, orElse: null).archivo;
     
     if(auxFile != null && auxFile.path != "null")
-      return Hero(
+      return Container(color: Colors.black,child: Hero(
         tag: "image"+tipo.toString(),
         child: GestureDetector(
           onTap: ()=> Navigator.push(context, MaterialPageRoute(builder: (context)=> ImageDetail(tipo: tipo,image: auxFile))),
           child: Image.file(auxFile)
         ),
-      );
+      ));
     else
       return Image.asset("images/noImage.png");
   }
@@ -215,13 +238,13 @@ class _CambioDocumentoState extends State<CambioDocumento> {
   Widget tipoContrato(){
     String contrato;
     if(solicitud.nombreGrupo == "null"){
-      contrato = "\nINDIVIDUAL";
+      contrato = "INDIVIDUAL";
     }else{
-      contrato = "\nGRUPAL ("+solicitud.nombreGrupo+")";
+      contrato = "GRUPO: "+solicitud.nombreGrupo+"";
     }
     return Container(
       child: Center(
-        child: Text(contrato, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+        child: Text(contrato, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.grey)),
       ),
     );
   }
@@ -232,59 +255,53 @@ class _CambioDocumentoState extends State<CambioDocumento> {
         Container(child:Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text("DATOS DEL CLIENTE", style: TextStyle(fontWeight: FontWeight.bold)),
+            Icon(Icons.person, color: widget.colorTema,),
+            Text("DATOS DEL CLIENTE", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
           ],
         ), margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0)),
         Table(
-          columnWidths: {0: FractionColumnWidth(.1)},
+          columnWidths: {1: FractionColumnWidth(.5)},
           children: [
             TableRow(
               children: [
-                Icon(Icons.attach_money, size: 15.0, color: widget.colorTema,),
-                Text("IMPORTE CAPITAL: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("IMPORTE CAPITAL: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(solicitud.importe.toString()),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.person, size: 15.0, color: widget.colorTema,),
-                Text("NOMBRE: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("NOMBRE: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(solicitud.nombrePrimero +" "+ solicitud.nombreSegundo+" "+ solicitud.apellidoPrimero +" "+ solicitud.apellidoSegundo ),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.calendar_today, size: 15.0, color: widget.colorTema,),
-                Text("FECHA DE NACIMIENTO: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("FECHA DE NACIMIENTO: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 //Text(formatDate(widget.datos.persona['fechaNacimiento'], [dd, '/', mm, '/', yyyy])),
                 Text(solicitud.fechaNacimiento.toString())
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.assignment_ind, size: 15.0, color: widget.colorTema,),
-                Text("CURP: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("CURP: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(solicitud.curp),
               ],
             ),
             TableRow(
               children: [
-                Icon(Icons.assignment_ind, size: 15.0, color: widget.colorTema,),
-                Text("RFC: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("RFC: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(solicitud.rfc),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.phone, size: 15.0, color: widget.colorTema,),
-                Text("TELÉFONO: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("TELÉFONO: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(solicitud.telefono),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.home, size: 15.0, color: widget.colorTema,),
-                Text("DIRECCIÖN: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("DIRECCIÖN: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(solicitud.direccion1+" "+solicitud.coloniaPoblacion+" C.P. "+solicitud.cp.toString()+" "+solicitud.delegacionMunicipio+" "+solicitud.ciudad+", "+solicitud.estado+" "+solicitud.pais),
               ]
             )
@@ -303,9 +320,10 @@ class _CambioDocumentoState extends State<CambioDocumento> {
   Widget styleButton(VoidCallback onPressed, String text){
     return RaisedButton(
       onPressed: buttonEnabled ? onPressed : (){},
-      color: widget.colorTema,
+      color: Color(0xff1A9CFF),
       textColor: Colors.white,
-      child: Text(text),
+      padding: EdgeInsets.all(12),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Icon(Icons.arrow_forward),Text(text, style: TextStyle(fontSize: 20),)]),
     );
   }
 
@@ -414,7 +432,8 @@ class ImageDetail extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.black,
         centerTitle: true,
-        title: Text(tipo == 1 ? "IDENTIFICACÓN" : tipo == 2 ? "COMPROBANTE DE DOMICILIO" : "AUTORIZACIÓN DE BURO")
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(tipo == 1 ? "IDENTIFICACÓN" : tipo == 2 ? "COMPROBANTE DE DOMICILIO" : "AUTORIZACIÓN DE BURO", style: TextStyle(color: Colors.white))
       ),
       body: Center(
         child: Hero(

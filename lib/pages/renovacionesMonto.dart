@@ -31,8 +31,10 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(widget.renovacion.nombre),
+        title: Text(widget.renovacion.nombre, style: TextStyle(color: Colors.white)),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
+        elevation: 0.0,
       ),
       body: Form(
         key: formKey,
@@ -44,22 +46,45 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
                 gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [Colors.green[100], Colors.white])
+                colors: [widget.colorTema, widget.colorTema])
               ),
             ),
-            SingleChildScrollView(
-              child: Container(
-                child: Card(
-                  color: Colors.white70,
-                  margin:  EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  elevation: 8.0,
-                  child: Padding(
-                    padding: EdgeInsets.all(15),
-                    child: Column(children: vista())
+            LayoutBuilder(
+              builder: (context, constraint){
+              return SingleChildScrollView(
+                child: ConstrainedBox( constraints: BoxConstraints(minHeight: constraint.maxHeight),
+                  child: Card(
+                    color: Colors.white,
+                    margin:  EdgeInsets.all(4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
+                    ),
+                    elevation: 0.0,
+                    child: IntrinsicHeight( child:Column(
+                      children: [
+                          Padding(
+                          padding: EdgeInsets.all(15),
+                          child: Column(children: vista())
+                        ),
+                        Expanded(child:  
+                          Align(
+                            alignment: FractionalOffset.bottomCenter,
+                            child: SizedBox(width: double.infinity, child: RaisedButton(
+                              onPressed: ()async{
+                                validaSubmit();
+                              },
+                              color: Color(0xff1A9CFF),
+                              textColor: Colors.white,
+                              padding: EdgeInsets.all(12),
+                              child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Icon(Icons.edit),Text("ACTUALIZAR IMPORTE", style: TextStyle(fontSize: 20),)]),
+                            ))
+                          ),
+                        )
+                      ]
+                    ))
                   )
                 )
-              )
+              );}
             )
           ]
         )
@@ -69,6 +94,18 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
 
   List<Widget> vista(){
     return [
+      Padding(padding: EdgeInsets.only(top: 20), child: Image.asset("images/confiaShop.png", height: 70,)),
+      confiaShop(),
+      /*Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
+        onPressed: ()async{
+          validaSubmit();
+          //widget.montoChange(3, 10.0);
+          //Navigator.push(context, MaterialPageRoute(builder: (context) => ConfiaShopView()));
+        },
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("ACTUALIZAR IMPORTE", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
+        color: widget.colorTema,
+      ))),*/
+      Divider(),
       padded(
         TextFormField(
           controller: importe,
@@ -77,6 +114,13 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
           decoration: InputDecoration(
             labelText: "Importe Capital",
             prefixIcon: Icon(Icons.attach_money, size: 40.0,),
+            fillColor: Color(0xfff2f2f2),
+            filled: true,
+            border: new OutlineInputBorder(
+              borderRadius: const BorderRadius.all(
+                const Radius.circular(10.0),
+              ),
+            ),
           ),
           keyboardType: TextInputType.number,
           validator: (value){
@@ -93,26 +137,20 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
           }
         ),
       ),
-      Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
-        onPressed: ()async{
-          validaSubmit();
-          //widget.montoChange(3, 10.0);
-          //Navigator.push(context, MaterialPageRoute(builder: (context) => ConfiaShopView()));
-        },
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("ACTUALIZAR IMPORTE", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
-        color: widget.colorTema,
-      ))),
       Divider(),
-      datos(),
-      Divider(),
-      Image.asset("images/confiaShop.png", height: 70,),
-      confiaShop()
+      Container(
+        child: datos(),
+        padding: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          color: Color(0xfff2f2f2)
+        ),
+      ),
     ];
   }
 
   Widget padded(Widget childs){
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 10),
       child: childs,
     );
   }
@@ -123,59 +161,53 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
         Container(child:Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text("DATOS DEL CLIENTE", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0)),
+            Icon(Icons.person, color: widget.colorTema,),
+            Text("DATOS DEL CLIENTE", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
           ],
         ), margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0)),
         Table(
-          columnWidths: {0: FractionColumnWidth(.1)},
+          columnWidths: {1: FractionColumnWidth(.5)},
           children: [
             TableRow(
               children: [
-                Icon(Icons.person, size: 15.0, color: widget.colorTema,),
-                Text("NOMBRE: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
-                Text(widget.renovacion.nombre, style: TextStyle(fontSize: 15.0)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("NOMBRE: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
+                Text(widget.renovacion.nombre),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.attach_money, size: 15.0, color: widget.colorTema,),
-                Text("IMPORTE: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
-                Text(widget.renovacion.importe.toStringAsFixed(2), style: TextStyle(fontSize: 15.0, color: importeActualiza ? Colors.green : Colors.black, fontWeight: importeActualiza ? FontWeight.bold : null)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("IMPORTE: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
+                Text(widget.renovacion.importe.toStringAsFixed(2), style: TextStyle(color: importeActualiza ? Colors.green : Colors.black, fontWeight: importeActualiza ? FontWeight.bold : null)),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.attach_money, size: 15.0, color: widget.colorTema,),
-                Text("CAPITAL: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
-                Text(widget.renovacion.capital.toStringAsFixed(2), style: TextStyle(fontSize: 15.0)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("CAPITAL: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
+                Text(widget.renovacion.capital.toStringAsFixed(2)),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.calendar_today, size: 15.0, color: widget.colorTema,),
-                Text("DÍAS DE ATRASO: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
-                Text(widget.renovacion.diasAtraso.toString(), style: TextStyle(fontSize: 15.0)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("DÍAS DE ATRASO: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
+                Text(widget.renovacion.diasAtraso.toString()),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.format_list_numbered, size: 15.0, color: widget.colorTema,),
-                Text("CLIENTE ID: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
-                Text(widget.renovacion.clienteID.toString(), style: TextStyle(fontSize: 15.0)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("CLIENTE ID: ", style: TextStyle(fontWeight: FontWeight.bold, color:  Colors.grey))),
+                Text(widget.renovacion.clienteID.toString()),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.format_list_numbered, size: 15.0, color: widget.colorTema,),
-                Text("CRÉDITO ID: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
-                Text(widget.renovacion.creditoID.toString(), style: TextStyle(fontSize: 15.0)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("CRÉDITO ID: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
+                Text(widget.renovacion.creditoID.toString()),
               ]
             ),
             TableRow(
               children: [
-                Icon(Icons.shopping_cart, size: 15.0, color: widget.colorTema,),
-                Text("BENEFICIO CONFIASHOP: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0)),
-                Text(widget.renovacion.beneficios != null ? widget.renovacion.beneficios[0]['cveBeneficio'] : "N/A", style: TextStyle(fontSize: 15.0)),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("BENEFICIO CONFIASHOP: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
+                Text(widget.renovacion.beneficios != null ? widget.renovacion.beneficios[0]['cveBeneficio'] : "N/A"),
               ]
             ),
           ],
@@ -185,11 +217,11 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
   }
 
   Widget confiaShop(){    
-    return Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
+    return Padding(padding: EdgeInsets.fromLTRB(10.0, 0, 10.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
       onPressed: ()async{
         Navigator.push(context, MaterialPageRoute(builder: (context) => ConfiaShopView()));
       },
-      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.shopping_cart, color: Colors.white) ,Text("ConfiaShop", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.shopping_cart, color: Colors.white) ,Text(" CONFIASHOP", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
       color: Colors.purple,
     )));
   }

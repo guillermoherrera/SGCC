@@ -146,7 +146,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
     List<TableRow> tablesRows = List();
     for(CatDocumento catDoc in catDocumentos){
       tablesRows.add(itemsFiles(catDoc.descDocumento,catDoc.tipo));
-      tablesRows.add(TableRow(children: [Divider(),Divider(),Divider()]));
+      tablesRows.add(TableRow(children: [Divider(color: widget.colorTema),Divider(color: widget.colorTema,),Divider(color: widget.colorTema)]));
 
       if(docArchivos.length != catDocumentos.length){
         DocumentoArchivo documentoArchivo = new DocumentoArchivo(tipo: catDoc.tipo, archivo: null, version: 1);
@@ -500,7 +500,7 @@ class ImageDetail extends StatelessWidget {
         backgroundColor: Colors.black,
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
-        title: Text(tipo == 1 ? "IDENTIFICACÓN" : tipo == 2 ? "COMPROBANTE DE DOMICILIO" : "AUTORIZACIÓN DE BURO")
+        title: Text(tipo == 1 ? "IDENTIFICACÓN" : tipo == 2 ? "COMPROBANTE DE DOMICILIO" : "AUTORIZACIÓN DE BURO", style: TextStyle(color: Colors.white))
       ),
       body: Center(
         child: Hero(
