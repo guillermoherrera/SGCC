@@ -235,15 +235,16 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
     
     if(catDocumentos.length == docArchivos.length) auxFile = docArchivos.singleWhere((archivo) => archivo.tipo == tipo).archivo;
     
-    if(auxFile != null)
+    if(auxFile != null){
+      String titulo = catDocumentos.singleWhere((archivo) => archivo.tipo == tipo).descDocumento;
       return Container(color: Colors.black,child:  Hero(
         tag: "image"+tipo.toString(),
         child: GestureDetector(
-          onTap: ()=> Navigator.push(context, MaterialPageRoute(builder: (context)=> ImageDetail(tipo: tipo,image: auxFile))),
+          onTap: ()=> Navigator.push(context, MaterialPageRoute(builder: (context)=> ImageDetail(tipo: tipo,image: auxFile, titulo: titulo))),
           child: Image.file(auxFile)
         ),
       ));
-    else
+    }else
       return Image.asset("images/noImage.png");
   }
 
@@ -348,6 +349,7 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
               onWillPop: (){},
               child: 
               AlertDialog(
+                shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -444,9 +446,10 @@ class _SolicitudDocumentosEditarState extends State<SolicitudDocumentosEditar> {
 }
 
 class ImageDetail extends StatelessWidget {
-  ImageDetail({this.tipo, this.image});
+  ImageDetail({this.tipo, this.image, this.titulo});
   final int tipo;
   final File image;
+  final String titulo;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -455,7 +458,7 @@ class ImageDetail extends StatelessWidget {
         backgroundColor: Colors.black,
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
-        title: Text(tipo == 1 ? "IDENTIFICACÓN" : tipo == 2 ? "COMPROBANTE DE DOMICILIO" : "AUTORIZACIÓN DE BURO", style: TextStyle(color: Colors.white),)
+        title: Text(titulo, style: TextStyle(color: Colors.white),)
       ),
       body: Center(
         child: Hero(

@@ -186,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.all(10.0),
+                        padding: EdgeInsets.all(13.0),
                         child: listaOpciones()
                       ),
                     )
@@ -345,6 +345,7 @@ class _HomePageState extends State<HomePage> {
         return WillPopScope(
           onWillPop: (){},
           child: AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -459,6 +460,7 @@ class _HomePageState extends State<HomePage> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
+                shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [

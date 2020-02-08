@@ -30,9 +30,17 @@ class _LoginState extends State<Login> {
   Firestore _firestore = Firestore.instance;
   AuthFirebase authFirebase = new AuthFirebase();
   DocumentSnapshot _datosCatalogo;
+  double paddingTop = 50;
   
   @override
   Widget build(BuildContext context) {
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    final bool isLandscape = orientation == Orientation.landscape;
+    if(isLandscape){
+      setState(() { paddingTop = 5;});
+    }else{
+      setState(() { paddingTop = 50;});
+    }
     return Scaffold(
       key: _scaffoldKey,
       /*appBar: AppBar(
@@ -50,7 +58,7 @@ class _LoginState extends State<Login> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [widget.colorTema, widget.colorTema])
+                  colors: [Colors.white, Colors.white])
                 ),
               ),
               SingleChildScrollView(
@@ -70,13 +78,13 @@ class _LoginState extends State<Login> {
                     ResponsiveContainer(
                       heightPercent: 60.0,
                       widthPercent: 100.0,
-                      child: Container(decoration: BoxDecoration(
+                      child: SingleChildScrollView(child: Container(decoration: BoxDecoration(
                           gradient: LinearGradient(
                           begin: Alignment.topRight,
                           end: Alignment.bottomLeft,
                           colors: [Colors.white, Colors.white])
                         ), child: Column(children: formLogin())
-                      )
+                      ))
                     ),
                   ]
                 )
@@ -136,7 +144,7 @@ class _LoginState extends State<Login> {
 
   Widget padded({Widget childs}){
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 50, 20, 20),//EdgeInsets.symmetric(vertical: 8.0),
+      padding: EdgeInsets.fromLTRB(20, paddingTop, 20, 20),//EdgeInsets.symmetric(vertical: 8.0),
       child: childs,
     );
   }
@@ -148,7 +156,7 @@ class _LoginState extends State<Login> {
   }
 
   Widget styleButton(String text, VoidCallback onPress){
-    return Padding(padding: EdgeInsets.fromLTRB(10, 50, 20, 0),child: SizedBox(width: double.infinity, child: new RaisedButton(
+    return Padding(padding: EdgeInsets.fromLTRB(10, paddingTop, 20, 0),child: SizedBox(width: double.infinity, child: new RaisedButton(
       onPressed: buttonEnabled ? onPress : (){},
       color: Color(0xfff2f2f2),
       textColor: widget.colorTema,
@@ -199,6 +207,8 @@ class _LoginState extends State<Login> {
     }else if(word.contains("An internal error has occurred. [ 7: ]")){
       return "Error interno, revisa tu conexión a internet.";
     }else if(word.contains("TimeoutException")){
+      return "Error interno, revisa tu conexión a internet.";
+    }else if(word.contains("ERROR_NETWORK")){
       return "Error interno, revisa tu conexión a internet.";
     }else{
       return "Correo y/o contraseña incorrectos.";

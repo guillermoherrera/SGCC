@@ -305,8 +305,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                   ),
                   child:  Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: solicitudes.length > 0 ? Padding(padding: EdgeInsets.all(5.0), child:  listaSolicitudes()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
+                    padding: EdgeInsets.all(13.0),
+                    child: solicitudes.length > 0 ? listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
                   ),
                 )
               )),
@@ -616,6 +616,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
         title: Center(child: Text("Elminar Solicitud")),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -649,6 +650,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
         title: Center(child: Text("Cerrar Grupo")),
         content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -685,6 +687,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
         title: Center(child: Text("Elminar Solicitud")),
         content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -801,6 +804,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         return WillPopScope(
           onWillPop: (){},
           child: AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -903,6 +907,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
+                shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [

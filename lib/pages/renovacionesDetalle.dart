@@ -202,8 +202,8 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                   ),
                   child:  Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: listaRenovacion.length > 0 ? Padding(padding: EdgeInsets.all(5.0), child:  renovacionLista()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
+                    padding: EdgeInsets.all(13.0),
+                    child: listaRenovacion.length > 0 ?  renovacionLista() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
                   ),
                 )
               )),
@@ -305,6 +305,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
         title: Center(child: Text("Solicitar Renovación")),
         content: Column(
               mainAxisSize: MainAxisSize.min,

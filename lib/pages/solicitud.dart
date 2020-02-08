@@ -631,6 +631,7 @@ class _SolicitudState extends State<Solicitud> {
         return WillPopScope(
           onWillPop: (){},
           child: AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

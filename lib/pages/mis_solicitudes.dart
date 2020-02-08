@@ -79,7 +79,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(10.0),
+                    padding: EdgeInsets.all(13.0),
                     child: listaOpciones()
                   ),
                 )

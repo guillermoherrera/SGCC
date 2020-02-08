@@ -113,11 +113,11 @@ class _CambioDocumentoState extends State<CambioDocumento> {
     return [
       Container(
         child: Center(
-          child: Text("ACTUALIZAR DOCUMENTO(S)", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          child: Text("DOCUMENTOS POR ACTUALIZAR: "+docArchivos.length.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         ),
       ),
       Divider(),
-      tipoContrato(),
+      Padding(padding: EdgeInsets.only(bottom: 50.0),child:  tipoContrato()),
       adjuntarId(),
       Container(
         child: datosPrevios(),
@@ -129,13 +129,13 @@ class _CambioDocumentoState extends State<CambioDocumento> {
       /*Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: buttonWidget(),
-      ),*/
+      ),
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Text("Paso 1 de 1", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
         ],
-      )
+      )*/
     ];
   }
 
@@ -349,6 +349,7 @@ class _CambioDocumentoState extends State<CambioDocumento> {
               onWillPop: (){},
               child: 
               AlertDialog(
+                shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [

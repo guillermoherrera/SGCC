@@ -229,7 +229,7 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
             )
           ),
           flexPadded(
-            Column(
+            Container(child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 //Text("Estado: "),
@@ -246,12 +246,20 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
                     });
                   } : null,
                   value: estado,
-                  underline: Container(color: Colors.grey,height: 1),
+                  underline: Container(color: Colors.grey,height: 0),
                   isExpanded: true,
-                  hint: Text(estadoAux),
+                  hint: Text(estadoAux, style: TextStyle(fontWeight: FontWeight.bold)),
                 ))
               ],
-            )
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            margin: EdgeInsets.only(bottom:20.0),
+            decoration: BoxDecoration(
+              color: Color(0xfff2f2f2),
+              borderRadius: BorderRadius.circular(15.0),
+              border: Border.all(
+                  color: Colors.grey[600], style: BorderStyle.solid, width: 1),
+            ),)
             /*TextFormField(
               controller: estadoCod,
               maxLength: 4,
