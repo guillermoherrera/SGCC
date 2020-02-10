@@ -223,13 +223,13 @@ class _SolicitudState extends State<Solicitud> {
           ),
           flexPadded(
             Center(child:
-            Container(margin: EdgeInsets.only(bottom: 10.0) ,child:
+            Container(margin: EdgeInsets.only(bottom: 20.0) ,child:
             RaisedButton(
               onPressed: ()=>consultarCurp(),
               color: Color.fromRGBO(26, 156, 255, 0.2),
               textColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: Color(0xff1A9CFF), width: 2.0)),
-              padding: EdgeInsets.all(12.0),
+              padding: EdgeInsets.only(top:9, bottom: 9, left: 30.0, right: 30.0),
               child: Column(children: <Widget>[Icon(Icons.search, color: Colors.white,),Text("CONSULTAR CURP", style: TextStyle(fontWeight: FontWeight.bold),)],),
             )))
           )

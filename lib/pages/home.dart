@@ -51,8 +51,10 @@ class _HomePageState extends State<HomePage> {
   int userType;
   int cantSolicitudesCambios = 0;
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
+  bool abs = false;
   List<String> nombres = ["Carlos", "Pedro", "Maria"];
   List<String> apellidos = ["Herrera", "Lopez", "Morales"];
+  List<String> personas = List();
   Random rnd = new Random();
 
   Future<void> getListDocumentos() async{
@@ -63,6 +65,10 @@ class _HomePageState extends State<HomePage> {
     cantSolicitudesCambios = await ServiceRepositorySolicitudes.solicitudesCambioCount(userID); 
     print("******** "+this.mounted.toString()+"**********");
     try{ setState(() {}); }catch(e){ print("ERROR: linea 49 Home:"+e.toString()); }
+    personas.clear();
+    for(int i=0; i < 10 ;i++){
+      personas.add(nombres[rnd.nextInt(3-0)]+" "+apellidos[rnd.nextInt(3-0)]);
+    }
   }
 
   void _moveToSignInScreen(BuildContext context) =>
@@ -99,7 +105,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: (){return new Future(() => false);},
-      child: Scaffold(
+      child: AbsorbPointer(absorbing: abs ,child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
           title: Image.asset('images/adminconfia.png', color: Colors.white, fit: BoxFit.cover),
@@ -133,16 +139,18 @@ class _HomePageState extends State<HomePage> {
         body: userType == null ? Container() : userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : RefreshIndicator(
             key: refreshKey,
             onRefresh: ()async{
+              setState(() {abs = true;});
               await Future.delayed(Duration(seconds:1));
               if(sincManual){
-                sincManual = false;
+                //sincManual = false;
                 await sincroniza.sincronizaDatos();
                 actualizaInfo();
-                sincManual = true;
+                //sincManual = true;
                 print("Sincronización Realizada: "+DateTime.now().toString());
               }else{
                 showSnackBar("Atención: El proceso de sincronizaición esta en curso, por favor espera un momento.", Colors.red);
               }
+              setState(() {abs = false;});
             },
             child: Stack(
               children: <Widget>[
@@ -196,13 +204,13 @@ class _HomePageState extends State<HomePage> {
             ]
           )
         )
-      ),
+      ))
     );
   }
 
   Widget listaOpciones(){
     return ListView.builder(
-      itemCount: 10,
+      itemCount: personas.length,
       itemBuilder: (context, index){
         return index == 0 ? Container(child:Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -225,7 +233,7 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               child: ListTile(
                 leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.person, color: widget.colorTema, size: 40)]),
-                title: Text(nombres[rnd.nextInt(3-0)]+" "+apellidos[rnd.nextInt(3-0)], style: TextStyle(fontWeight: FontWeight.bold)),
+                title: Text(personas[index], style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text("12/03/20 02:56 AM\nIMPORTE: \$1000"),
                 isThreeLine: true,
                 trailing:  Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("Estatus", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),Text(index < 4 ? "En espera" : "Sincronizado", style: TextStyle(color: index < 4 ? Colors.yellow[700] : widget.colorTema, fontWeight: FontWeight.bold))])

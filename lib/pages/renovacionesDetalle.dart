@@ -235,6 +235,39 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
           ]
         )
       ),
+      bottomNavigationBar: InkWell(
+        child:  Container(
+            child: listaRenovacion.length == 0 ? Padding(padding: EdgeInsets.all(0)) :  solicitable ? Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
+              onPressed: ()async{
+                await solicitarRenovacion();
+              },
+              //child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("SOLICITAR RENOVACIÓN", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
+              color: Color(0xff1A9CFF),
+              textColor: Colors.white,
+              padding: EdgeInsets.fromLTRB(8, 12, 8, 12),
+              elevation: 0.0,
+              child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Icon(Icons.arrow_forward),Text("SOLICITAR RENOVACIÓN", style: TextStyle(fontSize: 20),)]),
+            ))) : Padding(padding: EdgeInsets.fromLTRB(0.0, 0, 0.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
+              onPressed: ()async{},
+              //child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("RENOVACIÓN SOLICITADA", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
+              color: widget.colorTema,
+              textColor: Colors.white,
+              padding: EdgeInsets.fromLTRB(8, 12, 8, 12),
+              elevation: 0.0,
+              child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Icon(Icons.check),Text("RENOVACIÓN SOLICITADA", style: TextStyle(fontSize: 20),)]),
+            ))),
+            //color: Color(0xff1A9CFF),
+            decoration: BoxDecoration(
+              border: Border(
+                //top: BorderSide(width: 4.0, color: Colors.lightBlue.shade600),
+                bottom: BorderSide(width: 4.0, color: widget.colorTema),
+                left: BorderSide(width: 4.0, color: widget.colorTema),
+                right: BorderSide(width: 4.0, color: widget.colorTema),
+              ),
+              color: Color(0xff1A9CFF),
+            ),
+          ),
+        ),
     );
   }
 
@@ -261,6 +294,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
                   await Navigator.push(context, MaterialPageRoute(builder: (context) =>  RenovacionMonto(renovacion: listaRenovacion[index], colorTema: widget.colorTema, index: index, montoChange: montoChange)));
                 },),
                 leading: solicitable ? Checkbox(
+                  //activeColor: widget.colorTema,
                   value: inputs[index],
                   onChanged: (bool val){
                     itemChange(val, index);
