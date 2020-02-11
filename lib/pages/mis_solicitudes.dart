@@ -3,10 +3,15 @@ import 'package:sgcartera_app/pages/grupos.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'cartera.dart';
+import 'nuevas_solicitudes.dart';
+import 'renovaciones.dart';
+
 class MisSolicitudes extends StatefulWidget {
-  MisSolicitudes({this.colorTema, this.actualizaHome});
+  MisSolicitudes({this.colorTema, this.actualizaHome, this.cambio});
   Color colorTema;
   final VoidCallback actualizaHome;
+  int cambio;
   @override
   _MisSolicitudesState createState() => _MisSolicitudesState();
 }
@@ -36,15 +41,36 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
     getListDocumentos();
     super.initState();
   }
+
+  void _onItemTapped(int index) {
+    switch (index) {
+      case 0:
+        Navigator.pop(context);
+      break;
+      case 2:
+        Navigator.pushReplacement(context, MyCustomRoute(builder: (_) => Cartera(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome, cambio: widget.cambio,) ));
+        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Cartera(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome, cambio: widget.cambio,) ));
+      break;
+      case 3:
+        Navigator.pushReplacement(context, MyCustomRoute(builder: (_) => Renovaciones(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome, cambio: widget.cambio) )); 
+        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Renovaciones(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome, cambio: widget.cambio) )); 
+      break;
+      default:
+    }
+  }
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mis Solicitudes", style: TextStyle(color: Colors.white),),
+        title: Image.asset('images/adminconfia.png', color: Colors.white, fit: BoxFit.cover),//Text("Mis Solicitudes", style: TextStyle(color: Colors.white),),
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
         elevation: 0.0,
+        leading: Container(),
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.person_add, color: Colors.white), onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome) ));},)
+        ]
       ),
       body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : Container(
         child: Stack(
@@ -88,7 +114,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(13.0),
+                    padding: EdgeInsets.fromLTRB(13, 13, 13, 3),//.all(13.0),
                     child: items > 0 ? listaOpciones() : Container()
                   ),
                 )
@@ -107,6 +133,49 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
             )*/
           ]
         )
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('Inicio'),
+          ),
+          BottomNavigationBarItem(
+            icon: widget.cambio == null ? Icon(Icons.monetization_on) : widget.cambio > 0 ? Stack(children: <Widget>[
+              Icon(Icons.monetization_on),
+              Positioned(
+                  bottom: -5.0,
+                  left: 8.0,
+                  child: new Center(
+                    child: new Text(
+                      ".",
+                      style: new TextStyle(
+                          color: Colors.red,
+                          fontSize: 90.0,
+                          fontWeight: FontWeight.w500
+
+                      ),
+                    ),
+                  )),
+                ],
+              ) : Icon(Icons.monetization_on),
+            title: Text('Solicitudes'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_balance_wallet),
+            title: Text('Cartera'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.cached),
+            title: Text('Renovación'),
+          ),
+        ],
+        currentIndex: 1,
+        selectedItemColor: Color(0xff1a9cff),
+        backgroundColor: Color(0xffffffff),
+        unselectedItemColor: Color(0xffa9a9a9),
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -129,11 +198,11 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
             ),
             child: Container(
               child: ListTile(
-                leading: iconoItem(index),
+                leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[iconoItem(index)]),
                 title: textoItem(index),
-                subtitle: Text(""),//Text(getImporte(grupos[index])),
+                subtitle: Text("\n"),//Text(getImporte(grupos[index])),
                 isThreeLine: true,
-                //trailing: getIcono(grupos[index])
+                trailing: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[getNotif(index)])
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -146,6 +215,48 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         );
       },
     );
+  }
+
+  Widget getNotif(index){
+    if(index == 3){
+      switch (widget.cambio) {
+        case 0:
+          return Text("");
+          break;
+        case 1:
+          return Icon(Icons.filter_1, color: Colors.redAccent[700]);
+          break;
+        case 2:
+          return Icon(Icons.filter_2, color: Colors.redAccent[700]);
+          break;
+        case 3:
+          return Icon(Icons.filter_3, color: Colors.redAccent[700]);
+          break;
+        case 4:
+          return Icon(Icons.filter_4, color: Colors.redAccent[700]);
+          break;
+        case 5:
+          return Icon(Icons.filter_5, color: Colors.redAccent[700]);
+          break;
+        case 6:
+          return Icon(Icons.filter_6, color: Colors.redAccent[700]);
+          break;
+        case 7:
+          return Icon(Icons.filter_7, color: Colors.redAccent[700]);
+          break;
+        case 8:
+          return Icon(Icons.filter_8, color: Colors.redAccent[700]);
+          break;
+        case 9:
+          return Icon(Icons.filter_9, color: Colors.redAccent[700]);
+          break;
+        default:
+          return Icon(Icons.filter_9_plus, color: Colors.redAccent[700]);
+          break;
+      }
+    }else{
+      return Container(child: Text(""));
+    }
   }
 
   Widget itemSolicitudes(i){
@@ -211,11 +322,11 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
           return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nMIS SOLICITUDES ...", style: TextStyle(fontWeight: FontWeight.bold),)),);
         }
         else{
-          return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nGrupos Capturados (grupos abiertos)", style: TextStyle(fontWeight: FontWeight.bold),)),);
+          return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nGrupos Capturados", style: TextStyle(fontWeight: FontWeight.bold),)),);
         }
         break;
       case 1:
-        String texto = userType == 1 ? "\nEn Espera (no sincronizado)" : userType == 2 ? "\nEn Espera (grupos cerrados)" : "\nEn Espera (solicitudes y grupos cerrados)";
+        String texto = userType == 1 ? "\nEn Espera (no sincronizado)" : userType == 2 ? "\nEn Espera" : "\nEn Espera";
         return Padding(padding: EdgeInsets.all(10),child: Center(child:Text(texto, style: TextStyle(fontWeight: FontWeight.bold),)),);
         break;
       case 2:
@@ -265,5 +376,22 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "x_x", status: 0, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
     }
+  }
+}
+
+class MyCustomRoute<T> extends MaterialPageRoute<T> {
+  MyCustomRoute({ WidgetBuilder builder, RouteSettings settings })
+      : super(builder: builder, settings: settings);
+
+  @override
+  Widget buildTransitions(BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child) {
+    if (settings.isInitialRoute)
+      return child;
+    // Fades between routes. (If you don't want any animation,
+    // just return child.)
+    return new FadeTransition(opacity: animation, child: child);
   }
 }

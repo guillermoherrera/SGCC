@@ -31,6 +31,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as path;
 
 import 'cartera.dart';
+import 'mis_solicitudes.dart';
 import 'nuevas_solicitudes.dart';
 
 class HomePage extends StatefulWidget {
@@ -101,6 +102,28 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _onItemTapped(int index) {
+    switch (index) {
+      case 1:
+        if(sincManual){
+          Navigator.push(context, MyCustomRoute(builder: (_) => MisSolicitudes(colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), cambio: cantSolicitudesCambios)));
+          //Navigator.push(context, MaterialPageRoute(builder: (context)=> MisSolicitudes(colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), cambio: cantSolicitudesCambios)));
+        }else{
+          showSnackBar("Atención: El proceso de sincronizaición esta en curso, por favor espera un momento.", Colors.red);
+        }
+      break;
+      case 2:
+        Navigator.push(context, MyCustomRoute(builder: (_) => Cartera(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo(), cambio: cantSolicitudesCambios)));
+        //Navigator.push(context, MaterialPageRoute(builder: (context)=> Cartera(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo(), cambio: cantSolicitudesCambios)));
+      break;
+      case 3:
+        Navigator.push(context, MyCustomRoute(builder: (_) => Renovaciones(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo(), cambio: cantSolicitudesCambios)));
+        //Navigator.push(context, MaterialPageRoute(builder: (context)=> Renovaciones(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo(), cambio: cantSolicitudesCambios))); 
+      break;
+      default:
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -111,8 +134,9 @@ class _HomePageState extends State<HomePage> {
           title: Image.asset('images/adminconfia.png', color: Colors.white, fit: BoxFit.cover),
           centerTitle: true,
           elevation: 0.0,
-          leading: new IconButton(
-                icon: cantSolicitudesCambios > 0 ? Stack(children: <Widget>[
+          leading: new IconButton(icon: Icon(Icons.menu, color: Colors.white),
+                onPressed: () => _scaffoldKey.currentState.openDrawer()),
+                /*icon: cantSolicitudesCambios > 0 ? Stack(children: <Widget>[
                         Icon(Icons.menu, color: Colors.white),
                         Positioned(
                             bottom: -5.0,
@@ -133,7 +157,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () => _scaffoldKey.currentState.openDrawer()),
           actions: <Widget>[
             IconButton(icon: Icon(Icons.person_add, color: Colors.white), onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo()) ));},)
-          ],
+          ],*/
         ),
         drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), cantSolicitudesCambios: cantSolicitudesCambios, sincManual: sincManual ),
         body: userType == null ? Container() : userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : RefreshIndicator(
@@ -203,7 +227,50 @@ class _HomePageState extends State<HomePage> {
               )
             ]
           )
-        )
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              title: Text('Inicio'),
+            ),
+            BottomNavigationBarItem(
+              icon: cantSolicitudesCambios > 0 ? Stack(children: <Widget>[
+                Icon(Icons.monetization_on),
+                Positioned(
+                    bottom: -5.0,
+                    left: 8.0,
+                    child: new Center(
+                      child: new Text(
+                        ".",
+                        style: new TextStyle(
+                            color: Colors.red,
+                            fontSize: 90.0,
+                            fontWeight: FontWeight.w500
+
+                        ),
+                      ),
+                    )),
+                  ],
+                ) : Icon(Icons.monetization_on),
+              title: Text('Solicitudes'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_balance_wallet),
+              title: Text('Cartera'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.cached),
+              title: Text('Renovación'),
+            ),
+          ],
+          currentIndex: 0,
+          selectedItemColor: Color(0xff1a9cff),
+          backgroundColor: Color(0xffffffff),
+          unselectedItemColor: Color(0xffa9a9a9),
+          onTap: _onItemTapped,
+        ),
       ))
     );
   }
@@ -526,5 +593,22 @@ class _HomePageState extends State<HomePage> {
 
   void actualizaInfo(){
     getListDocumentos();
+  }
+}
+
+class MyCustomRoute<T> extends MaterialPageRoute<T> {
+  MyCustomRoute({ WidgetBuilder builder, RouteSettings settings })
+      : super(builder: builder, settings: settings);
+
+  @override
+  Widget buildTransitions(BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child) {
+    if (settings.isInitialRoute)
+      return child;
+    // Fades between routes. (If you don't want any animation,
+    // just return child.)
+    return new FadeTransition(opacity: animation, child: child);
   }
 }

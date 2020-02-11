@@ -70,7 +70,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               leading: Icon(Icons.home, color: Colors.white,),
             ),
           ),
-          Divider(),
+          /*Divider(),
           InkWell(
             onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome) ));},
             child: ListTile(
@@ -109,7 +109,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               leading: Icon(Icons.cached, color: Colors.white,),
             ),
           ),
-          Divider(),
+          Divider(),*/
           InkWell(
             onTap: (){
               _logOut();

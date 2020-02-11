@@ -149,7 +149,7 @@ class _CarteraDetalleState extends State<CarteraDetalle> {
               child:  Padding(
                 padding: EdgeInsets.all(30.0),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start ,children: <Widget>[
-                  Text("\$1,000", style: TextStyle(fontSize: 40.0)),
+                  Text("\$1,000", style: TextStyle(fontSize: 30.0)),
                   Text("Pago plazo", style: TextStyle(color: widget.colorTema, fontSize: 15)),
                   Text(""),
                   Text("1", style: TextStyle(fontSize: 20.0)),
@@ -173,7 +173,7 @@ class _CarteraDetalleState extends State<CarteraDetalle> {
               child:  Padding(
                 padding: EdgeInsets.all(30.0),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start ,children: <Widget>[
-                  Text("\$1,000", style: TextStyle(fontSize: 40.0)),
+                  Text("\$1,000", style: TextStyle(fontSize: 30.0)),
                   Text("Capital", style: TextStyle(color: widget.colorTema, fontSize: 15)),
                   Text(""),
                   Text("\$1,000", style: TextStyle(fontSize: 20.0)),

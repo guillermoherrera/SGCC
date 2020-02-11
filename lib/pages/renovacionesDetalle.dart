@@ -316,7 +316,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
 
   Widget subtitleLista(RenovacionObj renovacion){
     if(renovacion.beneficios != null){
-      return Row(children: <Widget>[Text("IMPORTE: "+renovacion.importe.toString(), style: TextStyle(fontWeight: FontWeight.bold)), renovacion.beneficios == null ? null : Text("   CONFIASHOP: "+renovacion.beneficios[0]['cveBeneficio'], style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple))]) ;
+      return Row(children: <Widget>[Text("IMPORTE: "+renovacion.importe.toString()+"   ", style: TextStyle(fontWeight: FontWeight.bold)), renovacion.beneficios == null ? null : Flexible(fit: FlexFit.loose,child:Text("CONFIASHOP: "+renovacion.beneficios[0]['cveBeneficio'], style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple),softWrap: false,overflow: TextOverflow.fade,))]) ;
     }else{
       return Text("IMPORTE: "+renovacion.importe.toString(), style: TextStyle(fontWeight: FontWeight.bold));
     }

@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:responsive_container/responsive_container.dart';
 import 'package:sgcartera_app/pages/carteraDetalle.dart';
 
+import 'mis_solicitudes.dart';
+import 'renovaciones.dart';
+
 class Cartera extends StatefulWidget {
-  Cartera({this.colorTema});
+  Cartera({this.colorTema, this.actualizaHome, this.cambio});
   final Color colorTema;
+  final VoidCallback actualizaHome;
+  int cambio;
   @override
   _CarteraState createState() => _CarteraState();
 }
@@ -31,16 +36,34 @@ class _CarteraState extends State<Cartera> {
     });
   }
 
+  void _onItemTapped(int index) {
+    switch (index) {
+      case 0:
+        Navigator.pop(context);
+      break;
+      case 1:
+        Navigator.pushReplacement(context, MyCustomRoute(builder: (_) => MisSolicitudes(colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, cambio: widget.cambio) ));
+        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> MisSolicitudes(colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, cambio: widget.cambio) ));
+      break;
+      case 3:
+        Navigator.pushReplacement(context, MyCustomRoute(builder: (_) => Renovaciones(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome, cambio: widget.cambio) )); 
+        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Renovaciones(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome, cambio: widget.cambio) )); 
+      break;
+      default:
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isLandscape = orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mi Cartera", style: TextStyle(color: Colors.white)),
+        title: Image.asset('images/adminconfia.png', color: Colors.white, fit: BoxFit.cover),//Text("Mi Cartera", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
         elevation: 0.0,
+        leading: Container(),
       ),
       body: RefreshIndicator(
         key: refreshKey,
@@ -65,8 +88,8 @@ class _CarteraState extends State<Cartera> {
                   child: Container(
                     child: ListTile(
                     leading: Icon(Icons.assignment,color: Colors.white, size: 40.0,),
-                    title: Text("\nCONTRATOS EN CARTERA: "+listaCartera.length.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
-                    subtitle: Row(children:<Widget>[Text("", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))]),
+                    title: Text("\nLISTA DE CONTRATOS EN CARTERA: "+listaCartera.length.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
+                    subtitle: Row(children:<Widget>[Text(" ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))]),
                     //trailing: Text(""),
                     isThreeLine: true,
                     ),
@@ -106,6 +129,49 @@ class _CarteraState extends State<Cartera> {
           ]
         )
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('Inicio'),
+          ),
+          BottomNavigationBarItem(
+            icon: widget.cambio == null ? Icon(Icons.monetization_on) : widget.cambio > 0 ? Stack(children: <Widget>[
+              Icon(Icons.monetization_on),
+              Positioned(
+                  bottom: -5.0,
+                  left: 8.0,
+                  child: new Center(
+                    child: new Text(
+                      ".",
+                      style: new TextStyle(
+                          color: Colors.red,
+                          fontSize: 90.0,
+                          fontWeight: FontWeight.w500
+
+                      ),
+                    ),
+                  )),
+                ],
+              ) : Icon(Icons.monetization_on),
+            title: Text('Solicitudes'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_balance_wallet),
+            title: Text('Cartera'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.cached),
+            title: Text('Renovación'),
+          ),
+        ],
+        currentIndex: 2,
+        selectedItemColor: Color(0xff1a9cff),
+        backgroundColor: Color(0xffffffff),
+        unselectedItemColor: Color(0xffa9a9a9),
+        onTap: _onItemTapped,
+      ),
     );
   }
 
@@ -144,5 +210,22 @@ class _CarteraState extends State<Cartera> {
         );
       }
     );
+  }
+}
+
+class MyCustomRoute<T> extends MaterialPageRoute<T> {
+  MyCustomRoute({ WidgetBuilder builder, RouteSettings settings })
+      : super(builder: builder, settings: settings);
+
+  @override
+  Widget buildTransitions(BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child) {
+    if (settings.isInitialRoute)
+      return child;
+    // Fades between routes. (If you don't want any animation,
+    // just return child.)
+    return new FadeTransition(opacity: animation, child: child);
   }
 }
