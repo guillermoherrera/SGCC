@@ -13,6 +13,7 @@ class MisSolicitudes extends StatefulWidget {
 
 class _MisSolicitudesState extends State<MisSolicitudes> {
   int userType;
+  int items = 0;
 
   Future<void> getInfo() async{
     final pref = await SharedPreferences.getInstance();
@@ -22,9 +23,17 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
     });
   }
 
+  getListDocumentos()async{
+    await Future.delayed(Duration(milliseconds:250));
+    setState(() {
+      items = 6;
+    });
+  }
+
   @override
   void initState() {
     getInfo();
+    getListDocumentos();
     super.initState();
   }
   
@@ -80,7 +89,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
                   ),
                   child: Padding(
                     padding: EdgeInsets.all(13.0),
-                    child: listaOpciones()
+                    child: items > 0 ? listaOpciones() : Container()
                   ),
                 )
               )),
@@ -104,7 +113,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
 
   Widget listaOpciones(){
     return ListView.builder(
-      itemCount: 6,
+      itemCount: items,
       itemBuilder: (context, index){
         return InkWell(
           onTap: ()=>_accionItem(index),
