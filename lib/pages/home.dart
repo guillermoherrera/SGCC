@@ -53,10 +53,12 @@ class _HomePageState extends State<HomePage> {
   int cantSolicitudesCambios = 0;
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
   bool abs = false;
+  List<solicitudModel.Solicitud> ultimos = List();
   List<String> nombres = ["Carlos", "Pedro", "Maria"];
   List<String> apellidos = ["Herrera", "Lopez", "Morales"];
-  List<String> personas = List();
+  //List<String> personas = List();
   Random rnd = new Random();
+  String mensaje = "* No tienes registros de solicitudes de crédito en este dispositivo. \n\n * Puedes ir al apartado de Solicitudes para comenzar a registrar y/o revisar solicitudes de crédito.";
 
   Future<void> getListDocumentos() async{
     final pref = await SharedPreferences.getInstance();
@@ -65,11 +67,14 @@ class _HomePageState extends State<HomePage> {
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);
     cantSolicitudesCambios = await ServiceRepositorySolicitudes.solicitudesCambioCount(userID); 
     print("******** "+this.mounted.toString()+"**********");
-    try{ setState(() {}); }catch(e){ print("ERROR: linea 49 Home:"+e.toString()); }
-    personas.clear();
-    for(int i=0; i < 10 ;i++){
+    
+    ultimos = await ServiceRepositorySolicitudes.getLastSolicitudes(userID);
+    print(ultimos);
+    /*personas.clear();
+    for(int i=0; i < 0 ;i++){
       personas.add(nombres[rnd.nextInt(3-0)]+" "+apellidos[rnd.nextInt(3-0)]);
-    }
+    }*/
+    try{ setState(() {}); }catch(e){ print("ERROR: linea 49 Home:"+e.toString()); }
   }
 
   void _moveToSignInScreen(BuildContext context) =>
@@ -218,8 +223,8 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.all(13.0),
-                        child: listaOpciones()
+                        padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
+                        child: ultimos.length > 0 ? listaOpciones() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black))));})),
                       ),
                     )
                   )),
@@ -228,56 +233,69 @@ class _HomePageState extends State<HomePage> {
             ]
           )
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              title: Text('Inicio'),
+        bottomNavigationBar: Stack(
+          children: <Widget>[
+            Row(
+              children:<Widget>[
+                Expanded(child:Container(padding: EdgeInsets.all(20),child: Text(""), color: Color(0xff1a9cff),)),
+                Expanded(child: Container(padding: EdgeInsets.all(20),child: Text(""), color: Color(0xffffffff),)),
+                Expanded(child: Container(padding: EdgeInsets.all(20),child: Text(""), color: Color(0xffffffff),)),
+                Expanded(child: Container(padding: EdgeInsets.all(20),child: Text(""), color: Color(0xffffffff),))
+              ]
             ),
-            BottomNavigationBarItem(
-              icon: cantSolicitudesCambios > 0 ? Stack(children: <Widget>[
-                Icon(Icons.monetization_on),
-                Positioned(
-                    bottom: -5.0,
-                    left: 8.0,
-                    child: new Center(
-                      child: new Text(
-                        ".",
-                        style: new TextStyle(
-                            color: Colors.red,
-                            fontSize: 90.0,
-                            fontWeight: FontWeight.w500
+            Container(margin: EdgeInsets.only(top:3),child: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  title: Text('Inicio'),
+                ),
+                BottomNavigationBarItem(
+                  icon: cantSolicitudesCambios > 0 ? Stack(children: <Widget>[
+                    Icon(Icons.monetization_on),
+                    Positioned(
+                        bottom: -5.0,
+                        left: 8.0,
+                        child: new Center(
+                          child: new Text(
+                            ".",
+                            style: new TextStyle(
+                                color: Colors.red,
+                                fontSize: 90.0,
+                                fontWeight: FontWeight.w500
 
-                        ),
-                      ),
-                    )),
-                  ],
-                ) : Icon(Icons.monetization_on),
-              title: Text('Solicitudes'),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_balance_wallet),
-              title: Text('Cartera'),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.cached),
-              title: Text('Renovación'),
-            ),
-          ],
-          currentIndex: 0,
-          selectedItemColor: Color(0xff1a9cff),
-          backgroundColor: Color(0xffffffff),
-          unselectedItemColor: Color(0xffa9a9a9),
-          onTap: _onItemTapped,
-        ),
+                            ),
+                          ),
+                        )),
+                      ],
+                    ) : Icon(Icons.monetization_on),
+                  title: Text('Solicitudes'),
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.account_balance_wallet),
+                  title: Text('Cartera'),
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.cached),
+                  title: Text('Renovación'),
+                ),
+              ],
+              currentIndex: 0,
+              selectedItemColor: Color(0xff1a9cff),
+              backgroundColor: Color(0xffffffff),
+              unselectedItemColor: Color(0xffa9a9a9),
+              onTap: _onItemTapped,
+            ))
+          ]
+        )
       ))
     );
   }
 
   Widget listaOpciones(){
+    int itemLoop = ultimos.length + 1;
     return ListView.builder(
-      itemCount: personas.length,
+      itemCount: itemLoop,
       itemBuilder: (context, index){
         return index == 0 ? Container(child:Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -300,10 +318,10 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               child: ListTile(
                 leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.person, color: widget.colorTema, size: 40)]),
-                title: Text(personas[index], style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text("12/03/20 02:56 AM\nIMPORTE: \$1000"),
+                title: Text(nombreCompleto(ultimos[index -1]), style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text(resumen(ultimos[index-1])),
                 isThreeLine: true,
-                trailing:  Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("Estatus", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),Text(index < 4 ? "En espera" : "Sincronizado", style: TextStyle(color: index < 4 ? Colors.yellow[700] : widget.colorTema, fontWeight: FontWeight.bold))])
+                trailing:  Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("Estatus", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),Text(ultimos[index-1].status == 0 || ultimos[index-1].status == 6 ? "En espera" : "Sincronizado", style: TextStyle(color: ultimos[index-1].status == 0 || ultimos[index-1].status == 6 ? Colors.yellow[700] : widget.colorTema, fontWeight: FontWeight.bold))])
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -316,6 +334,16 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  String nombreCompleto(solicitudModel.Solicitud obj){
+    return obj.nombrePrimero + " " + obj.nombreSegundo + " " + obj.apellidoPrimero + " " + obj.apellidoSegundo;
+  }
+
+  String resumen(solicitudModel.Solicitud obj){
+    //DateTime.fromMillisecondsSinceEpoch(ultimos[index-1].fechaCaptura).toString()+"\nIMPORTE: \$"+ultimos[index-1].importe.toStringAsFixed(2)
+    String fecha = formatDate(DateTime.fromMillisecondsSinceEpoch(obj.fechaCaptura), [dd, '/', mm, '/', yyyy, ' ', HH, ':', nn]);
+    return fecha+"\nIMPORTE: \$"+obj.importe.toStringAsFixed(2);
   }
 
   String getMensaje(){
@@ -354,7 +382,7 @@ class _HomePageState extends State<HomePage> {
         Text("para tomar acciones.", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))
       ],);
     else 
-      return Text("No hay solicitudes de crédito en espera.", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70));
+      return Text("Sin solicitudes de crédito en espera.", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70));
   }
 
   Widget getAcciones(){

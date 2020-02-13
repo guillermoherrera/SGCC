@@ -86,10 +86,11 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
         listaRenovacion.clear();
         inputs.clear();
         for(var i = 0; i <= 5; i++){
+          List<String> nombres = ["Maria Torres", "Patricia Sosa", "Lucia Morales", "Ana Perez", "Luisa Zapata", "Maria Perez"];
           RenovacionObj renovacion = new RenovacionObj(
             creditoID: 100+i, 
             clienteID: 1000+i,
-            nombre: "Nombre Cliente " + (i+1).toString(),
+            nombre: nombres[i],
             importe: 1000.0 + i,
             capital: 100.0 + i,
             diasAtraso: i, 
@@ -202,7 +203,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                   ),
                   child:  Padding(
-                    padding: EdgeInsets.all(13.0),
+                    padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
                     child: listaRenovacion.length > 0 ?  renovacionLista() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
                   ),
                 )

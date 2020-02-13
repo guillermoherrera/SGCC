@@ -18,6 +18,21 @@ class ServiceRepositorySolicitudes{
     return solicitudes;
   }
 
+  static Future<List<Solicitud>> getLastSolicitudes(String userID) async{
+    final sql = ''' SELECT * FROM ${DataBaseCreator.solicitudesTable}
+      WHERE ${DataBaseCreator.userID} = "$userID" AND NOT ${DataBaseCreator.status} = 99
+      ORDER BY ${DataBaseCreator.idSolicitud} DESC LIMIT 10''';
+
+    final data = await db.rawQuery(sql);
+    List<Solicitud> solicitudes = List();
+
+    for(final node in data){
+      final solicitud = Solicitud.fromJson(node);
+      solicitudes.add(solicitud);
+    }
+    return solicitudes;
+  }
+
   static Future<List<Solicitud>> getAllSolicitudesSync(String userID) async{
     final sql = ''' SELECT * FROM ${DataBaseCreator.solicitudesTable}
       WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.status} = 1''';
@@ -105,7 +120,8 @@ class ServiceRepositorySolicitudes{
       ${DataBaseCreator.ciudad},
       ${DataBaseCreator.estado},
       ${DataBaseCreator.cp},
-      ${DataBaseCreator.pais}
+      ${DataBaseCreator.pais},
+      ${DataBaseCreator.fechaCaptura}
     )values(
       ${solicitud.importe},
       "${solicitud.nombrePrimero}",
@@ -128,7 +144,8 @@ class ServiceRepositorySolicitudes{
       "${solicitud.ciudad}",
       "${solicitud.estado}",
       ${solicitud.cp},
-      "${solicitud.pais}"
+      "${solicitud.pais}",
+      ${solicitud.fechaCaptura}
     )
     ''';
 

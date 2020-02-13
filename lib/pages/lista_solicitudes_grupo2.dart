@@ -123,7 +123,7 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                   ),
                   child:  Padding(
-                    padding: EdgeInsets.all(13.0),
+                    padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
                     child: solicitudes.length > 0 ?listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
                   ),
                 ))

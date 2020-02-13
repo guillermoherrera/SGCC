@@ -9,6 +9,7 @@ class Solicitud{
   String apellidoPrimero;
   String apellidoSegundo;
   int fechaNacimiento;
+  int fechaCaptura;
   String curp;
   String rfc;
   String telefono;
@@ -32,6 +33,7 @@ class Solicitud{
     this.apellidoSegundo,
     this.curp,
     this.fechaNacimiento,
+    this.fechaCaptura,
     this.idGrupo,
     this.idSolicitud,
     this.importe,
@@ -60,6 +62,7 @@ class Solicitud{
     this.apellidoSegundo = json[DataBaseCreator.apellidoSegundo];
     this.curp = json[DataBaseCreator.curp];
     this.fechaNacimiento = json[DataBaseCreator.fechaNacimiento];
+    this.fechaCaptura = json[DataBaseCreator.fechaCaptura];
     this.idGrupo = json[DataBaseCreator.id_grupo];
     this.idSolicitud = json[DataBaseCreator.idSolicitud];
     this.importe = json[DataBaseCreator.importe];

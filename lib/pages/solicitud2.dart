@@ -437,7 +437,8 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
         ciudad: widget.datos.direccion['ciudad'],
         estado: widget.datos.direccion['estado'],
         cp: widget.datos.direccion['cp'],
-        pais: widget.datos.direccion['pais']
+        pais: widget.datos.direccion['pais'],
+        fechaCaptura: DateTime.now().millisecondsSinceEpoch
       );
 
       await ServiceRepositorySolicitudes.addSolicitud(solicitud).then((_) async{

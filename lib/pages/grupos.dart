@@ -101,7 +101,7 @@ class _GroupState extends State<Group> {
                       borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                     ),
                     child:  Padding(
-                      padding: EdgeInsets.all(13.0),
+                      padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
                       child: grupos.length > 0 ? listaGrupos() :  Padding(padding: EdgeInsets.all(20.0),child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Sin grupos en captura ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)), Row(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Presiona ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)), Icon(Icons.group_add, size: 30.0), Text(" para agregar un nuevo grupo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))],)],)), 
                     ),
                   )

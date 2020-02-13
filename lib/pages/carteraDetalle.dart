@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class CarteraDetalle extends StatefulWidget {
-  CarteraDetalle({this.colorTema, this.title});
+  CarteraDetalle({this.colorTema, this.title, this.contrato});
   final Color colorTema;
   final String title;
+  final int contrato;
   @override
   _CarteraDetalleState createState() => _CarteraDetalleState();
 }
@@ -67,7 +68,7 @@ class _CarteraDetalleState extends State<CarteraDetalle> {
                       borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                     ),
                     child:  Padding(
-                      padding: EdgeInsets.all(13.0),
+                      padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
                       child: ListView.builder(
                         itemCount: 1,
                         itemBuilder: (context, index){
@@ -105,7 +106,7 @@ class _CarteraDetalleState extends State<CarteraDetalle> {
               TableRow(
                 children: [
                   Container(padding: EdgeInsets.only(bottom: 5),child: Text("Contrato ", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold, color: Colors.grey))),
-                  Align(child:Text("XXXXXX", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),alignment: Alignment.centerRight),
+                  Align(child:Text(widget.contrato.toString(), style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),alignment: Alignment.centerRight),
                 ]
               ),
               TableRow(

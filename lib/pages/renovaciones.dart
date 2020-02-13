@@ -57,7 +57,7 @@ class _RenovacionesState extends State<Renovaciones> {
     listaRenovacion.clear();
     for(var i = 0; i <= 14; i++){
       GrupoRenovacion grupoRenovacion = new GrupoRenovacion(
-        nombre: "Grupo Renovacion"+ (i+1).toString(),
+        nombre: "Las Poderosas "+ (i+1).toString(),
         fechaTermino: startDate,
         grupoID: 400+i 
       );
@@ -145,7 +145,7 @@ class _RenovacionesState extends State<Renovaciones> {
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                 ),
                 child:  Padding(
-                  padding: EdgeInsets.all(13.0),
+                  padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
                   child: listaRenovacion.length > 0 ? renovacionLista() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
                 ),
               )
@@ -173,49 +173,61 @@ class _RenovacionesState extends State<Renovaciones> {
           ]
         )
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            title: Text('Inicio'),
+      bottomNavigationBar: Stack(
+        children: <Widget>[
+          Row(
+            children:<Widget>[
+              Expanded(child:Container(padding: EdgeInsets.all(20),child: Text(""), color: Color(0xffffffff),)),
+              Expanded(child: Container(padding: EdgeInsets.all(20),child: Text(""), color: Color(0xffffffff),)),
+              Expanded(child: Container(padding: EdgeInsets.all(20),child: Text(""), color: Color(0xffffffff),)),
+              Expanded(child: Container(padding: EdgeInsets.all(20),child: Text(""), color: Color(0xff1a9cff),))
+            ]
           ),
-          BottomNavigationBarItem(
-            icon: widget.cambio == null ? Icon(Icons.monetization_on) : widget.cambio > 0 ? Stack(children: <Widget>[
-              Icon(Icons.monetization_on),
-              Positioned(
-                  bottom: -5.0,
-                  left: 8.0,
-                  child: new Center(
-                    child: new Text(
-                      ".",
-                      style: new TextStyle(
-                          color: Colors.red,
-                          fontSize: 90.0,
-                          fontWeight: FontWeight.w500
+          Container(margin: EdgeInsets.only(top:3),child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                title: Text('Inicio'),
+              ),
+              BottomNavigationBarItem(
+                icon: widget.cambio == null ? Icon(Icons.monetization_on) : widget.cambio > 0 ? Stack(children: <Widget>[
+                  Icon(Icons.monetization_on),
+                  Positioned(
+                      bottom: -5.0,
+                      left: 8.0,
+                      child: new Center(
+                        child: new Text(
+                          ".",
+                          style: new TextStyle(
+                              color: Colors.red,
+                              fontSize: 90.0,
+                              fontWeight: FontWeight.w500
 
-                      ),
-                    ),
-                  )),
-                ],
-              ) : Icon(Icons.monetization_on),
-            title: Text('Solicitudes'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
-            title: Text('Cartera'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.cached),
-            title: Text('Renovación'),
-          ),
-        ],
-        currentIndex: 3,
-        selectedItemColor: Color(0xff1a9cff),
-        backgroundColor: Color(0xffffffff),
-        unselectedItemColor: Color(0xffa9a9a9),
-        onTap: _onItemTapped,
-      ),
+                          ),
+                        ),
+                      )),
+                    ],
+                  ) : Icon(Icons.monetization_on),
+                title: Text('Solicitudes'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.account_balance_wallet),
+                title: Text('Cartera'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.cached),
+                title: Text('Renovación'),
+              ),
+            ],
+            currentIndex: 3,
+            selectedItemColor: Color(0xff1a9cff),
+            backgroundColor: Color(0xffffffff),
+            unselectedItemColor: Color(0xffa9a9a9),
+            onTap: _onItemTapped,
+          ))
+        ]
+      )
     );
   }
 

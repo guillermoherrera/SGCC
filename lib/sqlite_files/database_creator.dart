@@ -27,6 +27,7 @@ class DataBaseCreator{
   static const apellidoPrimero = 'apellidoPrimero';
   static const apellidoSegundo = 'apellidoSegundo';
   static const fechaNacimiento = 'fechaNacimiento';
+  static const fechaCaptura = 'fechaCaptura';
   static const curp = 'curp';
   static const rfc = 'rfc';
   static const telefono = 'telefono';
@@ -131,7 +132,8 @@ class DataBaseCreator{
       $ciudad TEXT,
       $estado TEXT,
       $cp INTEGER,
-      $pais TEXT
+      $pais TEXT,
+      $fechaCaptura INTEGER
     )''';
     
     await db.execute(solicitudesSql);

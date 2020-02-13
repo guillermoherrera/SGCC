@@ -69,7 +69,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         elevation: 0.0,
         leading: Container(),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.person_add, color: Colors.white), onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome) ));},)
+          IconButton(icon: Icon(Icons.add_circle_outline, color: Colors.white), onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome) ));},)
         ]
       ),
       body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : Container(
@@ -134,49 +134,61 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
           ]
         )
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            title: Text('Inicio'),
+      bottomNavigationBar: Stack(
+        children: <Widget>[
+          Row(
+            children:<Widget>[
+              Expanded(child:Container(padding: EdgeInsets.all(20),child: Text(""), color: Color(0xffffffff),)),
+              Expanded(child: Container(padding: EdgeInsets.all(20),child: Text(""), color: Color(0xff1a9cff),)),
+              Expanded(child: Container(padding: EdgeInsets.all(20),child: Text(""), color: Color(0xffffffff),)),
+              Expanded(child: Container(padding: EdgeInsets.all(20),child: Text(""), color: Color(0xffffffff),))
+            ]
           ),
-          BottomNavigationBarItem(
-            icon: widget.cambio == null ? Icon(Icons.monetization_on) : widget.cambio > 0 ? Stack(children: <Widget>[
-              Icon(Icons.monetization_on),
-              Positioned(
-                  bottom: -5.0,
-                  left: 8.0,
-                  child: new Center(
-                    child: new Text(
-                      ".",
-                      style: new TextStyle(
-                          color: Colors.red,
-                          fontSize: 90.0,
-                          fontWeight: FontWeight.w500
+          Container(margin: EdgeInsets.only(top:3),child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                title: Text('Inicio'),
+              ),
+              BottomNavigationBarItem(
+                icon: widget.cambio == null ? Icon(Icons.monetization_on) : widget.cambio > 0 ? Stack(children: <Widget>[
+                  Icon(Icons.monetization_on),
+                  Positioned(
+                      bottom: -5.0,
+                      left: 8.0,
+                      child: new Center(
+                        child: new Text(
+                          ".",
+                          style: new TextStyle(
+                              color: Colors.red,
+                              fontSize: 90.0,
+                              fontWeight: FontWeight.w500
 
-                      ),
-                    ),
-                  )),
-                ],
-              ) : Icon(Icons.monetization_on),
-            title: Text('Solicitudes'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
-            title: Text('Cartera'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.cached),
-            title: Text('Renovación'),
-          ),
-        ],
-        currentIndex: 1,
-        selectedItemColor: Color(0xff1a9cff),
-        backgroundColor: Color(0xffffffff),
-        unselectedItemColor: Color(0xffa9a9a9),
-        onTap: _onItemTapped,
-      ),
+                          ),
+                        ),
+                      )),
+                    ],
+                  ) : Icon(Icons.monetization_on),
+                title: Text('Solicitudes'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.account_balance_wallet),
+                title: Text('Cartera'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.cached),
+                title: Text('Renovación'),
+              ),
+            ],
+            currentIndex: 1,
+            selectedItemColor: Color(0xff1a9cff),
+            backgroundColor: Color(0xffffffff),
+            unselectedItemColor: Color(0xffa9a9a9),
+            onTap: _onItemTapped,
+          ))
+        ]
+      )
     );
   }
 
@@ -224,34 +236,34 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
           return Text("");
           break;
         case 1:
-          return Icon(Icons.filter_1, color: Colors.redAccent[700]);
+          return  Container(child:Text(widget.cambio.toString(), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)), padding: EdgeInsets.all(9),decoration: BoxDecoration(color: Colors.red ,borderRadius: BorderRadius.all(Radius.circular(10))),);//Icon(Icons.filter_1, color: Colors.red);
           break;
         case 2:
-          return Icon(Icons.filter_2, color: Colors.redAccent[700]);
+          return Icon(Icons.filter_2, color: Colors.red);
           break;
         case 3:
-          return Icon(Icons.filter_3, color: Colors.redAccent[700]);
+          return Icon(Icons.filter_3, color: Colors.red);
           break;
         case 4:
-          return Icon(Icons.filter_4, color: Colors.redAccent[700]);
+          return Icon(Icons.filter_4, color: Colors.red);
           break;
         case 5:
-          return Icon(Icons.filter_5, color: Colors.redAccent[700]);
+          return Icon(Icons.filter_5, color: Colors.red);
           break;
         case 6:
-          return Icon(Icons.filter_6, color: Colors.redAccent[700]);
+          return Icon(Icons.filter_6, color: Colors.red);
           break;
         case 7:
-          return Icon(Icons.filter_7, color: Colors.redAccent[700]);
+          return Icon(Icons.filter_7, color: Colors.red);
           break;
         case 8:
-          return Icon(Icons.filter_8, color: Colors.redAccent[700]);
+          return Icon(Icons.filter_8, color: Colors.red);
           break;
         case 9:
-          return Icon(Icons.filter_9, color: Colors.redAccent[700]);
+          return Icon(Icons.filter_9, color: Colors.red);
           break;
         default:
-          return Icon(Icons.filter_9_plus, color: Colors.redAccent[700]);
+          return Icon(Icons.filter_9_plus, color: Colors.red);
           break;
       }
     }else{
