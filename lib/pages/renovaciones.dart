@@ -57,7 +57,7 @@ class _RenovacionesState extends State<Renovaciones> {
     listaRenovacion.clear();
     for(var i = 0; i <= 14; i++){
       GrupoRenovacion grupoRenovacion = new GrupoRenovacion(
-        nombre: "Las Poderosas "+ (i+1).toString(),
+        nombre: "LAS PODEROSAS "+ (i+1).toString(),
         fechaTermino: startDate,
         grupoID: 400+i 
       );

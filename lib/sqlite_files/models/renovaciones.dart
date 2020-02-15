@@ -14,6 +14,8 @@ class Renovacion{
   String ticket;
   int status;
   String userID;
+  int tipoContrato;
+  double nuevoImporte;
 
   Renovacion({
     this.beneficio,
@@ -28,7 +30,9 @@ class Renovacion{
     this.nombreGrupo,
     this.ticket,
     this.status,
-    this.userID
+    this.userID,
+    this.tipoContrato,
+    this.nuevoImporte
   });
 
   Renovacion.fromjson(Map<String, dynamic> json){
@@ -45,5 +49,7 @@ class Renovacion{
     this.ticket = json[DataBaseCreator.ticket];
     this.status = json[DataBaseCreator.status];
     this.userID = json[DataBaseCreator.userID];
+    this.tipoContrato = json[DataBaseCreator.tipoContrato];
+    this.nuevoImporte = json[DataBaseCreator.nuevoImporte];
   }
 }

@@ -199,17 +199,19 @@ class Sincroniza{
           creditoID: solicitudR.creditoID,
           clienteID: solicitudR.clienteID,
           nombre: solicitudR.nombreCompleto,
-          importe: solicitudR.importe,
+          importe: solicitudR.nuevoImporte,
           capital: solicitudR.capital,
           diasAtraso: solicitudR.diasAtraso,
           beneficios: beneficios,
           grupoID: grupoObj.grupoID,
           grupoNombre: solicitudR.nombreGrupo,
           ticket: solicitudR.ticket,
-          status: 1,
+          status: 9,
           userID: solicitudR.userID,
           fechaCaptura: DateTime.now(),
-          grupo_Id: solicitudR.idGrupo
+          grupo_Id: solicitudR.idGrupo,
+          tipoContrato: solicitudR.tipoContrato,
+          importeHistorico: solicitudR.importe
         );
         var result = await _firestore.collection("Renovaciones").add(renovacion.toJson());
         await ServiceRepositoryRenovaciones.updateRenovacionStatus(1, solicitudR.idRenovacion);

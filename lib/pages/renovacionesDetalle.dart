@@ -58,10 +58,11 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
           creditoID: f.creditoID, 
           clienteID: f.clienteID,
           nombre: f.nombreCompleto,
-          importe: f.importe,
+          importe: f.nuevoImporte,
           capital: f.capital,
           diasAtraso: f.diasAtraso, 
-          beneficios: f.beneficio == "null" ? null : [{"cveBeneficio":f.beneficio}]
+          beneficios: f.beneficio == "null" ? null : [{"cveBeneficio":f.beneficio}],
+          importeHistorico: f.importe
         );
         listaRenovacion.add(renovacion);
         listaRenEnviar.add(renovacion);
@@ -86,15 +87,16 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
         listaRenovacion.clear();
         inputs.clear();
         for(var i = 0; i <= 5; i++){
-          List<String> nombres = ["Maria Torres", "Patricia Sosa", "Lucia Morales", "Ana Perez", "Luisa Zapata", "Maria Perez"];
+          List<String> nombres = ["MARIA TORRES", "PATRICIA SOSA", "LUCIA MORALES", "ANA PEREZ", "LUISA ZAPATA", "MARIA PEREZ"];
           RenovacionObj renovacion = new RenovacionObj(
             creditoID: 100+i, 
             clienteID: 1000+i,
             nombre: nombres[i],
-            importe: 1000.0 + i,
-            capital: 100.0 + i,
+            importe: 1000.0 + (i*500),
+            capital: 100.0 + (i*500),
             diasAtraso: i, 
-            beneficios: i%2 == 0 ? [{"cveBeneficio":"A"}] : null
+            beneficios: i%2 == 0 ? [{"cveBeneficio":"A"}] : null,
+            importeHistorico: 1000.0+(i*500)
           );
           listaRenovacion.add(renovacion);
           listaRenEnviar.add(renovacion);
@@ -117,7 +119,8 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
         importe: f.importe,
         capital: 0.0,
         diasAtraso: 0, 
-        beneficios: null
+        beneficios: null,
+        importeHistorico: f.importe,
       );
       
       var objeto = listaRenovacion.where((r)=>r.creditoID == f.idSolicitud);
@@ -406,11 +409,13 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
               creditoID: f.creditoID,
               clienteID: f.clienteID == null ? null : f.clienteID,
               nombreCompleto: f.nombre,
-              importe: f.importe,
+              importe: f.importeHistorico,
               capital: f.capital,
               diasAtraso: f.diasAtraso,
               beneficio: f.beneficios == null ? null : f.beneficios[0]['cveBeneficio'],
-              userID: userID
+              userID: userID,
+              tipoContrato: 2,
+              nuevoImporte: f.importe
             );
 
             await ServiceRepositoryRenovaciones.addRenovacion(renovacion);

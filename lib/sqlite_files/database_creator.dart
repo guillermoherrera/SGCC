@@ -70,6 +70,7 @@ class DataBaseCreator{
   static const diasAtraso = "diasAtraso";
   static const beneficio = "beneficio";
   static const ticket = "ticket";
+  static const nuevoImporte = "nuevoImporte";
 
   static void dataBaseLog(String functionName, String sql, [List<Map<String, dynamic>> selectedQueryResult, int insertAndUpdateQueryResult]){
     print(functionName);
@@ -181,7 +182,9 @@ class DataBaseCreator{
       $beneficio TEXT,
       $ticket TEXT,
       $status INT,
-      $userID TEXT
+      $userID TEXT,
+      $tipoContrato INT,
+      $nuevoImporte DOUBLE
     )''';
 
     await db.execute(solicitudesSql);

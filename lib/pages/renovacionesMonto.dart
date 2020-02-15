@@ -176,8 +176,26 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
             ),
             TableRow(
               children: [
-                Container(padding: EdgeInsets.only(bottom: 5),child: Text("IMPORTE: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("RENOVACION IMPORTE: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(widget.renovacion.importe.toStringAsFixed(2), style: TextStyle(color: importeActualiza ? Colors.green : Colors.black, fontWeight: importeActualiza ? FontWeight.bold : null)),
+              ]
+            ),
+            TableRow(
+              children: [
+                Divider(),
+                Divider(),
+              ]
+            ),
+            TableRow(
+              children: [
+                Container(padding: EdgeInsets.only(bottom: 5),child:Text("DATOS ACTUALES", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black))),
+                Container()
+              ]
+            ),
+            TableRow(
+              children: [
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("IMPORTE: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
+                Text(widget.renovacion.importeHistorico.toStringAsFixed(2)),
               ]
             ),
             TableRow(

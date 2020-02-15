@@ -13,6 +13,8 @@ class RenovacionObj{
   String userID;
   DateTime fechaCaptura;
   int grupo_Id;
+  int tipoContrato;
+  double importeHistorico;
 
   RenovacionObj({
     this.creditoID,
@@ -28,7 +30,9 @@ class RenovacionObj{
     this.status,
     this.userID,
     this.fechaCaptura,
-    this.grupo_Id
+    this.grupo_Id,
+    this.tipoContrato,
+    this.importeHistorico
   });
 
   Map<String, dynamic> toJson()=>{
@@ -45,7 +49,9 @@ class RenovacionObj{
     'status': status,
     'userID': userID,
     'fechaCaptura': fechaCaptura,
-    'grupo_Id': grupo_Id
+    'grupo_Id': grupo_Id,
+    'tipoContrato': tipoContrato,
+    'importeHistorico': importeHistorico
   };
 }
 

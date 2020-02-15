@@ -205,7 +205,7 @@ class _CarteraState extends State<Cartera> {
             child: Container(
               child: ListTile(
                 leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.group, color: widget.colorTema,size: 40.0,)]),
-                title: Text("Las Pagadoras " + listaCartera[index], style: TextStyle(fontWeight: FontWeight.bold)),
+                title: Text("LAS PAGADORAS " + listaCartera[index], style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text("Contrato: 12345" + listaCartera[index]),
                 isThreeLine: true,
                 trailing: Column(children: <Widget>[ Icon(Icons.arrow_forward_ios)], mainAxisAlignment: MainAxisAlignment.center,),
@@ -218,7 +218,7 @@ class _CarteraState extends State<Cartera> {
               ),
             )
           ),
-          onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> CarteraDetalle(colorTema: widget.colorTema, title: "Las Pagadoras " + listaCartera[index], contrato: 123450+index+1,)));},
+          onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> CarteraDetalle(colorTema: widget.colorTema, title: "LAS PAGADORAS " + listaCartera[index], contrato: 123450+index+1,)));},
         );
       }
     );

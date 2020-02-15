@@ -56,7 +56,9 @@ class ServiceRepositoryRenovaciones{
         ${DataBaseCreator.beneficio},
         ${DataBaseCreator.ticket},
         ${DataBaseCreator.status},
-        ${DataBaseCreator.userID}
+        ${DataBaseCreator.userID},
+        ${DataBaseCreator.tipoContrato},
+        ${DataBaseCreator.nuevoImporte}
       )values(
         ${renovacion.idRenovacion},
         ${renovacion.idGrupo},
@@ -70,7 +72,9 @@ class ServiceRepositoryRenovaciones{
         "${renovacion.beneficio}",
         "${renovacion.ticket}",
         0,
-        "${renovacion.userID}"
+        "${renovacion.userID}",
+        ${renovacion.tipoContrato},
+        ${renovacion.nuevoImporte}
       )''';
 
     final result = await db.rawInsert(sql);

@@ -342,7 +342,7 @@ class _HomePageState extends State<HomePage> {
 
   String resumen(solicitudModel.Solicitud obj){
     //DateTime.fromMillisecondsSinceEpoch(ultimos[index-1].fechaCaptura).toString()+"\nIMPORTE: \$"+ultimos[index-1].importe.toStringAsFixed(2)
-    String fecha = formatDate(DateTime.fromMillisecondsSinceEpoch(obj.fechaCaptura), [dd, '/', mm, '/', yyyy, ' ', HH, ':', nn]);
+    String fecha = obj.fechaCaptura == null ? "Cambio de Documento Atendido" : formatDate(DateTime.fromMillisecondsSinceEpoch(obj.fechaCaptura), [dd, '/', mm, '/', yyyy, ' ', HH, ':', nn]);
     return fecha+"\nIMPORTE: \$"+obj.importe.toStringAsFixed(2);
   }
 
