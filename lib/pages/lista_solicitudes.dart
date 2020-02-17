@@ -72,6 +72,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         mensaje = "Sin solicitudes por autorizar para mostrar.";
         await getSolcitudesespera(userID,1);
         await getSolcitudesespera(userID,6);
+        await getRenovacionesEspera(userID,1);
+        await getRenovacionesEspera(userID,6);
         /*await getSolcitudesespera(userID,7);
         await getSolcitudesespera(userID,8);
         await getSolcitudesespera(userID,9);
@@ -86,11 +88,13 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         msjEncabezado = "SOLICITUDES APROBADAS: ";
         mensaje = "Sin solicitudes Aprobadas para mostrar.";
         await getSolcitudesespera(userID,2);
+        await getRenovacionesEspera(userID,2);
         break;
       case 4:
         msjEncabezado = "SOLICITUDES RECHAZADAS: ";
         mensaje = "Sin solicitudes Rechazadas para mostrar.";
         await getSolcitudesespera(userID,3);
+        await getRenovacionesEspera(userID,3);
         break;
       case 5:
         gruposGuardados = await ServiceRepositoryGrupos.getAllGruposSync(userID);
@@ -166,6 +170,123 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         }
         QuerySnapshot querySnapshot2 = await q2.getDocuments().timeout(Duration(seconds: 10));
         gruposGuardados.clear();
+        for(DocumentSnapshot dato in querySnapshot2.documents){
+          Grupo grupo = new Grupo(
+            grupoID: dato.documentID,
+            nombreGrupo: dato.data['nombre'],
+            status: dato.data['status'],
+            userID: dato.data['userID'],
+            cantidad: dato.data['integrantes'],
+            importe: dato.data['importe']
+          );
+          gruposGuardados.add(grupo);
+        }
+        for(Grupo grupo in gruposGuardados){
+          if(grupo.status == 2){
+            var solicitudesGrupo = solicitudes.where((sol)=>sol.grupoID == grupo.grupoID).toList();
+            if(solicitudesGrupo.length == 0){
+              Solicitud solicitud = new Solicitud(
+                apellidoPrimero: "",
+                apellidoSegundo: "",
+                curp: "",
+                fechaNacimiento: 0,
+                //idGrupo: dato.data['grupoId'],
+                grupoID: grupo.grupoID,
+                idSolicitud: null,
+                importe: 0,
+                nombrePrimero: "",
+                nombreSegundo: "",
+                rfc: "",
+                telefono: "",
+                nombreGrupo: grupo.nombreGrupo,
+                userID: grupo.userID,
+                status: 1,
+                tipoContrato: 2,
+                documentID: ""
+              );
+              solicitudes.add(solicitud);
+            }
+          }
+        }
+      }
+
+    }catch(e){
+      solicitudes.clear();
+      mensaje = "Error interno. Revisa tu conexión a internet 🚫☹️";
+    }
+  }
+
+  getRenovacionesEspera(userID, status) async{
+    try{
+      Query q;
+      if(status == 2){
+        q = _firestore.collection("Renovaciones").where('dictamen', isEqualTo: true).where('userID', isEqualTo:userID);
+      }else if(status == 3){
+        q = _firestore.collection("Renovaciones").where('dictamen', isEqualTo: false).where('userID', isEqualTo:userID);
+      }else if(status == 1){
+        q = _firestore.collection("Renovaciones").where('status', isEqualTo: status).where('userID', isEqualTo:userID);
+      }else{
+        q = _firestore.collection("Renovaciones").where('status', isGreaterThan: 3).where('userID', isEqualTo:userID);
+      }
+      QuerySnapshot querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
+      //if(status == 2 || status == 3) solicitudes.clear();
+      for(DocumentSnapshot dato in querySnapshot.documents){
+        if(dato.data['clienteID'] == null){
+          Solicitud solicitud = new Solicitud(
+            apellidoPrimero: dato.data['persona']['apellido'],
+            apellidoSegundo: dato.data['persona']['apellidoSegundo'],
+            curp: dato.data['persona']['curp'],
+            fechaNacimiento: dato.data['persona']['fechaNacimiento'].millisecondsSinceEpoch,
+            //idGrupo: dato.data['grupoId'],
+            grupoID: dato.data['grupoID'],
+            idSolicitud: null,
+            importe: dato.data['importe'],
+            nombrePrimero: dato.data['persona']['nombre'],
+            nombreSegundo: dato.data['persona']['nombreSegundo'],
+            rfc: dato.data['persona']['rfc'],
+            telefono: dato.data['persona']['telefono'],
+            nombreGrupo: dato.data['grupoNombre'],
+            userID: dato.data['userID'],
+            status: dato.data['status'],
+            tipoContrato: dato.data['tipoContrato'],
+            documentID: dato.documentID
+          );
+          solicitudes.add(solicitud);
+        }else{
+          Solicitud solicitud = new Solicitud(
+            apellidoPrimero: dato.data['nombre'],
+            apellidoSegundo: "",
+            curp: "",
+            fechaNacimiento: DateTime.now().millisecondsSinceEpoch,
+            //idGrupo: dato.data['grupoId'],
+            grupoID: dato.data['grupoID'],
+            idSolicitud: null,
+            importe: dato.data['importe'],
+            nombrePrimero: "",
+            nombreSegundo: "",
+            rfc: "",
+            telefono: "",
+            nombreGrupo: dato.data['grupoNombre'],
+            userID: dato.data['userID'],
+            status: dato.data['status'],
+            tipoContrato: dato.data['tipoContrato'],
+            documentID: dato.documentID
+          );
+          solicitudes.add(solicitud);
+        }
+      }
+
+      if(gruposGuardados.length >= 0){
+        Query q2;
+        if(status == 2){
+          q2 = _firestore.collection("GruposRenovacion").where('dictamen', isEqualTo: true).where('userID', isEqualTo:userID);    
+        }else if(status == 3){
+          q2 = _firestore.collection("GruposRenovacion").where('dictamen', isEqualTo: false).where('userID', isEqualTo:userID);
+        }else{
+          q2 = _firestore.collection("GruposRenovacion").where('status', isEqualTo: 2).where('userID', isEqualTo:userID);
+        }
+        QuerySnapshot querySnapshot2 = await q2.getDocuments().timeout(Duration(seconds: 10));
+        //gruposGuardados.clear();
         for(DocumentSnapshot dato in querySnapshot2.documents){
           Grupo grupo = new Grupo(
             grupoID: dato.documentID,
@@ -487,7 +608,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           icono = Tooltip(message: "Por autorizar consulta de Buró", child: Icon(Icons.done_all));
           break;
         case 2:
-          icono = Tooltip(message: "Aprobado", child: Icon(Icons.done_all, color: Colors.lightGreenAccent));
+          icono = Tooltip(message: "Aprobado", child: Icon(Icons.done_all, color: widget.colorTema));
           break;
         case 3:
           icono = Tooltip(message: "Denegado", child: Icon(Icons.block, color: Colors.red));
@@ -502,7 +623,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           icono = Tooltip(message: "En proceso de consulta de Buró", child: Icon(Icons.done_all, color: Colors.blue));
           break;
         case 9:
-          icono = Tooltip(message: "Por dictaminar (consulta de buró exitosa)", child: Icon(Icons.done_all, color: Colors.black));
+          icono = Container(child: Tooltip(message: "Por dictaminar", child: Icon(Icons.done_all, color: Colors.white)),decoration: BoxDecoration(color: widget.colorTema ,borderRadius: BorderRadius.all(Radius.circular(15))));
           break;
         case 10:
           icono = Tooltip(message: "Error en consulta de Buró", child: Icon(Icons.done_all, color: Colors.red));
@@ -540,7 +661,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           children: 
           <Widget>[
             Row(mainAxisSize: MainAxisSize.min ,children: <Widget>[
-              Tooltip(message: "El grupo fue Aprobado.", child: Icon(Icons.done_all, color: Colors.lightGreenAccent,)),
+              Tooltip(message: "El grupo fue Aprobado.", child: Icon(Icons.done_all, color: widget.colorTema,)),
               Text("        "),
               IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context) =>  ListaSolicitudesGrupoSinc(title: solicitud.nombreGrupo, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, solicitudes: solicitudesGrupo.toList())));

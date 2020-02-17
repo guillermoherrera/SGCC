@@ -143,7 +143,8 @@ class Sincroniza{
       
       }
       ///Consulta Cambios de Documentos
-      await getCambios(userID);
+      await getCambios(userID, "Solicitudes");
+      await getCambios(userID, "Renovaciones");
       //Sincroniza Cambios de Documentos
       await sincCambios();
       //Sincroniza Renovaciones
@@ -306,8 +307,8 @@ class Sincroniza{
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);
   }
 
-  getCambios(userID) async{
-    Query q = _firestore.collection("Solicitudes").where('status', isEqualTo: 6).where('userID', isEqualTo:userID);
+  getCambios(userID, coleccion) async{
+    Query q = _firestore.collection(coleccion).where('status', isEqualTo: 6).where('userID', isEqualTo:userID);
     QuerySnapshot querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
     
     for(DocumentSnapshot document in querySnapshot.documents){//querySnapshot.documents[0].documentID
@@ -459,11 +460,15 @@ class Sincroniza{
       try{
         if(documentos.length > 0) await _firestore.collection("Solicitudes").document(solicitud.documentID).updateData({"documentos": FieldValue.arrayUnion(documentos), "status": 1}).timeout(Duration(seconds: 10));
       }catch(e){
-        //devolver los documentos al estado 1
-        List<DocumentoSolicitud> documentosActualizados = await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(idSol);
-        for(DocumentoSolicitud doc in documentosActualizados){
-          doc.cambioDoc = 1;
-          await ServiceRepositoryDocumentosSolicitud.updateDocumentoSolicitudCambio(doc);
+        try{
+          if(documentos.length > 0) await _firestore.collection("Renovaciones").document(solicitud.documentID).updateData({"documentos": FieldValue.arrayUnion(documentos), "status": 1}).timeout(Duration(seconds: 10));
+        }catch(e){
+          //devolver los documentos al estado 1
+          List<DocumentoSolicitud> documentosActualizados = await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(idSol);
+          for(DocumentoSolicitud doc in documentosActualizados){
+            doc.cambioDoc = 1;
+            await ServiceRepositoryDocumentosSolicitud.updateDocumentoSolicitudCambio(doc);
+          }
         }
       }
     }

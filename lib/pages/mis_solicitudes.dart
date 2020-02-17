@@ -236,7 +236,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
           return Text("");
           break;
         case 1:
-          return  Container(child:Text(widget.cambio.toString(), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)), padding: EdgeInsets.all(9),decoration: BoxDecoration(color: Colors.red ,borderRadius: BorderRadius.all(Radius.circular(10))),);//Icon(Icons.filter_1, color: Colors.red);
+          return  Container(child:Text(widget.cambio.toString(), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)), padding: EdgeInsets.all(6),decoration: BoxDecoration(color: Colors.red ,borderRadius: BorderRadius.all(Radius.circular(15))),);//Icon(Icons.filter_1, color: Colors.red);
           break;
         case 2:
           return Icon(Icons.filter_2, color: Colors.red);

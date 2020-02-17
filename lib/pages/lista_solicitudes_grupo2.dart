@@ -27,27 +27,55 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
       
       QuerySnapshot querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
       
+      if(querySnapshot.documents.length == 0){
+        q = _firestore.collection("Renovaciones").where('grupoID', isEqualTo: widget.solicitudes[0].grupoID);
+        querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
+      }
+      if(querySnapshot.documents.length == 0){mensaje = "Sin solicitudes por mostrar";}
       for(DocumentSnapshot dato in querySnapshot.documents){
-        Solicitud solicitud = new Solicitud(
-          apellidoPrimero: dato.data['persona']['apellido'],
-          apellidoSegundo: dato.data['persona']['apellidoSegundo'],
-          curp: dato.data['persona']['curp'],
-          fechaNacimiento: dato.data['persona']['fechaNacimiento'].millisecondsSinceEpoch,
-          //idGrupo: dato.data['grupoId'],
-          grupoID: dato.data['grupoID'],
-          idSolicitud: null,
-          importe: dato.data['importe'],
-          nombrePrimero: dato.data['persona']['nombre'],
-          nombreSegundo: dato.data['persona']['nombreSegundo'],
-          rfc: dato.data['persona']['rfc'],
-          telefono: dato.data['persona']['telefono'],
-          nombreGrupo: dato.data['grupoNombre'],
-          userID: dato.data['userID'],
-          status: dato.data['status'],
-          tipoContrato: dato.data['tipoContrato'],
-          documentID: dato.documentID
-        );
-        solicitudes.add(solicitud);
+        if(dato.data['clienteID'] == null){
+          Solicitud solicitud = new Solicitud(
+            apellidoPrimero: dato.data['persona']['apellido'],
+            apellidoSegundo: dato.data['persona']['apellidoSegundo'],
+            curp: dato.data['persona']['curp'],
+            fechaNacimiento: dato.data['persona']['fechaNacimiento'].millisecondsSinceEpoch,
+            //idGrupo: dato.data['grupoId'],
+            grupoID: dato.data['grupoID'],
+            idSolicitud: null,
+            importe: dato.data['importe'],
+            nombrePrimero: dato.data['persona']['nombre'],
+            nombreSegundo: dato.data['persona']['nombreSegundo'],
+            rfc: dato.data['persona']['rfc'],
+            telefono: dato.data['persona']['telefono'],
+            nombreGrupo: dato.data['grupoNombre'],
+            userID: dato.data['userID'],
+            status: dato.data['status'],
+            tipoContrato: dato.data['tipoContrato'],
+            documentID: dato.documentID
+          );
+          solicitudes.add(solicitud);
+        }else{
+          Solicitud solicitud = new Solicitud(
+            apellidoPrimero: dato.data['nombre'],
+            apellidoSegundo: "",
+            curp: dato.data['clienteID'].toString(),//Auxiliar de clienteID
+            fechaNacimiento: DateTime.now().millisecondsSinceEpoch,
+            //idGrupo: dato.data['grupoId'],
+            grupoID: dato.data['grupoID'],
+            idSolicitud: null,
+            importe: dato.data['importe'],
+            nombrePrimero: "",
+            nombreSegundo: "",
+            rfc: "",
+            telefono: "",
+            nombreGrupo: dato.data['grupoNombre'],
+            userID: dato.data['userID'],
+            status: dato.data['status'],
+            tipoContrato: dato.data['tipoContrato'],
+            documentID: dato.documentID
+          );
+          solicitudes.add(solicitud);
+        }
       }
       setState(() {});
     }catch(e){
@@ -186,7 +214,11 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
 
   String getImporte(Solicitud solicitud){
     double importe = solicitud.importe;
-    return "TELÉFONO: "+solicitud.telefono+"\nIMPORTE: "+importe.toStringAsFixed(2);
+    if(solicitud.telefono.isEmpty){
+      return "CLIENTE ID: "+solicitud.curp+"\nIMPORTE: "+importe.toStringAsFixed(2);
+    }else{
+      return "TELÉFONO: "+solicitud.telefono+"\nIMPORTE: "+importe.toStringAsFixed(2);
+    }
   }
 
   Widget getIconoMenu(Solicitud solicitud){
@@ -196,7 +228,7 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
         icono = Tooltip(message: "Por autorizar consulta de Buró", child: Icon(Icons.done_all));
         break;
       case 2:
-        icono = Tooltip(message: "Dictaminado", child: Icon(Icons.done_all, color: Colors.lightGreenAccent));
+        icono = Tooltip(message: "Dictaminado", child: Icon(Icons.done_all, color: widget.colorTema));
         break;
       case 3:
         icono = Tooltip(message: "Rechazado", child: Icon(Icons.block, color: Colors.red));
@@ -211,7 +243,7 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
         icono = Tooltip(message: "En proceso de consulta de Buró", child: Icon(Icons.done_all, color: Colors.blue));
         break;
       case 9:
-        icono = Tooltip(message: "Por dictaminar (consulta de buró exitosa)", child: Icon(Icons.done_all, color: Colors.white));
+        icono = Container(child: Tooltip(message: "Por dictaminar", child: Icon(Icons.done_all, color: Colors.white)),decoration: BoxDecoration(color: widget.colorTema ,borderRadius: BorderRadius.all(Radius.circular(15))));
         break;
       case 10:
         icono = Tooltip(message: "Error en consulta de Buró", child: Icon(Icons.done_all, color: Colors.red));

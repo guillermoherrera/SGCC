@@ -167,18 +167,26 @@ class _HomePageState extends State<HomePage> {
         body: userType == null ? Container() : userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : RefreshIndicator(
             key: refreshKey,
             onRefresh: ()async{
-              setState(() {abs = true;});
-              await Future.delayed(Duration(seconds:1));
-              if(sincManual){
-                //sincManual = false;
-                await sincroniza.sincronizaDatos();
-                actualizaInfo();
-                //sincManual = true;
-                print("Sincronización Realizada: "+DateTime.now().toString());
-              }else{
-                showSnackBar("Atención: El proceso de sincronizaición esta en curso, por favor espera un momento.", Colors.red);
+              try {
+                final result = await InternetAddress.lookup('google.com');
+                if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                  setState(() {abs = true;});
+                  await Future.delayed(Duration(seconds:1));
+                  if(sincManual){
+                    //sincManual = false;
+                    await sincroniza.sincronizaDatos();
+                    actualizaInfo();
+                    //sincManual = true;
+                    print("Sincronización Realizada: "+DateTime.now().toString());
+                  }else{
+                    showSnackBar("Atención: El proceso de sincronizaición esta en curso, por favor espera un momento.", Colors.red);
+                  }
+                  setState(() {abs = false;});
+                }
+              } on SocketException catch (_) {
+                print('not connected');
+                mostrarShowDialog(false);
               }
-              setState(() {abs = false;});
             },
             child: Stack(
               children: <Widget>[
@@ -376,16 +384,16 @@ class _HomePageState extends State<HomePage> {
   Widget getLeyenda(){
     if(solicitudes.length > 0)
       return Row(children: <Widget>[
-        Text("Da clic en", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70)),
-        Icon(Icons.more_vert, size: 15.0), 
-        Text("para tomar acciones.", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))
+        Text("Desliza hacia abajo", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70)),
+        Icon(Icons.refresh, size: 15.0, color: Colors.white), 
+        Text(".", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))
       ],);
     else 
       return Text("Sin solicitudes de crédito en espera.", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70));
   }
 
   Widget getAcciones(){
-    return solicitudes.length > 0 ? PopupMenuButton(
+    return null;/*solicitudes.length > 0 ? PopupMenuButton(
       itemBuilder: (_) => <PopupMenuItem<int>>[
         new PopupMenuItem<int>(
             child: Row(children: <Widget>[Icon(Icons.cached, color: Colors.green,),Text(" Sincronizar")],), value: 1),
@@ -408,7 +416,7 @@ class _HomePageState extends State<HomePage> {
           }
         }
       }
-    ) : null;//Icon(Icons.check_circle, color: Colors.blue ,size: 40.0,);
+    ) : null;//Icon(Icons.check_circle, color: Colors.blue ,size: 40.0,);*/
   }
 
   showDialogo() async{
@@ -583,7 +591,8 @@ class _HomePageState extends State<HomePage> {
       });
     }
     ///Consulta Cambios de Documentos
-    await  sincroniza.getCambios(userID);
+    await  sincroniza.getCambios(userID, "Solicitudes");
+    await  sincroniza.getCambios(userID, "Renovaciones");
     //Sincroniza Cambios de Documentos
     await sincroniza.sincCambios();
     pref.setBool("Sinc", true);
