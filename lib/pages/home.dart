@@ -59,6 +59,7 @@ class _HomePageState extends State<HomePage> {
   //List<String> personas = List();
   Random rnd = new Random();
   String mensaje = "* No tienes registros de solicitudes de crédito en este dispositivo. \n\n * Puedes ir al apartado de Solicitudes para comenzar a registrar y/o revisar solicitudes de crédito.";
+  bool changePass = false;
 
   Future<void> getListDocumentos() async{
     final pref = await SharedPreferences.getInstance();
@@ -70,10 +71,8 @@ class _HomePageState extends State<HomePage> {
     
     ultimos = await ServiceRepositorySolicitudes.getLastSolicitudes(userID);
     print(ultimos);
-    /*personas.clear();
-    for(int i=0; i < 0 ;i++){
-      personas.add(nombres[rnd.nextInt(3-0)]+" "+apellidos[rnd.nextInt(3-0)]);
-    }*/
+    changePass = pref.getBool("passGenerico");
+
     try{ setState(() {}); }catch(e){ print("ERROR: linea 49 Home:"+e.toString()); }
   }
 
@@ -139,9 +138,9 @@ class _HomePageState extends State<HomePage> {
           title: Image.asset('images/adminconfia.png', color: Colors.white, fit: BoxFit.cover),
           centerTitle: true,
           elevation: 0.0,
-          leading: new IconButton(icon: Icon(Icons.menu, color: Colors.white),
-                onPressed: () => _scaffoldKey.currentState.openDrawer()),
-                /*icon: cantSolicitudesCambios > 0 ? Stack(children: <Widget>[
+          leading: new IconButton(/*icon: Icon(Icons.menu, color: Colors.white),
+                onPressed: () => _scaffoldKey.currentState.openDrawer()),*/
+                icon: changePass ? Stack(children: <Widget>[
                         Icon(Icons.menu, color: Colors.white),
                         Positioned(
                             bottom: -5.0,
@@ -150,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                               child: new Text(
                                 ".",
                                 style: new TextStyle(
-                                    color: Colors.red,
+                                    color: Colors.yellow[900],
                                     fontSize: 90.0,
                                     fontWeight: FontWeight.w500
 
@@ -160,11 +159,11 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ) : Icon(Icons.menu, color: Colors.white),
                 onPressed: () => _scaffoldKey.currentState.openDrawer()),
-          actions: <Widget>[
+          /*actions: <Widget>[
             IconButton(icon: Icon(Icons.person_add, color: Colors.white), onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo()) ));},)
           ],*/
         ),
-        drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), cantSolicitudesCambios: cantSolicitudesCambios, sincManual: sincManual ),
+        drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), changePass: changePass, sincManual: sincManual ),
         body: userType == null ? Container() : userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : RefreshIndicator(
             key: refreshKey,
             onRefresh: ()async{

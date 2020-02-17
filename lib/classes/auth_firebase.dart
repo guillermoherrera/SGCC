@@ -23,4 +23,17 @@ class AuthFirebase{
   Future<void> signOut() async{
     return firebaseAuth.signOut();
   }
+
+  Future<bool> changePass(password, email, pass) async{
+    bool result;
+    try{
+      await firebaseAuth.signInWithEmailAndPassword(email: email, password: pass).timeout(Duration(seconds:10));
+      FirebaseUser firebaseUser = await firebaseAuth.currentUser();
+      await firebaseUser.updatePassword(password).timeout(Duration(seconds: 10));
+      result = true;
+    }catch(e){
+      result = false;
+    }
+    return result;
+  }
 }

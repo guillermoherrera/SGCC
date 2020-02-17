@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/pages/acerca_de.dart';
+import 'package:sgcartera_app/pages/cambio_contrasena.dart';
 import 'package:sgcartera_app/pages/cartera.dart';
 import 'package:sgcartera_app/pages/home.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes.dart';
@@ -12,12 +13,12 @@ import 'package:sgcartera_app/pages/solicitud.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomDrawer extends StatefulWidget {
-  CustomDrawer({this.authFirebase, this.onSingIn, this.colorTema, this.actualizaHome, this.cantSolicitudesCambios, this.sincManual });
+  CustomDrawer({this.authFirebase, this.onSingIn, this.colorTema, this.actualizaHome, this.changePass, this.sincManual });
   final AuthFirebase authFirebase;
   final VoidCallback onSingIn;
   final Color colorTema;
   final VoidCallback actualizaHome;
-  final int cantSolicitudesCambios;
+  final bool changePass;
   final bool sincManual;
   @override
   _CustomDrawerState createState() => _CustomDrawerState();
@@ -30,6 +31,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   Future<void> getDatos() async{
     final pref = await SharedPreferences.getInstance();
     email = pref.getString("email");
+    name = pref.getString("name");
     fechaSinc = pref.getString("fechaSinc");
     sinc = pref.getBool("Sinc");
     setState(() {});
@@ -68,6 +70,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
             child: ListTile(
               title: Text("INICIO", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
               leading: Icon(Icons.home, color: Colors.white,),
+            ),
+          ),
+          InkWell(
+            onTap: (){ Navigator.push(context, MaterialPageRoute(builder: (context) => CambioContrasena(colorTema: widget.colorTema, changePass: widget.changePass, actualizaHome: widget.actualizaHome) ));},
+            child: ListTile(
+              title: Text("CAMBIO DE CONTRASEÑA", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
+              leading: Icon(Icons.lock, color: Colors.white,),
+              trailing: widget.changePass ? Icon(Icons.error, color: Colors.yellow[900]) : null,
             ),
           ),
           /*Divider(),

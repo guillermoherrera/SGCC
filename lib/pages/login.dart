@@ -31,6 +31,7 @@ class _LoginState extends State<Login> {
   AuthFirebase authFirebase = new AuthFirebase();
   DocumentSnapshot _datosCatalogo;
   double paddingTop = 50;
+  bool obscureText1 = true;
   
   @override
   Widget build(BuildContext context) {
@@ -121,7 +122,7 @@ class _LoginState extends State<Login> {
       padded(
         childs: TextFormField(
           controller: pass,
-          obscureText: true,
+          obscureText: obscureText1,
           decoration: InputDecoration(
             prefixIcon: Icon(Icons.lock),
             labelText: "Contraseña",
@@ -132,6 +133,7 @@ class _LoginState extends State<Login> {
                 const Radius.circular(10.0),
               ),
             ),
+            suffixIcon: IconButton(icon: Icon(Icons.remove_red_eye), onPressed: (){setState(() {obscureText1 = !obscureText1;});})
           ),
           validator: (value){return value.isEmpty ? "Por favor ingresa tu contraseña" : null;},
         )
@@ -226,8 +228,14 @@ class _LoginState extends State<Login> {
       querySnapshot = await q.getDocuments();
       if(querySnapshot.documents.length > 0){
         pref.setInt("tipoUsuario",querySnapshot.documents[0].data['tipoUsuario']);
+        pref.setString("name",querySnapshot.documents[0].data['nombre']);
+        pref.setBool("passGenerico", querySnapshot.documents[0].data['passGenerico']);
+        pref.setString("documentID",querySnapshot.documents[0].documentID);
       }else{
-        pref.setInt("tipoUsuario",0);
+        pref.setInt("tipoUsuario", 0);
+        pref.setString("name","");
+        pref.setBool("passGenerico", false);
+        pref.setString("documentID","");
       }
       
       //catDocumentos
