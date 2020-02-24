@@ -72,7 +72,8 @@ class _HomePageState extends State<HomePage> {
     ultimos = await ServiceRepositorySolicitudes.getLastSolicitudes(userID);
     print(ultimos);
     changePass = pref.getBool("passGenerico");
-
+    if(changePass == null){changePass = false;}
+    
     try{ setState(() {}); }catch(e){ print("ERROR: linea 49 Home:"+e.toString()); }
   }
 
@@ -109,12 +110,12 @@ class _HomePageState extends State<HomePage> {
   void _onItemTapped(int index) {
     switch (index) {
       case 1:
-        if(sincManual){
+        //if(sincManual){
           Navigator.push(context, MyCustomRoute(builder: (_) => MisSolicitudes(colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), cambio: cantSolicitudesCambios)));
           //Navigator.push(context, MaterialPageRoute(builder: (context)=> MisSolicitudes(colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), cambio: cantSolicitudesCambios)));
-        }else{
-          showSnackBar("Atención: El proceso de sincronizaición esta en curso, por favor espera un momento.", Colors.red);
-        }
+        //}else{
+          //showSnackBar("Atención: El proceso de sincronizaición esta en curso, por favor espera un momento.", Colors.red);
+        //}
       break;
       case 2:
         Navigator.push(context, MyCustomRoute(builder: (_) => Cartera(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo(), cambio: cantSolicitudesCambios)));
@@ -206,8 +207,8 @@ class _HomePageState extends State<HomePage> {
                       child: Container(
                         child: ListTile(
                         leading: getIcono(),
-                        title: Text(getMensaje(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
-                        subtitle: getLeyenda(),
+                        title: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text(getMensaje(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white))),
+                        subtitle: SingleChildScrollView(scrollDirection: Axis.horizontal, child: getLeyenda()),
                         trailing: getAcciones(),
                         isThreeLine: true,
                         ),

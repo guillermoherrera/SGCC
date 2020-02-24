@@ -56,7 +56,7 @@ class _GroupState extends State<Group> {
         iconTheme: IconThemeData(color: Colors.white),
         elevation: 0.0,
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.group_add), onPressed: () {showFormGrupo();},)
+          //IconButton(icon: Icon(Icons.group_add), onPressed: () {showFormGrupo();},)
         ],
       ),
       body: Container(
@@ -77,7 +77,7 @@ class _GroupState extends State<Group> {
                     child: Container(
                       child: ListTile(
                       leading: Icon(Icons.group,color: Colors.white, size: 40.0,),
-                      title: Text("\nGRUPOS EN CAPTURA: "+gruposCant.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
+                      title: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nGRUPOS EN CAPTURA: "+gruposCant.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white))),
                       subtitle: Text("", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70)),
                       //trailing: Text(""),
                       isThreeLine: true,
@@ -102,7 +102,7 @@ class _GroupState extends State<Group> {
                     ),
                     child:  Padding(
                       padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
-                      child: grupos.length > 0 ? listaGrupos() :  Padding(padding: EdgeInsets.all(20.0),child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Sin grupos en captura ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)), Row(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Presiona ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)), Icon(Icons.group_add, size: 30.0), Text(" para agregar un nuevo grupo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))],)],)), 
+                      child: grupos.length > 0 ? listaGrupos() :  Padding(padding: EdgeInsets.all(20.0),child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Sin grupos en captura ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)), Row(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Presiona ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)), Icon(Icons.group_add, size: 30.0), Text(" para agregar un grupo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))],)],)), 
                     ),
                   )
                 ))),
@@ -122,6 +122,7 @@ class _GroupState extends State<Group> {
           ]
         )
       ),
+      floatingActionButton: FloatingActionButton(child: Icon(Icons.group_add, color: Colors.white), backgroundColor: widget.colorTema,onPressed: (){showFormGrupo();}),
     );
   }
 

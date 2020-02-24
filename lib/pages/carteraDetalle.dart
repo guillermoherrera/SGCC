@@ -44,7 +44,7 @@ class _CarteraDetalleState extends State<CarteraDetalle> {
                     child: Container(
                       child: ListTile(
                       //leading: Icon(Icons.assignment,color: Colors.white, size: 40.0,),
-                      title: Text("\n", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
+                      title: Text("", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
                       subtitle: Center(child: Icon(Icons.account_balance_wallet,color: Colors.white, size: 40.0,)),
                       //trailing: Text(""),
                       isThreeLine: true,

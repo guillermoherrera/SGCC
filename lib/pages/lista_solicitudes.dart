@@ -351,6 +351,14 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         iconTheme: IconThemeData(color: Colors.white),
         elevation: 0.0,
         actions: <Widget>[
+          PopupMenuButton(
+            icon: Icon(Icons.help),
+            itemBuilder: (_) => <PopupMenuItem<int>>[
+              PopupMenuItem<int>(
+                child: Row(children: <Widget>[Text("Mantén presionado "), Icon(Icons.done_all, color: Colors.grey),Text(" en la lista.")]),
+              )
+            ]
+          )
           //widget.status == 0 ? IconButton(icon: Icon(Icons.cached), color: Colors.white, onPressed: () {showDialogo();},) : Text("")
         ],
       ),
@@ -402,7 +410,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                   child: Container(
                     child: ListTile(
                     leading: Icon(Icons.assignment,color: Colors.white, size: 40.0,),
-                    title: Text(solicitudesCant != null ? "\n" + msjEncabezado+solicitudesCant.toString() : "\n" + msjEncabezado, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
+                    title: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text(solicitudesCant != null ? "\n" + msjEncabezado+solicitudesCant.toString() : "\n" + msjEncabezado, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white))),
                     subtitle: Text("", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70)),
                     //trailing: Text(""),
                     isThreeLine: true,
@@ -646,11 +654,11 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           children: 
           <Widget>[
             Row(mainAxisSize: MainAxisSize.min ,children: <Widget>[
+              Tooltip(message: "Los integrantes estan en proceso de aprobación.", child: Icon(Icons.done_all)),
+              Text("        "),
               IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: ()async {
                 await Navigator.push(context, MaterialPageRoute(builder: (context) =>  ListaSolicitudesGrupoSinc(title: solicitud.nombreGrupo, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, solicitudes: solicitudesGrupo.toList())));
               },),
-              Text("        "),
-              Tooltip(message: "Los integrantes estan en proceso de aprobación.", child: Icon(Icons.done_all)),
             ],)
           ]);
         break;

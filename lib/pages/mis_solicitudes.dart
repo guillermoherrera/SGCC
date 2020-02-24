@@ -69,7 +69,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         elevation: 0.0,
         leading: Container(),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.add_circle_outline, color: Colors.white), onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome) ));},)
+          //IconButton(icon: Icon(Icons.add_circle_outline, color: Colors.white), onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome) ));},)
         ]
       ),
       body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : Container(
@@ -89,9 +89,9 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
                   elevation: 0.0,
                   child: Container(
                     child: ListTile(
-                    //leading: Icon(Icons.assignment,color: Colors.white, size: 40.0,),
-                    title: Text("\n", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
-                    subtitle: Center(child: Icon(Icons.assignment,color: Colors.white, size: 40.0,)),
+                    leading: Icon(Icons.assignment,color: Colors.white, size: 40.0,),
+                    title: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nMIS SOLICITUDES", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white))),
+                    subtitle: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("Seguimiento y estado de solicitudes.", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))),
                     //trailing: Text(""),
                     isThreeLine: true,
                     ),
@@ -134,6 +134,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
           ]
         )
       ),
+      floatingActionButton: FloatingActionButton(child: Icon(Icons.add, color: Colors.white), backgroundColor: widget.colorTema,onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome) ));}),
       bottomNavigationBar: Stack(
         children: <Widget>[
           Row(
@@ -231,7 +232,12 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
 
   Widget getNotif(index){
     if(index == 3){
-      switch (widget.cambio) {
+      if(widget.cambio > 0){
+        return  Container(child:Text(widget.cambio.toString(), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)), padding: EdgeInsets.all(6),decoration: BoxDecoration(color: Colors.red ,borderRadius: BorderRadius.all(Radius.circular(15))),);//Icon(Icons.filter_1, color: Colors.red);    
+      }else{
+        return Text("");
+      }
+      /*switch (widget.cambio) {
         case 0:
           return Text("");
           break;
@@ -265,7 +271,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         default:
           return Icon(Icons.filter_9_plus, color: Colors.red);
           break;
-      }
+      }*/
     }else{
       return Container(child: Text(""));
     }

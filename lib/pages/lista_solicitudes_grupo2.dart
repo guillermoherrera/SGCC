@@ -100,6 +100,14 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
         iconTheme: IconThemeData(color: Colors.white),
         elevation: 0.0,
         actions: <Widget>[
+          PopupMenuButton(
+            icon: Icon(Icons.help),
+            itemBuilder: (_) => <PopupMenuItem<int>>[
+              PopupMenuItem<int>(
+                child: Row(children: <Widget>[Text("Mantén presionado "), Icon(Icons.done_all, color: Colors.grey),Text(" en la lista.")]),
+              )
+            ]
+          )
           //widget.status == 0 ? IconButton(icon: Icon(Icons.cached), color: Colors.white, onPressed: () {showDialogo();},) : Text("")
         ],
       ),
@@ -127,7 +135,7 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
                   child: Container(
                     child: ListTile(
                     //leading: Icon(Icons.assignment,color: Colors.white, size: 40.0,),
-                    title: Text("\n", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
+                    title: Text("", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
                     subtitle: Center(child: Icon(Icons.group,color: Colors.white, size: 40.0,)),
                     //trailing: Text(""),
                     isThreeLine: true,

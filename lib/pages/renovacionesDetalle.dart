@@ -155,9 +155,9 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
         iconTheme: IconThemeData(color: Colors.white),
         elevation: 0.0,
         actions: listaRenovacion.length == 0 ? null : solicitable ? <Widget>[
-          IconButton(icon: Icon(Icons.person_add), onPressed: () {
+          /*IconButton(icon: Icon(Icons.person_add), onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Grupo Renovación: "+ widget.grupoInfo.nombre, colorTema: widget.colorTema, grupoId: widget.grupoInfo.grupoID, grupoNombre: widget.grupoInfo.nombre, actualizaHome: ()=>actualizaRenovacion(), esRenovacion: true,)));
-          })
+          })*/
         ] : null,
       ),
       body: RefreshIndicator(
@@ -182,7 +182,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
                   child: Container(
                     child: ListTile(
                     leading: Icon(Icons.group,color: Colors.white, size: 40.0,),
-                    title: Text("\nINTEGRANTES: "+integrantes.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
+                    title: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nINTEGRANTES: "+integrantes.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white))),
                     subtitle: Text("IMPORTE: "+importe.toStringAsFixed(2), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70)),
                     //trailing: Text(""),
                     isThreeLine: true,
@@ -239,6 +239,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
           ]
         )
       ),
+      floatingActionButton: listaRenovacion.length == 0 ? null : solicitable ? FloatingActionButton(child: Icon(Icons.person_add, color: Colors.white), backgroundColor: widget.colorTema,onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Grupo Renovación: "+ widget.grupoInfo.nombre, colorTema: widget.colorTema, grupoId: widget.grupoInfo.grupoID, grupoNombre: widget.grupoInfo.nombre, actualizaHome: ()=>actualizaRenovacion(), esRenovacion: true,)));}) : null,
       bottomNavigationBar: InkWell(
         child:  Container(
             child: listaRenovacion.length == 0 ? Padding(padding: EdgeInsets.all(0)) :  solicitable ? Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(

@@ -35,7 +35,7 @@ class _AboutState extends State<About> {
                     child: Container(
                       child: ListTile(
                       //leading: Icon(Icons.group,color: Colors.white, size: 40.0,),
-                      title: Text("\n", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
+                      title: Text("", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
                       subtitle: Center(child: Icon(Icons.info,color: Colors.white, size: 40.0,)),
                       //trailing: Text(""),
                       isThreeLine: true,
@@ -78,14 +78,14 @@ class _AboutState extends State<About> {
       Container(child:
         Center(child: Text("App Asesores desarrollada por Admnistracion Confiable.", style: TextStyle(fontWeight: FontWeight.bold),),),
         padding: EdgeInsets.all(10),
-        color: Color(0xfff2f2f2),
+        //color: Color(0xfff2f2f2),
       ),
       Container(
         child: Center(child:
           Text('''\nAplicación creada para la precaptura de prospectos de clientes, los datos que se registran son los minimos necesarios para realizar la consulta de buró y para la identificación del cliente, dicho proceso se realiza para una posible futura originación.''', textAlign: TextAlign.justify)
         ),
         padding: EdgeInsets.all(10),
-        color: Color(0xfff2f2f2),
+        //color: Color(0xfff2f2f2),
       ),
       Container(child:
         Text("version 1.0."),

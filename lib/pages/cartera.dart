@@ -88,8 +88,8 @@ class _CarteraState extends State<Cartera> {
                   child: Container(
                     child: ListTile(
                     leading: Icon(Icons.assignment,color: Colors.white, size: 40.0,),
-                    title: Text("\nLISTA DE CONTRATOS EN CARTERA: "+listaCartera.length.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
-                    subtitle: Row(children:<Widget>[Text(" ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))]),
+                    title: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nCONTRATOS EN CARTERA: "+listaCartera.length.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white))),
+                    subtitle: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("Mi cartera", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))),
                     //trailing: Text(""),
                     isThreeLine: true,
                     ),

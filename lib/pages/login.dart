@@ -264,6 +264,9 @@ class _LoginState extends State<Login> {
       }
     }catch(e){
       pref.setInt("tipoUsuario",0);
+      pref.setString("name","");
+      pref.setBool("passGenerico", false);
+      pref.setString("documentID","");
     }
 
   }

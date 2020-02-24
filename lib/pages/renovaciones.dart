@@ -95,7 +95,7 @@ class _RenovacionesState extends State<Renovaciones> {
         elevation: 0.0,
         leading: Container(),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.date_range, color: Colors.white), onPressed: ()async{await displayDateRangePicker(context);},)
+          //IconButton(icon: Icon(Icons.date_range, color: Colors.white), onPressed: ()async{await displayDateRangePicker(context);},)
         ],
       ),
       body: RefreshIndicator(
@@ -121,8 +121,8 @@ class _RenovacionesState extends State<Renovaciones> {
                 child: Container(
                   child: ListTile(
                   leading: Icon(Icons.assignment,color: Colors.white, size: 40.0,),
-                  title: Text("\nCONTRATOS PROXIMOS A LIQUIDAR: "+listaRenovacion.length.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
-                  subtitle: Row(children:<Widget>[Icon(Icons.calendar_today, color: Colors.white, size: 10,),  Text(" Consulta del día "+formatDate(startDate, [dd, '/', mm, '/', yyyy])+" al día "+formatDate(endDate, [dd, '/', mm, '/', yyyy]), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))]),
+                  title: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nPROXIMOS A LIQUIDAR: "+listaRenovacion.length.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white))),
+                  subtitle: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children:<Widget>[Icon(Icons.calendar_today, color: Colors.white, size: 10,),  Text(" Consulta del día "+formatDate(startDate, [dd, '/', mm, '/', yyyy])+" al día "+formatDate(endDate, [dd, '/', mm, '/', yyyy]), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))])),
                   //trailing: Text(""),
                   isThreeLine: true,
                   ),
@@ -173,6 +173,7 @@ class _RenovacionesState extends State<Renovaciones> {
           ]
         )
       ),
+      floatingActionButton: FloatingActionButton(child: Icon(Icons.date_range, color: Colors.white), backgroundColor: widget.colorTema,onPressed: ()async{await displayDateRangePicker(context);}),
       bottomNavigationBar: Stack(
         children: <Widget>[
           Row(

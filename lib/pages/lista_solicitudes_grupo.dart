@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
+import 'package:sgcartera_app/components/fancy_fab.dart';
 import 'package:sgcartera_app/pages/home.dart';
 import 'package:sgcartera_app/pages/solicitud.dart' as SolicitudPage;
 import 'package:sgcartera_app/pages/root_page.dart';
@@ -23,13 +24,21 @@ class ListaSolicitudesGrupo extends StatefulWidget {
   _ListaSolicitudesGrupoState createState() => _ListaSolicitudesGrupoState();
 }
 
-class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
+class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo>  with SingleTickerProviderStateMixin  {
   List<Solicitud> solicitudes = List();  
   AuthFirebase authFirebase = new AuthFirebase();
   bool status;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   List<Grupo> gruposAbiertos = List();  
   int userType;
+
+  bool isOpened = false;
+  AnimationController _animationController;
+  Animation<Color> _animateColor;
+  Animation<double> _animateIcon;
+  Animation<double> _translateButton;
+  Curve _curve = Curves.easeOut;
+  double _fabHeight = 56.0;
 
   Future<void> getListDocumentos() async{
     status = widget.grupo.status == 0 ? true : false;
@@ -44,8 +53,61 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
   @override
   void initState() {
     getListDocumentos();
-    // TODO: implement initState
+    
+     _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500))..addListener((){ setState(() {}); });
+    _animateIcon = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+    _animateColor = ColorTween(begin: Color(0xff76BD21), end: Color(0xff76BD21)).animate(CurvedAnimation(parent: _animationController, curve: Interval(0.00, 1.00, curve: Curves.linear)));
+    _translateButton = Tween<double>(begin: _fabHeight, end: -14.0).animate(CurvedAnimation(parent: _animationController, curve: Interval(0.0, 0.75, curve: _curve)));
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  animate(){
+    if(!isOpened){
+      _animationController.forward();
+    }else{
+      _animationController.reverse();
+    }
+    isOpened = !isOpened;
+  }
+
+  Widget add(){
+    return new Container(
+      child: FloatingActionButton(
+        heroTag: "btn3",
+        onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => SolicitudPage.Solicitud(title: "Solicitud Grupal: "+widget.grupo.nombreGrupo, colorTema: widget.colorTema, grupoId: widget.grupo.idGrupo, grupoNombre: widget.grupo.nombreGrupo, actualizaHome: widget.actualizaHome)));},
+        tooltip: 'Agregar Integrante',
+        child: Icon(Icons.person_add),
+        backgroundColor: Color(0xff76BD21),
+      )
+    );
+  }
+
+  Widget image(){
+    return Container(
+      child: FloatingActionButton(
+        heroTag: "btn2",
+        onPressed: (){cerrarGrupo(widget.grupo);},
+        tooltip: 'Cerrar Grupo',
+        child: Icon(Icons.lock),
+        backgroundColor: Color(0xff76BD21),
+      ),
+    );
+  }
+
+  Widget toggle(){
+    return Container(child: FloatingActionButton(
+      heroTag: "btn1",
+      backgroundColor: _animateColor.value,
+      onPressed: animate,
+      tooltip: 'Toggle',
+      child: AnimatedIcon(icon: AnimatedIcons.menu_close, progress: _animateIcon),
+    ));
   }
 
   @override
@@ -60,7 +122,8 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
           centerTitle: true,
           iconTheme: IconThemeData(color: Colors.white),
           elevation: 0.0,
-          actions: status ? <Widget>[
+          actions: <Widget>[]
+          /*status ? <Widget>[
             IconButton(icon: Icon(Icons.lock), onPressed: () {
               cerrarGrupo(widget.grupo);
             },),
@@ -68,7 +131,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
               //cerrarGrupo(widget.grupo);
               Navigator.push(context, MaterialPageRoute(builder: (context) => SolicitudPage.Solicitud(title: "Solicitud Grupal: "+widget.grupo.nombreGrupo, colorTema: widget.colorTema, grupoId: widget.grupo.idGrupo, grupoNombre: widget.grupo.nombreGrupo, actualizaHome: widget.actualizaHome)));
             },)
-          ] : null,
+          ] : null,*/
         ),
         body: Container(
           child: Stack(
@@ -88,7 +151,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
                     child: Container(
                       child: ListTile(
                       //leading: Icon(Icons.assignment,color: Colors.white, size: 40.0,),
-                      title: Text("\n", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
+                      title: Text("", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white)),
                       subtitle: Center(child: Icon(Icons.group,color: Colors.white, size: 40.0,)),
                       //trailing: Text(""),
                       isThreeLine: true,
@@ -122,12 +185,26 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo> {
             ]
           )
         ),
+        floatingActionButton: status ? Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Transform(
+              transform: Matrix4.translationValues(0.0, _translateButton.value * 2.0, 0.0),
+              child: add(),
+            ),
+            Transform(
+              transform: Matrix4.translationValues(0.0, _translateButton.value * 1.0, 0.0),
+              child: image(),
+            ),
+            toggle()
+          ]
+        ) : Container(),
         bottomNavigationBar: InkWell(
           child:  Container(
               child: ListTile(
                 leading: Icon(Icons.group, color: Colors.white,size: 40.0,),
-                title: Row(children: <Widget>[Icon(Icons.error, color: status ? Colors.yellow : Colors.green,),Text(" Este grupo esta en status "+(status ? "Abierto" : "Cerrado"), style: TextStyle(color: Colors.white))],),
-                subtitle: status ? Row(children: <Widget>[Text("Da click en ", style: TextStyle(color: Colors.white)), Icon(Icons.lock, color: Colors.white,), Text(" para cerrar el grupo", style: TextStyle(color: Colors.white))],) : Text(""),
+                title: Row(children: <Widget>[Icon(Icons.error, color: status ? Colors.yellow : Colors.white,),Text(" Este grupo esta en status "+(status ? "Abierto" : "Cerrado"), style: TextStyle(color: Colors.white))],),
+                subtitle: status ? Row(children: <Widget>[Text("En ", style: TextStyle(color: Colors.white)), Icon(Icons.menu, color: Colors.white,),Text(" da click en ", style: TextStyle(color: Colors.white)), Icon(Icons.lock, color: Colors.white,), Text(" para cerrar el grupo", style: TextStyle(color: Colors.white))],) : Text(""),
               ),
               color: widget.colorTema
             ),

@@ -122,12 +122,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
           Divider(),*/
           InkWell(
             onTap: (){
-              _logOut();
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));
+              if(widget.sincManual){
+                _logOut();
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: widget.authFirebase, colorTema: widget.colorTema,)));
+              }
             },
             child: ListTile(
-              title: Text("CERRAR SESIÓN", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-              leading: Icon(Icons.exit_to_app, color: Colors.red,),
+              title: Text(widget.sincManual ? "CERRAR SESIÓN" : "SINCRONIZANDO ...", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+              leading: widget.sincManual ? Icon(Icons.exit_to_app, color: Colors.red,) : CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),),
             ),
           ),
           InkWell(
