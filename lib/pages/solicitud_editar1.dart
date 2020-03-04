@@ -184,7 +184,7 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
               maxLength: 40,
               style: TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
-                labelText: "Delegación/Municipio",
+                labelText: "Municipio/Delegación",
                 fillColor: Color(0xfff2f2f2),
                 filled: true,
                 border: new OutlineInputBorder(
@@ -198,7 +198,7 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
                 if (municipio.text != value.toUpperCase())
                   municipio.value = municipio.value.copyWith(text: value.toUpperCase());
               },
-              validator: (value){return value.isEmpty && ciudad.text.isEmpty ? "Ingresa la delegación o municipio" : null;},
+              validator: (value){return value.isEmpty && ciudad.text.isEmpty ? "Ingresa el municipio o delegación" : null;},
             )
           )
         ]

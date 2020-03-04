@@ -441,7 +441,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
         fechaCaptura: DateTime.now().millisecondsSinceEpoch
       );
 
-      await ServiceRepositorySolicitudes.addSolicitud(solicitud).then((_) async{
+      await ServiceRepositorySolicitudes.addSolicitud(solicitud).then((id) async{
 
         if(widget.datos.grupoId != null){
           if(!widget.esRenovacion){
@@ -454,7 +454,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
           final int _idD = await ServiceRepositoryDocumentosSolicitud.documentosSolicitudCount();
           final DocumentoSolicitud documentoSolicitud = new DocumentoSolicitud(
             idDocumentoSolicitud: _idD + 1,
-            idSolicitud: solicitud.idSolicitud,
+            idSolicitud: id,
             tipo: doc['tipo'],
             documento: docArchivos.firstWhere((archivo) => archivo.tipo == doc['tipo']).archivo.path,
             version: doc['version']

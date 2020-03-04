@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage> {
     print("******** "+this.mounted.toString()+"**********");
     
     ultimos = await ServiceRepositorySolicitudes.getLastSolicitudes(userID);
-    print(ultimos);
+    print("ultimos "+ultimos.length.toString());
     changePass = pref.getBool("passGenerico");
     if(changePass == null){changePass = false;}
     
@@ -88,19 +88,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   sincronizarInfo()async{
-    sincManual = false;
+    /*sincManual = false;
     await sincroniza.sincronizaDatos();
     actualizaInfo();
     sincManual = true;
-    print("Sincronización Realizada: "+DateTime.now().toString());
+    print("Sincronización Realizada: "+DateTime.now().toString());*/
     const oneSec = const Duration(seconds:600);
     new Timer.periodic(oneSec, (Timer t)async{
       if(this.mounted){
-        sincManual = false;
-        await sincroniza.sincronizaDatos();
-        actualizaInfo();
-        sincManual = true;
-        print("Sincronización Realizada: "+DateTime.now().toString());
+        if(!abs){
+          sincManual = false;
+          await sincroniza.sincronizaDatos();
+          actualizaInfo();
+          sincManual = true;
+          print("Sincronización Programada Realizada: "+DateTime.now().toString());
+        }
       }else{
         t.cancel();
       }
@@ -178,7 +180,7 @@ class _HomePageState extends State<HomePage> {
                     await sincroniza.sincronizaDatos();
                     actualizaInfo();
                     //sincManual = true;
-                    print("Sincronización Realizada: "+DateTime.now().toString());
+                    print("Sincronización Manual Realizada: "+DateTime.now().toString());
                   }else{
                     showSnackBar("Atención: El proceso de sincronizaición esta en curso, por favor espera un momento.", Colors.red);
                   }

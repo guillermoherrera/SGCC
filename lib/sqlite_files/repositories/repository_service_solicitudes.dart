@@ -97,7 +97,7 @@ class ServiceRepositorySolicitudes{
     return solicitudes;
   }
 
-  static Future<void> addSolicitud(Solicitud solicitud) async{
+  static Future<int> addSolicitud(Solicitud solicitud) async{
     final sql = '''INSERT INTO ${DataBaseCreator.solicitudesTable}(
       ${DataBaseCreator.importe},
       ${DataBaseCreator.nombrePrimero},
@@ -151,6 +151,7 @@ class ServiceRepositorySolicitudes{
 
     final result = await db.rawInsert(sql);
     DataBaseCreator.dataBaseLog("agregar Solcitud", sql, null, result);
+    return result;
   }
 
   static Future<void> addSolicitudCambio(Solicitud solicitud) async{
@@ -225,7 +226,7 @@ class ServiceRepositorySolicitudes{
       ${DataBaseCreator.id_grupo} = ${solicitud.idGrupo},
       ${DataBaseCreator.nombre_Grupo} = "${solicitud.nombreGrupo}",
       ${DataBaseCreator.userID} = "${solicitud.userID}",
-      ${DataBaseCreator.status} = ${solicitud.status},
+      
       ${DataBaseCreator.tipoContrato} = ${solicitud.tipoContrato},
 
       ${DataBaseCreator.direccion1} = "${solicitud.direccion1}",

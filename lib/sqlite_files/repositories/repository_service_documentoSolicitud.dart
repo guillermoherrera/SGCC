@@ -67,7 +67,7 @@ class ServiceRepositoryDocumentosSolicitud{
 
   static Future<void> addDocumentoSolicitud(DocumentoSolicitud documentoSolicitud) async{
     final sql = '''INSERT INTO ${DataBaseCreator.documentoSolicitudesTable}(
-      ${DataBaseCreator.idDocumentoSolicitudes},
+      
       ${DataBaseCreator.id_Solicitud},
       ${DataBaseCreator.tipoDocumento},
       ${DataBaseCreator.documento},
@@ -75,7 +75,7 @@ class ServiceRepositoryDocumentosSolicitud{
       ${DataBaseCreator.cambioDoc},
       ${DataBaseCreator.observacionCambio}
     )values(
-      ${documentoSolicitud.idDocumentoSolicitud},
+      
       ${documentoSolicitud.idSolicitud},
       ${documentoSolicitud.tipo},
       "${documentoSolicitud.documento}",

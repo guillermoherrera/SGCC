@@ -124,6 +124,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
         elevation: 0.0,
+        leading: Container(),
       ),
       body: Form(
         key: formKey,
@@ -610,7 +611,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
       curpStr = curpStr + fechaNacimiento.text[0] +fechaNacimiento.text [1];
     }
 
-    curp.text = curpStr;
+    if(curp.text.length < 18) curp.text = curpStr;
     rfc.text = curpStr;
   }
 }

@@ -34,6 +34,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     name = pref.getString("name");
     fechaSinc = pref.getString("fechaSinc");
     sinc = pref.getBool("Sinc");
+    if(sinc == null){sinc = true;};
     setState(() {});
   }
   
@@ -140,7 +141,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           )
         ],
-      ),),Text(fechaSinc != null ? "Ultima Sincronización: "+fechaSinc : "", style: TextStyle(color: sinc ? Colors.black38 : Colors.red[200], fontWeight: FontWeight.bold))])
+      ),),Text(fechaSinc != null ? "Ultima Sincronización: "+fechaSinc : "", style: TextStyle(color: sinc == true ? Colors.black38 : Colors.red[200], fontWeight: FontWeight.bold))])
     ));
   }
 
