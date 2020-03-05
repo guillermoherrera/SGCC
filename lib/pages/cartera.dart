@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_container/responsive_container.dart';
+import 'package:sgcartera_app/classes/consulta_cartera.dart';
+import 'package:sgcartera_app/models/responses.dart';
 import 'package:sgcartera_app/pages/carteraDetalle.dart';
 
 import 'mis_solicitudes.dart';
@@ -15,9 +17,10 @@ class Cartera extends StatefulWidget {
 }
 
 class _CarteraState extends State<Cartera> {
-  List<String> listaCartera = List();
+  List<Contrato> listaCartera = List();
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
   String mensaje = "Cargando ...🕔";
+  ConsultaCartera consultaCartera = new ConsultaCartera();
 
   @override
   void initState() {
@@ -27,9 +30,22 @@ class _CarteraState extends State<Cartera> {
 
   getListDocumentos()async{
     await Future.delayed(Duration(seconds:1));
-    listaCartera.clear();
-    for(var i = 0; i <= 5; i++){
-      listaCartera.add((i+1).toString());
+    ContratosRequest contratosRequest;
+    contratosRequest = await consultaCartera.consultaContratos();
+    if(contratosRequest.result){
+      listaCartera.clear();
+      for(var i = 0; i < contratosRequest.contratosCant ; i++){
+        Contrato contrato = new Contrato(
+          contratoId: contratosRequest.contratos[i].contratoId,
+          nombreGeneral: contratosRequest.contratos[i].nombreGeneral,
+          fechaTermina: contratosRequest.contratos[i].fechaTermina
+        );
+        listaCartera.add(contrato);
+      }
+      //someObjects.sort((a, b) => a.someProperty.compareTo(b.someProperty));
+      listaCartera.sort((a,b) => a.nombreGeneral.compareTo(b.nombreGeneral));
+    }else{
+      mensaje = contratosRequest.mensaje;
     }
     setState(() {
       
@@ -125,7 +141,8 @@ class _CarteraState extends State<Cartera> {
                 )),
               ),
               listaCartera.length > 0 ? Expanded(child:carteraLista()) : Expanded(child: ListView())*/
-            ],)
+            ],),
+            listaCartera.length > 0 ? Container() : ListView()
           ]
         )
       ),
@@ -205,8 +222,8 @@ class _CarteraState extends State<Cartera> {
             child: Container(
               child: ListTile(
                 leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.group, color: widget.colorTema,size: 40.0,)]),
-                title: Text("LAS PAGADORAS " + listaCartera[index], style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text("Contrato: 12345" + listaCartera[index]),
+                title: Text(listaCartera[index].nombreGeneral, style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text("Contrato: "+ listaCartera[index].contratoId.toString()),
                 isThreeLine: true,
                 trailing: Column(children: <Widget>[ Icon(Icons.arrow_forward_ios)], mainAxisAlignment: MainAxisAlignment.center,),
               ),
@@ -218,7 +235,7 @@ class _CarteraState extends State<Cartera> {
               ),
             )
           ),
-          onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> CarteraDetalle(colorTema: widget.colorTema, title: "LAS PAGADORAS " + listaCartera[index], contrato: 123450+index+1,)));},
+          onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> CarteraDetalle(colorTema: widget.colorTema, title: listaCartera[index].nombreGeneral, contrato: listaCartera[index].contratoId,)));},
         );
       }
     );

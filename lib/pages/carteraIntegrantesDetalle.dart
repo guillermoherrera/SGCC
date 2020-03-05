@@ -1,47 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/consulta_cartera.dart';
 import 'package:sgcartera_app/models/responses.dart';
-import 'package:sgcartera_app/pages/carteraIntegrantes.dart';
 
-class CarteraDetalle extends StatefulWidget {
-  CarteraDetalle({this.colorTema, this.title, this.contrato});
+class CarteraIntegranteDetalle extends StatefulWidget {
   final Color colorTema;
   final String title;
-  final int contrato;
+  final Integrante integrante;
+  final Contrato contratoGpo;
+  CarteraIntegranteDetalle({this.colorTema, this.title, this.integrante, this.contratoGpo});
   @override
-  _CarteraDetalleState createState() => _CarteraDetalleState();
+  _CarteraIntegranteDetalleState createState() => _CarteraIntegranteDetalleState();
 }
 
-class _CarteraDetalleState extends State<CarteraDetalle> {
+class _CarteraIntegranteDetalleState extends State<CarteraIntegranteDetalle> {
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
   bool isData = false;
   ConsultaCartera consultaCartera = new ConsultaCartera();
   Widget cargando = Padding(padding: EdgeInsets.all(2), child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)));
-  ContratoDetalleRequest contratoDRequest;
-  Contrato contrato;
-
-  @override
-  void initState() {
-    getInfo();
-    super.initState();
-  }
+  IntegranteDetalleRequest integranteDetalleRequest;
+  Integrante integrante;
 
   getInfo()async{
     await Future.delayed(Duration(seconds:1));
-    contratoDRequest = await consultaCartera.consultaContratoDetalle(widget.contrato);
-    if(contratoDRequest.result){
+    integranteDetalleRequest = await consultaCartera.consultaIntegranteDetalle(widget.contratoGpo.contratoId, widget.integrante.cveCliente);
+    if(integranteDetalleRequest.result){
       isData = true;
-      contratoDRequest.contrato.nombreGeneral = widget.title;
-      contratoDRequest.contrato.contratoId = widget.contrato;
-      contrato = contratoDRequest.contrato;
+      integrante = integranteDetalleRequest.integrante;
     }else{
       cargando = Column(children:[
         Icon(Icons.perm_scan_wifi ,color: Colors.white, size: 40.0,),
         Text("Error al obtener Datos.", style: TextStyle(color: Colors.white),)
       ]);
-      //Icon(Icons.signal_wifi_off ,color: Colors.white, size: 40.0,);
     }
     setState(() {});
+  }
+  
+  @override
+  void initState() {
+    getInfo();
+    super.initState();
   }
 
   @override
@@ -116,13 +113,6 @@ class _CarteraDetalleState extends State<CarteraDetalle> {
           ]
         )
       ),
-      floatingActionButton: isData ? FloatingActionButton(
-        child: Icon(Icons.list, color: Colors.white),
-        backgroundColor: widget.colorTema,onPressed: ()async{
-          Navigator.push(context, MaterialPageRoute(builder: (context) => CarteraIntegrantes(colorTema: widget.colorTema, grupoInfo: contratoDRequest)));
-          //await Navigator.push(context, MaterialPageRoute(builder: (context) =>  RenovacionMonto(renovacion: listaRenovacion[index], colorTema: widget.colorTema, index: index, montoChange: montoChange)));
-        }
-      ) : null,
     );
   }
 
@@ -135,7 +125,7 @@ class _CarteraDetalleState extends State<CarteraDetalle> {
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               Text("Cartera", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40)),
-              Text("Fecha Termino: "+(isData ? contrato.fechaTermina.substring(0, 10) : "**/**/**")+"\nFecha Inicio: "+(isData ? contrato.fechaInicio.substring(0, 10) : "**/**/**"), style: TextStyle(color: Colors.grey, fontSize: 16.0),)
+              Text("Fecha Termino: "+(isData ? integrante.fechaTermina.substring(0, 10) : "**/**/**")+"\nFecha Ultimo Pago: "+(isData ? integrante.fechaUltimoPago.substring(0, 10) : "**/**/**"), style: TextStyle(color: Colors.grey, fontSize: 16.0),)
             ],
           ),
         ),
@@ -145,32 +135,32 @@ class _CarteraDetalleState extends State<CarteraDetalle> {
             children: [
               TableRow(
                 children: [
-                  Container(padding: EdgeInsets.only(bottom: 5),child: Text("Contrato ", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold, color: Colors.grey))),
-                  Align(child:Text(widget.contrato.toString(), style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),alignment: Alignment.centerRight),
+                  Container(padding: EdgeInsets.only(bottom: 5),child: Text("Cliente ", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold, color: Colors.grey))),
+                  Align(child:Text(widget.integrante.cveCliente, style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),alignment: Alignment.centerRight),
                 ]
               ),
               TableRow(
                 children: [
-                  Container(padding: EdgeInsets.only(bottom: 5),child: Text("Importe Total ", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold, color: Colors.grey))),
-                  Align(child:Text(isData ? "\$"+contrato.importe.toStringAsFixed(2): "\$*,*.*", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),alignment: Alignment.centerRight),
+                  Container(padding: EdgeInsets.only(bottom: 5),child: Text("Importe ", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold, color: Colors.grey))),
+                  Align(child:Text(isData ? "\$"+integrante.importe.toStringAsFixed(2): "\$*,*.*", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),alignment: Alignment.centerRight),
                 ]
               ),
               TableRow(
                 children: [
                   Container(padding: EdgeInsets.only(bottom: 5),child: Text("Saldo Actual ", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold, color: Colors.grey))),
-                  Align(child:Text(isData ? "\$"+contrato.saldoActual.toStringAsFixed(2) : "\$*,*.*", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),alignment: Alignment.centerRight),
+                  Align(child:Text(isData ? "\$"+integrante.saldoActual.toStringAsFixed(2) : "\$*,*.*", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),alignment: Alignment.centerRight),
                 ]
               ),
               TableRow(
                 children: [
                   Container(padding: EdgeInsets.only(bottom: 5),child: Text("Saldo Atrasado ", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold, color: Colors.grey))),
-                  Align(child:Text(isData ? "\$"+contrato.saldoAtrazado.toStringAsFixed(2) : "\$*,*.*", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),alignment: Alignment.centerRight),
+                  Align(child:Text(isData ? "\$"+integrante.saldoAtrazado.toStringAsFixed(2) : "\$*,*.*", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),alignment: Alignment.centerRight),
                 ]
               ),
               TableRow(
                 children: [
                   Container(padding: EdgeInsets.only(bottom: 5),child: Text("Días Atraso ", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold, color: Colors.grey))),
-                  Align(child:Text(isData ? contrato.diasAtrazo.toString() : "*", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),alignment: Alignment.centerRight),
+                  Align(child:Text(isData ? integrante.diasAtrazo.toString() : "*", style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),alignment: Alignment.centerRight),
                 ]
               ),
             ]
@@ -190,14 +180,14 @@ class _CarteraDetalleState extends State<CarteraDetalle> {
               child:  Padding(
                 padding: EdgeInsets.all(25.0),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start ,children: <Widget>[
-                  SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text(isData ? "\$"+contrato.pagoXPlazo.toStringAsFixed(2) : "\$*,*.*", style: TextStyle(fontSize: 30.0))),
-                  Text("Pago plazo", style: TextStyle(color: widget.colorTema, fontSize: 15)),
+                  SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text(isData ? integrante.noCda.toString() : "*", style: TextStyle(fontSize: 30.0))),
+                  Text("No. Corrida", style: TextStyle(color: widget.colorTema, fontSize: 15)),
                   Text(""),
-                  Text(isData ? contrato.ultimoPagoPlazo.toString() : "*", style: TextStyle(fontSize: 20.0)),
-                  Text("Plazo actual", style: TextStyle(color: widget.colorTema, fontSize: 15)),
+                  Text(isData ? integrante.folio.toString() : "*", style: TextStyle(fontSize: 20.0)),
+                  Text("Folio", style: TextStyle(color: widget.colorTema, fontSize: 15)),
                   Text(""),
-                  Text(isData ? contrato.plazos.toString() : "**", style: TextStyle(fontSize: 20.0)),
-                  Text("Plazos", style: TextStyle(color: widget.colorTema, fontSize: 15)),
+                  Text(isData ? integrante.pagos.toString() : "**", style: TextStyle(fontSize: 20.0)),
+                  Text("Pagos", style: TextStyle(color: widget.colorTema, fontSize: 15)),
                   /*Text(""),
                   Text(isData ? contrato.integrantesCant.toString() : "*", style: TextStyle(fontSize: 20.0)),
                   Text("Integrantes", style: TextStyle(color: widget.colorTema, fontSize: 15)),*/
@@ -214,14 +204,14 @@ class _CarteraDetalleState extends State<CarteraDetalle> {
               child:  Padding(
                 padding: EdgeInsets.all(25.0),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start ,children: <Widget>[
-                  SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text(isData ? "\$"+contrato.capital.toStringAsFixed(2) : "\$*,*.*", style: TextStyle(fontSize: 30.0))),
+                  SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text(isData ? "\$"+integrante.capital.toStringAsFixed(2) : "\$*,*.*", style: TextStyle(fontSize: 30.0))),
                   Text("Capital", style: TextStyle(color: widget.colorTema, fontSize: 15)),
                   Text(""),
-                  Text(isData ? "\$"+contrato.interes.toStringAsFixed(2) : "\$*,*.*", style: TextStyle(fontSize: 20.0)),
+                  Text(isData ? "\$"+integrante.interes.toStringAsFixed(2) : "\$*,*.*", style: TextStyle(fontSize: 20.0)),
                   Text("Interes", style: TextStyle(color: widget.colorTema, fontSize: 15)),
                   Text(""),
-                  Text(isData ? contrato.integrantesCant.toString() : "*", style: TextStyle(fontSize: 20.0)),
-                  Text("Integrantes", style: TextStyle(color: widget.colorTema, fontSize: 15)),
+                  Text(widget.integrante.telefono.toString(), style: TextStyle(fontSize: 20.0)),
+                  Text("Teléfono", style: TextStyle(color: widget.colorTema, fontSize: 15)),
                   /*Text(""),
                   Text(isData ? contrato.status.toString() : "\$*,*.*", style: TextStyle(fontSize: 20.0)),
                   Text("Status", style: TextStyle(color: widget.colorTema, fontSize: 15)),
