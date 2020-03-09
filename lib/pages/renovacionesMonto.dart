@@ -206,7 +206,7 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
             ),
             TableRow(
               children: [
-                Container(padding: EdgeInsets.only(bottom: 5),child: Text("DÍAS DE ATRASO: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
+                Container(padding: EdgeInsets.only(bottom: 5),child: Text("DÍAS/ATRASO ACUMULADO: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))),
                 Text(widget.renovacion.diasAtraso.toString()),
               ]
             ),

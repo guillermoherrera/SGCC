@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:responsive_container/responsive_container.dart';
+import 'package:sgcartera_app/classes/consulta_cartera.dart';
 import 'package:sgcartera_app/models/grupo_renovacion.dart';
+import 'package:sgcartera_app/models/responses.dart';
 import 'package:sgcartera_app/pages/renovacionesDetalle.dart';
 
 import 'cartera.dart';
@@ -19,11 +21,13 @@ class Renovaciones extends StatefulWidget {
 }
 
 class _RenovacionesState extends State<Renovaciones> {
-  List<GrupoRenovacion> listaRenovacion = List();
+  //List<GrupoRenovacion> listaRenovacion = List();
+  List<Contrato> listaRenovacion = List();
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now().add(Duration(days: 7));
   String mensaje = "Cargando ...🕔";
+  ConsultaCartera consultaCartera = new ConsultaCartera();
 
   Future displayDateRangePicker(BuildContext context)async{
     final List<DateTime> picked = await DateRagePicker.showDatePicker(
@@ -39,6 +43,7 @@ class _RenovacionesState extends State<Renovaciones> {
       });
       print(picked);
       setState((){
+        mensaje = "Cargando ...🕔";
         startDate = picked[0];
         endDate = picked[1];
         getListDocumentos();
@@ -54,7 +59,26 @@ class _RenovacionesState extends State<Renovaciones> {
 
   getListDocumentos()async{
     await Future.delayed(Duration(seconds:1));
-    listaRenovacion.clear();
+    ContratosRequest contratosRequest;
+    contratosRequest = await consultaCartera.consultaContratosR(formatDate(startDate, [dd, '/', mm, '/', yyyy]), formatDate(endDate, [dd, '/', mm, '/', yyyy]));
+    if(contratosRequest.result){
+      listaRenovacion.clear();
+      mensaje = "Consulta sin resultados.";//"Consulta del día "+formatDate(startDate, [dd, '/', mm, '/', yyyy])+" al día "+formatDate(endDate, [dd, '/', mm, '/', yyyy])+" sin resultados.";
+      for(var i = 0; i < contratosRequest.contratosCant ; i++){
+        Contrato contrato = new Contrato(
+          status: contratosRequest.contratos[i].status,
+          contratoId: contratosRequest.contratos[i].contratoId,
+          nombreGeneral: contratosRequest.contratos[i].nombreGeneral,
+          fechaTermina: contratosRequest.contratos[i].fechaTermina
+        );
+        listaRenovacion.add(contrato);
+      }
+      //someObjects.sort((a, b) => a.someProperty.compareTo(b.someProperty));
+      //listaRenovacion.sort((a,b) => a.nombreGeneral.compareTo(b.nombreGeneral));
+    }else{
+      mensaje = contratosRequest.mensaje;
+    }
+    /*listaRenovacion.clear();
     for(var i = 0; i <= 14; i++){
       GrupoRenovacion grupoRenovacion = new GrupoRenovacion(
         nombre: "LAS PODEROSAS "+ (i+1).toString(),
@@ -62,7 +86,7 @@ class _RenovacionesState extends State<Renovaciones> {
         grupoID: 400+i 
       );
       listaRenovacion.add(grupoRenovacion);
-    }
+    }*/
     setState(() {});
   }
 
@@ -121,7 +145,7 @@ class _RenovacionesState extends State<Renovaciones> {
                 child: Container(
                   child: ListTile(
                   leading: Icon(Icons.assignment,color: Colors.white, size: 40.0,),
-                  title: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nPROXIMOS A LIQUIDAR: "+listaRenovacion.length.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white))),
+                  title: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nCONTRATOS A TERMINAR: "+listaRenovacion.length.toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white))),
                   subtitle: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children:<Widget>[Icon(Icons.calendar_today, color: Colors.white, size: 10,),  Text(" Consulta del día "+formatDate(startDate, [dd, '/', mm, '/', yyyy])+" al día "+formatDate(endDate, [dd, '/', mm, '/', yyyy]), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))])),
                   //trailing: Text(""),
                   isThreeLine: true,
@@ -250,8 +274,8 @@ class _RenovacionesState extends State<Renovaciones> {
             child: Container(
               child: ListTile(
                 leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.group, color: widget.colorTema,size: 40.0,)]),
-                title: Text(listaRenovacion[index].nombre, style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text("Fecha termino: " + formatDate(listaRenovacion[index].fechaTermino, [dd, '/', mm, '/', yyyy])),
+                title: Text(listaRenovacion[index].nombreGeneral, style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text("Contrato: " + listaRenovacion[index].contratoId.toString()+" | Status: " + listaRenovacion[index].status.toString()+"\nFecha termino: " + listaRenovacion[index].fechaTermina.substring(0, 10)),
                 isThreeLine: true,
                 trailing: Column(children: <Widget>[ Icon(Icons.arrow_forward_ios)], mainAxisAlignment: MainAxisAlignment.center,),
               ),

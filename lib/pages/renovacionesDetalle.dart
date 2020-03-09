@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_container/responsive_container.dart';
+import 'package:sgcartera_app/classes/consulta_cartera.dart';
 import 'package:sgcartera_app/models/grupo_renovacion.dart';
 import 'package:sgcartera_app/models/renovacion.dart';
+import 'package:sgcartera_app/models/responses.dart';
 import 'package:sgcartera_app/pages/renovacionesMonto.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/renovaciones.dart' as SqliteRenovaciones;
@@ -17,7 +19,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class RenovacionesDetalle extends StatefulWidget {
   RenovacionesDetalle({this.colorTema, this.grupoInfo, this.actualizaHome});
   final Color colorTema;
-  final GrupoRenovacion grupoInfo;
+  //final GrupoRenovacion grupoInfo;
+  final Contrato grupoInfo;
   final VoidCallback actualizaHome;
   @override
   _RenovacionesDetalleState createState() => _RenovacionesDetalleState();
@@ -37,6 +40,11 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
   bool solicitable = true;
   String userID;
   Firestore _firestore = Firestore.instance;
+  ContratoDetalleRequest contratoDRequest;
+  Contrato contrato;
+  ConsultaCartera consultaCartera = new ConsultaCartera();
+  bool isData = false;
+  Widget cargando = Padding(padding: EdgeInsets.all(2), child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)));
 
   @override
   void initState() {
@@ -48,7 +56,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
     final pref = await SharedPreferences.getInstance();
     userID = pref.getString("uid");
     await Future.delayed(Duration(seconds:1));
-    listaRenEspera = await ServiceRepositoryRenovaciones.getRenovacionesFromGrupo(widget.grupoInfo.grupoID);
+    listaRenEspera = await ServiceRepositoryRenovaciones.getRenovacionesFromGrupo(widget.grupoInfo.contratoId);
     if(listaRenEspera.length > 0){
       solicitable = false;
       listaRenovacion.clear();
@@ -71,12 +79,12 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
     }else{
       Query q;
       QuerySnapshot querySnapshot;
-      q = _firestore.collection("GruposRenovacion").where('grupo_id', isEqualTo: widget.grupoInfo.grupoID);
+      q = _firestore.collection("GruposRenovacion").where('grupo_id', isEqualTo: widget.grupoInfo.contratoId);
       try{
         querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
       }catch(e){
         solicitable = false;
-        mensaje = "Revisa tu conexión.";
+        mensaje = "Error al consultar datos.";
       }
       if(querySnapshot.documents.length > 0){
         importe = querySnapshot.documents[0].data['importe'];
@@ -84,33 +92,45 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
         mensaje = "Renovacion solicitada previamente";
         solicitable = false;
       }else{
-        listaRenovacion.clear();
-        inputs.clear();
-        for(var i = 0; i <= 5; i++){
-          List<String> nombres = ["MARIA TORRES", "PATRICIA SOSA", "LUCIA MORALES", "ANA PEREZ", "LUISA ZAPATA", "MARIA PEREZ"];
-          RenovacionObj renovacion = new RenovacionObj(
-            creditoID: 100+i, 
-            clienteID: 1000+i,
-            nombre: nombres[i],
-            importe: 1000.0 + (i*500),
-            capital: 100.0 + (i*500),
-            diasAtraso: i, 
-            beneficios: i%2 == 0 ? [{"cveBeneficio":"A"}] : null,
-            importeHistorico: 1000.0+(i*500)
-          );
-          listaRenovacion.add(renovacion);
-          listaRenEnviar.add(renovacion);
-          inputs.add(true);
+        
+        contratoDRequest = await consultaCartera.consultaContratoDetalle(widget.grupoInfo.contratoId);
+        if(contratoDRequest.result){
+          solicitable = contratoDRequest.contrato.renovado ? false : true;
+          isData = true;
+          contratoDRequest.contrato.nombreGeneral = widget.grupoInfo.nombreGeneral;
+          contratoDRequest.contrato.contratoId = widget.grupoInfo.contratoId;
+          contrato = contratoDRequest.contrato;
+
+          listaRenovacion.clear();
+          inputs.clear();
+          for(var i = 0; i < contratoDRequest.integrantes.length; i++){
+            RenovacionObj renovacion = new RenovacionObj(
+              creditoID: contratoDRequest.integrantes[i].noCda, 
+              clienteID: contratoDRequest.integrantes[i].cveCliente,
+              nombre: contratoDRequest.integrantes[i].nombreCompleto,
+              importe: contratoDRequest.integrantes[i].capital,
+              capital: contratoDRequest.integrantes[i].capital,
+              diasAtraso: contratoDRequest.integrantes[i].diasAtrazo, 
+              beneficios: i%2 == 0 ? [{"cveBeneficio":"A"}] : null,
+              importeHistorico: contratoDRequest.integrantes[i].importe
+            );
+            listaRenovacion.add(renovacion);
+            listaRenEnviar.add(renovacion);
+            inputs.add(true);
+          }
+          await getListNewDocumentos();
+          await getSuma();
+        }else{
+          solicitable = false;
+          mensaje = "Error al consultar datos.";
         }
-        await getListNewDocumentos();
-        await getSuma();
       }
     }
     setState(() {});
   }
 
   Future<void> getListNewDocumentos() async{
-    solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, widget.grupoInfo.nombre);
+    solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, widget.grupoInfo.nombreGeneral);
     solicitudes.forEach((f){
       RenovacionObj renovacion = new RenovacionObj(
         creditoID: f.idSolicitud, 
@@ -150,7 +170,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(widget.grupoInfo.nombre, style: TextStyle(color: Colors.white)),
+        title: Text(widget.grupoInfo.nombreGeneral, style: TextStyle(color: Colors.white)),
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
         elevation: 0.0,
@@ -239,7 +259,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
           ]
         )
       ),
-      floatingActionButton: listaRenovacion.length == 0 ? null : solicitable ? FloatingActionButton(child: Icon(Icons.person_add, color: Colors.white), backgroundColor: widget.colorTema,onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Grupo Renovación: "+ widget.grupoInfo.nombre, colorTema: widget.colorTema, grupoId: widget.grupoInfo.grupoID, grupoNombre: widget.grupoInfo.nombre, actualizaHome: ()=>actualizaRenovacion(), esRenovacion: true,)));}) : null,
+      floatingActionButton: listaRenovacion.length == 0 ? null : solicitable ? FloatingActionButton(child: Icon(Icons.person_add, color: Colors.white), backgroundColor: widget.colorTema,onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Solicitud(title: "Grupo Renovación: "+ widget.grupoInfo.nombreGeneral, colorTema: widget.colorTema, grupoId: widget.grupoInfo.contratoId, grupoNombre: widget.grupoInfo.nombreGeneral, actualizaHome: ()=>actualizaRenovacion(), esRenovacion: true,)));}) : null,
       bottomNavigationBar: InkWell(
         child:  Container(
             child: listaRenovacion.length == 0 ? Padding(padding: EdgeInsets.all(0)) :  solicitable ? Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
@@ -304,7 +324,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
                   onChanged: (bool val){
                     itemChange(val, index);
                   },
-                ) : IconButton(icon: Icon(Icons.done), onPressed: (){}),
+                ) : IconButton(icon: Icon(Icons.person), onPressed: (){}),
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -350,7 +370,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.error, color: Colors.yellow, size: 100.0,),
-                Text(".\n\n¿Desea solicitar la renovación del grupo "+widget.grupoInfo.nombre+"?"),
+                Text(".\n\n¿Desea solicitar la renovación del grupo "+widget.grupoInfo.nombreGeneral+"?"),
               ],
             ),
             actions: <Widget>[
@@ -389,8 +409,8 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
     try{
       
       final Grupo grupo = new Grupo(
-        idGrupo: widget.grupoInfo.grupoID ,
-        nombreGrupo: widget.grupoInfo.nombre,
+        idGrupo: widget.grupoInfo.contratoId ,
+        nombreGrupo: widget.grupoInfo.nombreGeneral,
         status: 4,
         userID: userID,
         cantidad: integrantes,
@@ -405,8 +425,8 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
             idRenov = idRenov + 1;
             final SqliteRenovaciones.Renovacion renovacion = new SqliteRenovaciones.Renovacion(
               idRenovacion: idRenov,
-              idGrupo: widget.grupoInfo.grupoID,
-              nombreGrupo: widget.grupoInfo.nombre,
+              idGrupo: widget.grupoInfo.contratoId,
+              nombreGrupo: widget.grupoInfo.nombreGeneral,
               creditoID: f.creditoID,
               clienteID: f.clienteID == null ? null : f.clienteID,
               nombreCompleto: f.nombre,

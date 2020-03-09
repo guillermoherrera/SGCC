@@ -1,6 +1,6 @@
 class RenovacionObj{
   int creditoID;
-  int clienteID;
+  String clienteID;
   String nombre;
   double importe;
   double capital; 

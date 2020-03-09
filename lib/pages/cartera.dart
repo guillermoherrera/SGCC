@@ -36,6 +36,7 @@ class _CarteraState extends State<Cartera> {
       listaCartera.clear();
       for(var i = 0; i < contratosRequest.contratosCant ; i++){
         Contrato contrato = new Contrato(
+          status: contratosRequest.contratos[i].status,
           contratoId: contratosRequest.contratos[i].contratoId,
           nombreGeneral: contratosRequest.contratos[i].nombreGeneral,
           fechaTermina: contratosRequest.contratos[i].fechaTermina
@@ -223,7 +224,7 @@ class _CarteraState extends State<Cartera> {
               child: ListTile(
                 leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.group, color: widget.colorTema,size: 40.0,)]),
                 title: Text(listaCartera[index].nombreGeneral, style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text("Contrato: "+ listaCartera[index].contratoId.toString()),
+                subtitle: Text("Contrato: "+ listaCartera[index].contratoId.toString()+"\nStatus: "+ listaCartera[index].status.toString()),
                 isThreeLine: true,
                 trailing: Column(children: <Widget>[ Icon(Icons.arrow_forward_ios)], mainAxisAlignment: MainAxisAlignment.center,),
               ),

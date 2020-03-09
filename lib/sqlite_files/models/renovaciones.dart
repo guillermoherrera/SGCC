@@ -5,7 +5,7 @@ class Renovacion{
   int idGrupo;
   String nombreGrupo;
   int creditoID;
-  int clienteID;
+  String clienteID;
   String nombreCompleto;
   double importe;
   double capital;

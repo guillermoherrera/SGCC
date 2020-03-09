@@ -28,6 +28,7 @@ class Contrato{
   String contacto;
   String status;
   int integrantesCant;
+  bool renovado;
 
   Contrato({
     this.contratoId,
@@ -46,7 +47,8 @@ class Contrato{
     this.saldoActual,
     this.saldoAtrazado,
     this.status,
-    this.ultimoPagoPlazo
+    this.ultimoPagoPlazo,
+    this.renovado
   });
 }
 

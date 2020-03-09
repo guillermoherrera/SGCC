@@ -66,7 +66,7 @@ class ServiceRepositoryRenovaciones{
         ${renovacion.importe},
         "${renovacion.nombreCompleto}",
         ${renovacion.creditoID},
-        ${renovacion.clienteID},
+        "${renovacion.clienteID}",
         ${renovacion.capital},
         ${renovacion.diasAtraso},
         "${renovacion.beneficio}",

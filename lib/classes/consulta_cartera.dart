@@ -8,6 +8,7 @@ class ConsultaCartera{
   Firestore _firestore = Firestore.instance;
   DocumentSnapshot _datosApi;
   final String baseURL= "http://192.168.70.94:4000/cartera/";
+  final String baseURL2= "http://192.168.70.94:4000/renovacion/";
 
   Future<ConsultaApiKey> getApiKey() async{
     ConsultaApiKey result = new ConsultaApiKey();
@@ -70,7 +71,7 @@ class ConsultaCartera{
           result.result = true;
           result.contratos = List();
           for(Map contratoMap in json.decode(response.body)['data']){
-            Contrato contrato = new Contrato(contratoId: int.parse(contratoMap['contratoId'].toString()), fechaTermina: contratoMap['fechaTermina'].toString(), nombreGeneral: contratoMap['nombreGeneral'].toString());
+            Contrato contrato = new Contrato(status: contratoMap['status'].toString(),contratoId: int.parse(contratoMap['contratoId'].toString()), fechaTermina: contratoMap['fechaTermina'].toString(), nombreGeneral: contratoMap['nombreGeneral'].toString());
             result.contratos.add(contrato);
           }
           result.contratosCant = result.contratos.length; 
@@ -106,7 +107,7 @@ class ConsultaCartera{
     }else{
       try{
         http.Response response = await http.get(baseURL+action,
-        headers: <String, String>{'x-api-key': apiKey,'contrato': contrato.toString()}).timeout(Duration(seconds: 10));
+        headers: <String, String>{'x-api-key': apiKey,'contrato': contrato.toString(),'userID': 'kQu3MBgQbfUCNZovwCjmDJF27E53'}).timeout(Duration(seconds: 10));
 
         if(response.body.isEmpty){
           result.mensaje = "\nAPI ERROR.\nTOKEN NO AUTORIZADO. POR FAVOR VUELVA A INTENTARLO.";
@@ -118,7 +119,15 @@ class ConsultaCartera{
           result.result = true;
           result.integrantes = List();
           for(Map contratoMap in json.decode(response.body)['data']['integrantes']){
-            Integrante integrante = new Integrante(cveCliente: contratoMap['cveCli'], importe: double.parse(contratoMap['importeT'].toString()), nombreCompleto: contratoMap['nombreCom'], telefono: contratoMap['telefonoCel']);
+            Integrante integrante = new Integrante(
+              cveCliente: contratoMap['cveCli'],
+              importe: double.parse(contratoMap['importeT'].toString()),
+              nombreCompleto: (contratoMap['tesorero'] ? "(T) " : contratoMap['presidente'] ? "(P) " : "") + contratoMap['nombreCom'],
+              telefono: contratoMap['telefonoCel'],
+              diasAtrazo: int.parse(contratoMap['diaAtr'].toString()),
+              capital: double.parse(contratoMap['capital'].toString()),
+              noCda: int.parse(contratoMap['noCda'].toString())
+            );
             result.integrantes.add(integrante);
           }
           var data = json.decode(response.body)['data'];
@@ -135,7 +144,8 @@ class ConsultaCartera{
           result.contrato.interes = double.parse(data['interes'].toString());
           result.contrato.status = data['status'].toString();
           result.contrato.contacto = data['contacto'].toString();
-          result.contrato.integrantesCant = int.parse(data['integrantesCant'].toString()); 
+          result.contrato.integrantesCant = int.parse(data['integrantesCant'].toString());
+          result.contrato.renovado = data['renovado'];
         }else{
           result.mensaje = "\n"+json.decode(response.body)['resultDesc'];
           result.result = false;
@@ -202,6 +212,54 @@ class ConsultaCartera{
         result.result = false;
       }
     }
+    return result;
+  }
+
+
+  Future<ContratosRequest> consultaContratosR(fechaI, fechaF) async{
+    ContratosRequest result = new ContratosRequest();
+    final String action = "contratosAsesor";
+    ConsultaApiKey consultaApiKey;
+    final pref = await SharedPreferences.getInstance();
+    var apiKey = pref.getString("apiKeyCartera");
+
+    if(apiKey == null){
+      consultaApiKey = await getApiKey();
+      apiKey = consultaApiKey.apiKey;
+    }
+
+    if(apiKey == null){
+      result.mensaje = consultaApiKey.mensaje;
+      result.result = false;
+    }else{
+      try{
+        http.Response response = await http.get(baseURL2+action,
+        headers: <String, String>{'x-api-key': apiKey,'userID': 'kQu3MBgQbfUCNZovwCjmDJF27E53', 'fechaInicio': fechaI, 'fechaFin': fechaF}).timeout(Duration(seconds: 10));
+
+        if(response.body.isEmpty){
+          result.mensaje = "\nAPI ERROR.\nTOKEN NO AUTORIZADO. POR FAVOR VUELVA A INTENTARLO.";
+          result.result = false;
+          await pref.setString('tokenConsultaCurp', null);
+        }else if(json.decode(response.body)['data'] != null){
+          result.mensaje = "OK";
+          result.result = true;
+          result.contratos = List();
+          for(Map contratoMap in json.decode(response.body)['data']){
+            Contrato contrato = new Contrato(status: contratoMap['status'].toString() ,contratoId: int.parse(contratoMap['contratoId'].toString()), fechaTermina: contratoMap['fechaTermina'].toString(), nombreGeneral: contratoMap['nombreGeneral'].toString());
+            result.contratos.add(contrato);
+          }
+          result.contratosCant = result.contratos.length; 
+        }else{
+          result.mensaje = "\n"+json.decode(response.body)['resultDesc'];
+          result.result = false;
+        }
+
+      }catch(e){
+        result.mensaje = "\nERROR AL CONSULTAR CON LA APLICACIÓN DE CONSULTA.\n\nPOR FAVOR REVISA TU CONEXIÓN A INTERNET O VUELVALO A INTENTAR MAS TARDE";
+        result.result = false;
+      }
+    }
+
     return result;
   }
 }

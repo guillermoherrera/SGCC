@@ -113,7 +113,7 @@ class _CarteraIntegrantesState extends State<CarteraIntegrantes> {
             ),
             child: Container(
               child: ListTile(
-                title: Text(listaIntegrantes[index].nombreCompleto, style: TextStyle(fontWeight: FontWeight.bold),),
+                title: Text(listaIntegrantes[index].nombreCompleto,),
                 subtitle: subtitleLista(listaIntegrantes[index]),
                 trailing:  IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: ()async {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => CarteraIntegranteDetalle(colorTema: widget.colorTema, integrante: listaIntegrantes[index], title: listaIntegrantes[index].nombreCompleto, contratoGpo: widget.grupoInfo.contrato )));

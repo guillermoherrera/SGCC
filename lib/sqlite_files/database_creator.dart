@@ -176,7 +176,7 @@ class DataBaseCreator{
       $importe DOUBLE,
       $nombreCompleto TEXT,
       $creditoID INT,
-      $clienteID INT,
+      $clienteID TEXT,
       $capital DOUBLE,
       $diasAtraso INT,
       $beneficio TEXT,

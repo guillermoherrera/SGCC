@@ -189,7 +189,7 @@ class Sincroniza{
         grupoObj.grupoID = gruposGuardados.firstWhere((grupo)=> grupo.nombre == solicitudR.nombreGrupo).grupoID;
       }
 
-      if(solicitudR.clienteID != null){
+      if(solicitudR.clienteID != null && solicitudR.clienteID != "null"){
 
         BeneficioObj beneficio = new BeneficioObj(
           claveBeneficio: solicitudR.beneficio

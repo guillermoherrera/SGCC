@@ -19,12 +19,13 @@ class Consulta{
     
     final pref = await SharedPreferences.getInstance();
     final String action = "login";
+    final String apiKeyName = "API_CONSULTA";
     String user, keys;
 
     var map = new Map<String, dynamic>();
     
     try{
-      Query q = _firestore.collection("apiConsultaKeys");
+      Query q = _firestore.collection("apiConsultaKeys").where("apiKeyName", isEqualTo: apiKeyName);
       QuerySnapshot querySnapshot = await q.getDocuments().timeout(Duration(seconds: 10));
 
       if(querySnapshot.documents.length != 0){

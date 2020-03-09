@@ -135,7 +135,7 @@ class _CarteraDetalleState extends State<CarteraDetalle> {
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               Text("Cartera", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40)),
-              Text("Fecha Termino: "+(isData ? contrato.fechaTermina.substring(0, 10) : "**/**/**")+"\nFecha Inicio: "+(isData ? contrato.fechaInicio.substring(0, 10) : "**/**/**"), style: TextStyle(color: Colors.grey, fontSize: 16.0),)
+              Text("Fecha Inicio: "+(isData ? contrato.fechaInicio.substring(0, 10) : "**/**/**")+"\nFecha Termino: "+(isData ? contrato.fechaTermina.substring(0, 10) : "**/**/**"), style: TextStyle(color: Colors.grey, fontSize: 16.0),)
             ],
           ),
         ),
