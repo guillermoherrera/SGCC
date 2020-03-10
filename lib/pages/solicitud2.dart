@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/classes/backblaze.dart';
+import 'package:sgcartera_app/classes/shared_class.dart';
 import 'package:sgcartera_app/models/backBlaze_request.dart';
 import 'package:sgcartera_app/models/documento.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
@@ -45,6 +46,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
   List<CatDocumento> catDocumentos = List();
   List<DocumentoArchivo> docArchivos = List();
   AuthFirebase authFirebase = new AuthFirebase();
+  Shared shared = Shared();
 
   @override
   void initState() {
@@ -329,7 +331,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       if(await saveSqfliteSolcitud(documentos)){
         
         //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "En Espera (no sincronizadas)", status: 0, colorTema: widget.colorTema,) ));
-
+        shared.cleanSharedP();
         showDialog(
           context: context,
           barrierDismissible: false,

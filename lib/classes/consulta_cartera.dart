@@ -48,6 +48,7 @@ class ConsultaCartera{
     ConsultaApiKey consultaApiKey;
     final pref = await SharedPreferences.getInstance();
     var apiKey = pref.getString("apiKeyCartera");
+    String userID = pref.getString("uid");
 
     if(apiKey == null){
       consultaApiKey = await getApiKey();
@@ -60,7 +61,7 @@ class ConsultaCartera{
     }else{
       try{
         http.Response response = await http.get(baseURL+action,
-        headers: <String, String>{'x-api-key': apiKey,'userID': 'kQu3MBgQbfUCNZovwCjmDJF27E53'}).timeout(Duration(seconds: 10));
+        headers: <String, String>{'x-api-key': apiKey,'userID': userID}).timeout(Duration(seconds: 10));
 
         if(response.body.isEmpty){
           result.mensaje = "\nAPI ERROR.\nTOKEN NO AUTORIZADO. POR FAVOR VUELVA A INTENTARLO.";
@@ -95,6 +96,7 @@ class ConsultaCartera{
     ConsultaApiKey consultaApiKey;
     final pref = await SharedPreferences.getInstance();
     var apiKey = pref.getString("apiKeyCartera");
+    String userID = pref.getString("uid");
 
     if(apiKey == null){
       consultaApiKey = await getApiKey();
@@ -107,7 +109,7 @@ class ConsultaCartera{
     }else{
       try{
         http.Response response = await http.get(baseURL+action,
-        headers: <String, String>{'x-api-key': apiKey,'contrato': contrato.toString(),'userID': 'kQu3MBgQbfUCNZovwCjmDJF27E53'}).timeout(Duration(seconds: 10));
+        headers: <String, String>{'x-api-key': apiKey,'contrato': contrato.toString(),'userID': userID}).timeout(Duration(seconds: 10));
 
         if(response.body.isEmpty){
           result.mensaje = "\nAPI ERROR.\nTOKEN NO AUTORIZADO. POR FAVOR VUELVA A INTENTARLO.";
@@ -118,17 +120,19 @@ class ConsultaCartera{
           result.mensaje = "OK";
           result.result = true;
           result.integrantes = List();
-          for(Map contratoMap in json.decode(response.body)['data']['integrantes']){
-            Integrante integrante = new Integrante(
-              cveCliente: contratoMap['cveCli'],
-              importe: double.parse(contratoMap['importeT'].toString()),
-              nombreCompleto: (contratoMap['tesorero'] ? "(T) " : contratoMap['presidente'] ? "(P) " : "") + contratoMap['nombreCom'],
-              telefono: contratoMap['telefonoCel'],
-              diasAtrazo: int.parse(contratoMap['diaAtr'].toString()),
-              capital: double.parse(contratoMap['capital'].toString()),
-              noCda: int.parse(contratoMap['noCda'].toString())
-            );
-            result.integrantes.add(integrante);
+          if(json.decode(response.body)['data']['integrantes'] != null){ 
+            for(Map contratoMap in json.decode(response.body)['data']['integrantes']){
+              Integrante integrante = new Integrante(
+                cveCliente: contratoMap['cveCli'],
+                importe: double.parse(contratoMap['importeT'].toString()),
+                nombreCompleto: (contratoMap['tesorero'] ? "(T) " : contratoMap['presidente'] ? "(P) " : "") + contratoMap['nombreCom'],
+                telefono: contratoMap['telefonoCel'],
+                diasAtrazo: int.parse(contratoMap['diaAtr'].toString()),
+                capital: double.parse(contratoMap['capital'].toString()),
+                noCda: int.parse(contratoMap['noCda'].toString())
+              );
+              result.integrantes.add(integrante);
+            }
           }
           var data = json.decode(response.body)['data'];
           result.contrato.fechaTermina = data['fechaTermina'].toString();
@@ -165,6 +169,7 @@ class ConsultaCartera{
     ConsultaApiKey consultaApiKey;
     final pref = await SharedPreferences.getInstance();
     var apiKey = pref.getString("apiKeyCartera");
+    String userID = pref.getString("uid");
 
     if(apiKey == null){
       consultaApiKey = await getApiKey();
@@ -177,7 +182,7 @@ class ConsultaCartera{
     }else{
       try{
         http.Response response = await http.get(baseURL+action,
-        headers: <String, String>{'x-api-key': apiKey,'contrato': contrato.toString(), 'cveCliente': cveCliente}).timeout(Duration(seconds: 10));
+        headers: <String, String>{'x-api-key': apiKey,'contrato': contrato.toString(), 'cveCliente': cveCliente,'userID': userID}).timeout(Duration(seconds: 10));
 
         if(response.body.isEmpty){
           result.mensaje = "\nAPI ERROR.\nTOKEN NO AUTORIZADO. POR FAVOR VUELVA A INTENTARLO.";
@@ -222,6 +227,7 @@ class ConsultaCartera{
     ConsultaApiKey consultaApiKey;
     final pref = await SharedPreferences.getInstance();
     var apiKey = pref.getString("apiKeyCartera");
+    String userID = pref.getString("uid");
 
     if(apiKey == null){
       consultaApiKey = await getApiKey();
@@ -234,7 +240,7 @@ class ConsultaCartera{
     }else{
       try{
         http.Response response = await http.get(baseURL2+action,
-        headers: <String, String>{'x-api-key': apiKey,'userID': 'kQu3MBgQbfUCNZovwCjmDJF27E53', 'fechaInicio': fechaI, 'fechaFin': fechaF}).timeout(Duration(seconds: 10));
+        headers: <String, String>{'x-api-key': apiKey,'userID': userID, 'fechaInicio': fechaI, 'fechaFin': fechaF}).timeout(Duration(seconds: 10));
 
         if(response.body.isEmpty){
           result.mensaje = "\nAPI ERROR.\nTOKEN NO AUTORIZADO. POR FAVOR VUELVA A INTENTARLO.";

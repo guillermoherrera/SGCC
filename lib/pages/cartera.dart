@@ -3,6 +3,7 @@ import 'package:responsive_container/responsive_container.dart';
 import 'package:sgcartera_app/classes/consulta_cartera.dart';
 import 'package:sgcartera_app/models/responses.dart';
 import 'package:sgcartera_app/pages/carteraDetalle.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'mis_solicitudes.dart';
 import 'renovaciones.dart';
@@ -21,6 +22,7 @@ class _CarteraState extends State<Cartera> {
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
   String mensaje = "Cargando ...🕔";
   ConsultaCartera consultaCartera = new ConsultaCartera();
+  int userType = 1;
 
   @override
   void initState() {
@@ -29,24 +31,29 @@ class _CarteraState extends State<Cartera> {
   }
 
   getListDocumentos()async{
-    await Future.delayed(Duration(seconds:1));
-    ContratosRequest contratosRequest;
-    contratosRequest = await consultaCartera.consultaContratos();
-    if(contratosRequest.result){
-      listaCartera.clear();
-      for(var i = 0; i < contratosRequest.contratosCant ; i++){
-        Contrato contrato = new Contrato(
-          status: contratosRequest.contratos[i].status,
-          contratoId: contratosRequest.contratos[i].contratoId,
-          nombreGeneral: contratosRequest.contratos[i].nombreGeneral,
-          fechaTermina: contratosRequest.contratos[i].fechaTermina
-        );
-        listaCartera.add(contrato);
+    final pref = await SharedPreferences.getInstance();
+    userType = pref.getInt('tipoUsuario');
+    if(userType != null && userType > 0){
+      await Future.delayed(Duration(seconds:1));
+      ContratosRequest contratosRequest;
+      contratosRequest = await consultaCartera.consultaContratos();
+      if(contratosRequest.result){
+        listaCartera.clear();
+        mensaje = "Cartera activa vacía";
+        for(var i = 0; i < contratosRequest.contratosCant ; i++){
+          Contrato contrato = new Contrato(
+            status: contratosRequest.contratos[i].status,
+            contratoId: contratosRequest.contratos[i].contratoId,
+            nombreGeneral: contratosRequest.contratos[i].nombreGeneral,
+            fechaTermina: contratosRequest.contratos[i].fechaTermina
+          );
+          listaCartera.add(contrato);
+        }
+        //someObjects.sort((a, b) => a.someProperty.compareTo(b.someProperty));
+        listaCartera.sort((a,b) => a.nombreGeneral.compareTo(b.nombreGeneral));
+      }else{
+        mensaje = contratosRequest.mensaje;
       }
-      //someObjects.sort((a, b) => a.someProperty.compareTo(b.someProperty));
-      listaCartera.sort((a,b) => a.nombreGeneral.compareTo(b.nombreGeneral));
-    }else{
-      mensaje = contratosRequest.mensaje;
     }
     setState(() {
       
@@ -82,7 +89,7 @@ class _CarteraState extends State<Cartera> {
         elevation: 0.0,
         leading: Container(),
       ),
-      body: RefreshIndicator(
+      body: userType == null ? Container() : userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) :  RefreshIndicator(
         key: refreshKey,
         onRefresh: ()async{
           await Future.delayed(Duration(seconds:1));

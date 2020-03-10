@@ -7,6 +7,7 @@ import 'package:sgcartera_app/classes/consulta_cartera.dart';
 import 'package:sgcartera_app/models/grupo_renovacion.dart';
 import 'package:sgcartera_app/models/responses.dart';
 import 'package:sgcartera_app/pages/renovacionesDetalle.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'cartera.dart';
 import 'mis_solicitudes.dart';
@@ -28,6 +29,7 @@ class _RenovacionesState extends State<Renovaciones> {
   DateTime endDate = DateTime.now().add(Duration(days: 7));
   String mensaje = "Cargando ...🕔";
   ConsultaCartera consultaCartera = new ConsultaCartera();
+  int userType = 1;
 
   Future displayDateRangePicker(BuildContext context)async{
     final List<DateTime> picked = await DateRagePicker.showDatePicker(
@@ -58,35 +60,30 @@ class _RenovacionesState extends State<Renovaciones> {
   }
 
   getListDocumentos()async{
-    await Future.delayed(Duration(seconds:1));
-    ContratosRequest contratosRequest;
-    contratosRequest = await consultaCartera.consultaContratosR(formatDate(startDate, [dd, '/', mm, '/', yyyy]), formatDate(endDate, [dd, '/', mm, '/', yyyy]));
-    if(contratosRequest.result){
-      listaRenovacion.clear();
-      mensaje = "Consulta sin resultados.";//"Consulta del día "+formatDate(startDate, [dd, '/', mm, '/', yyyy])+" al día "+formatDate(endDate, [dd, '/', mm, '/', yyyy])+" sin resultados.";
-      for(var i = 0; i < contratosRequest.contratosCant ; i++){
-        Contrato contrato = new Contrato(
-          status: contratosRequest.contratos[i].status,
-          contratoId: contratosRequest.contratos[i].contratoId,
-          nombreGeneral: contratosRequest.contratos[i].nombreGeneral,
-          fechaTermina: contratosRequest.contratos[i].fechaTermina
-        );
-        listaRenovacion.add(contrato);
+    final pref = await SharedPreferences.getInstance();
+    userType = pref.getInt('tipoUsuario');
+    if(userType != null && userType > 0){
+      await Future.delayed(Duration(seconds:1));
+      ContratosRequest contratosRequest;
+      contratosRequest = await consultaCartera.consultaContratosR(formatDate(startDate, [dd, '/', mm, '/', yyyy]), formatDate(endDate, [dd, '/', mm, '/', yyyy]));
+      if(contratosRequest.result){
+        listaRenovacion.clear();
+        mensaje = "Consulta sin resultados.";//"Consulta del día "+formatDate(startDate, [dd, '/', mm, '/', yyyy])+" al día "+formatDate(endDate, [dd, '/', mm, '/', yyyy])+" sin resultados.";
+        for(var i = 0; i < contratosRequest.contratosCant ; i++){
+          Contrato contrato = new Contrato(
+            status: contratosRequest.contratos[i].status,
+            contratoId: contratosRequest.contratos[i].contratoId,
+            nombreGeneral: contratosRequest.contratos[i].nombreGeneral,
+            fechaTermina: contratosRequest.contratos[i].fechaTermina
+          );
+          listaRenovacion.add(contrato);
+        }
+        //someObjects.sort((a, b) => a.someProperty.compareTo(b.someProperty));
+        //listaRenovacion.sort((a,b) => a.nombreGeneral.compareTo(b.nombreGeneral));
+      }else{
+        mensaje = contratosRequest.mensaje;
       }
-      //someObjects.sort((a, b) => a.someProperty.compareTo(b.someProperty));
-      //listaRenovacion.sort((a,b) => a.nombreGeneral.compareTo(b.nombreGeneral));
-    }else{
-      mensaje = contratosRequest.mensaje;
     }
-    /*listaRenovacion.clear();
-    for(var i = 0; i <= 14; i++){
-      GrupoRenovacion grupoRenovacion = new GrupoRenovacion(
-        nombre: "LAS PODEROSAS "+ (i+1).toString(),
-        fechaTermino: startDate,
-        grupoID: 400+i 
-      );
-      listaRenovacion.add(grupoRenovacion);
-    }*/
     setState(() {});
   }
 
@@ -122,7 +119,7 @@ class _RenovacionesState extends State<Renovaciones> {
           //IconButton(icon: Icon(Icons.date_range, color: Colors.white), onPressed: ()async{await displayDateRangePicker(context);},)
         ],
       ),
-      body: RefreshIndicator(
+      body: userType == null ? Container() : userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : RefreshIndicator(
         key: refreshKey,
         onRefresh: ()async{
           await Future.delayed(Duration(seconds:1));

@@ -331,7 +331,7 @@ class _HomePageState extends State<HomePage> {
                 title: Text(nombreCompleto(ultimos[index -1]), style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(resumen(ultimos[index-1])),
                 isThreeLine: true,
-                trailing:  Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("Estatus", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),Text(ultimos[index-1].status == 0 || ultimos[index-1].status == 6 ? "En espera" : "Sincronizado", style: TextStyle(color: ultimos[index-1].status == 0 || ultimos[index-1].status == 6 ? Colors.yellow[700] : widget.colorTema, fontWeight: FontWeight.bold))])
+                trailing:  Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("Estatus", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),Text(ultimos[index-1].status == 0 || ultimos[index-1].status == 6 ? "En espera" : ultimos[index-1].fechaCaptura == null ? "Realizado" : "Sincronizado", style: TextStyle(color: ultimos[index-1].status == 0 || ultimos[index-1].status == 6 ? Colors.yellow[700] : widget.colorTema, fontWeight: FontWeight.bold))])
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(

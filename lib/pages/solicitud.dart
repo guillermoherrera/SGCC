@@ -4,6 +4,7 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/classes/consulta.dart';
+import 'package:sgcartera_app/classes/shared_class.dart';
 import 'package:sgcartera_app/models/curp_request.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
@@ -44,6 +45,7 @@ class _SolicitudState extends State<Solicitud> {
   AuthFirebase authFirebase = new AuthFirebase();
   Consulta consulta = new Consulta();
   List<CatEstado> estados = List();
+  Shared shared = Shared();
 
   DateTime now = new DateTime.now();
   DateTime selectedDate;
@@ -75,10 +77,29 @@ class _SolicitudState extends State<Solicitud> {
     estados = await RepositoryCatEstados.getAllCatEstados();
   }
 
+  getSharedP()async{
+    await Future.delayed(Duration(seconds:1));
+    Persona personaShared;
+    personaShared = await shared.obtenerPersona();
+
+    curp.text = personaShared.curp;
+    nombre.text = personaShared.nombre;
+    nombreAdicional.text = personaShared.nombreSegundo;
+    apellidoPrimero.text = personaShared.apellido;
+    apellidoSegundo.text = personaShared.apellidoSegundo;
+    fechaNacimiento.text = personaShared.fechaNacimiento != null ? formatDate( personaShared.fechaNacimiento, [dd, '/', mm, '/', yyyy]) : null;
+    selectedDate =  personaShared.fechaNacimiento;
+    rfc.text = personaShared.rfc;
+    telefono.text = personaShared.telefono;
+
+    setState(() {});
+  }
+
   @override
   void initState() {
     if(widget.esRenovacion == null){widget.esRenovacion = false;} 
     getEstados();
+    getSharedP();
     //formatted = formatter.format(selectedDate);
     //fechaNacimiento.text = formatted;
     // TODO: implement initState
@@ -423,7 +444,7 @@ class _SolicitudState extends State<Solicitud> {
               validator: (value){
                 if(value.isEmpty){
                   return "Ingresa el RFC";
-                }else if(value.length < 10){
+                }else if(value.length != 10 && value.length != 13){
                   return "Completa el RFC";
                 }
                 return null;
@@ -528,6 +549,7 @@ class _SolicitudState extends State<Solicitud> {
       _buttonStatus();
       //Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome)));
       estados.sort((a, b) => a.estado.compareTo(b.estado));
+      shared.guardarPersona(persona);
       Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDireccion(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, estados: estados, esRenovacion: widget.esRenovacion)));
     }else{
       final snackBar = SnackBar(

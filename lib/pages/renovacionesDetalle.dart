@@ -103,6 +103,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
 
           listaRenovacion.clear();
           inputs.clear();
+          mensaje = "Grupo sin información";
           for(var i = 0; i < contratoDRequest.integrantes.length; i++){
             RenovacionObj renovacion = new RenovacionObj(
               creditoID: contratoDRequest.integrantes[i].noCda, 
@@ -420,28 +421,33 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
       if(await ServiceRepositoryGrupos.validaGrupo(grupo)){
         await ServiceRepositoryGrupos.addGrupoRenovacion(grupo);
         int idRenov = await ServiceRepositoryRenovaciones.renovacionesCount();
-        listaRenEnviar.forEach((f)async{
-          if(f!=null){
+        //listaRenEnviar.forEach((f)async{
+        for(int i = 0; i < listaRenEnviar.length; i++ ){
+          //if(f!=null){
+          if(listaRenEnviar[i] != null){
             idRenov = idRenov + 1;
             final SqliteRenovaciones.Renovacion renovacion = new SqliteRenovaciones.Renovacion(
               idRenovacion: idRenov,
               idGrupo: widget.grupoInfo.contratoId,
               nombreGrupo: widget.grupoInfo.nombreGeneral,
-              creditoID: f.creditoID,
-              clienteID: f.clienteID == null ? null : f.clienteID,
-              nombreCompleto: f.nombre,
-              importe: f.importeHistorico,
-              capital: f.capital,
-              diasAtraso: f.diasAtraso,
-              beneficio: f.beneficios == null ? null : f.beneficios[0]['cveBeneficio'],
+              creditoID: listaRenEnviar[i].creditoID,
+              clienteID: listaRenEnviar[i].clienteID == null ? null : listaRenEnviar[i].clienteID,
+              nombreCompleto: listaRenEnviar[i].nombre,
+              importe: listaRenEnviar[i].importeHistorico,
+              capital: listaRenEnviar[i].capital,
+              diasAtraso: listaRenEnviar[i].diasAtraso,
+              beneficio: listaRenEnviar[i].beneficios == null ? null : listaRenEnviar[i].beneficios[0]['cveBeneficio'],
               userID: userID,
               tipoContrato: 2,
-              nuevoImporte: f.importe
+              nuevoImporte: listaRenEnviar[i].importe
             );
 
             await ServiceRepositoryRenovaciones.addRenovacion(renovacion);
+          }else{
+            var solicitud = await ServiceRepositorySolicitudes.getOneSolicitud(listaRenovacion[i].creditoID);
+            await ServiceRepositorySolicitudes.deleteSolicitudCompleta(solicitud);
           }
-        });
+        }//);
 
         result = true;
       }      

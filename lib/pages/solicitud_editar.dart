@@ -412,7 +412,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
               validator: (value){
                 if(value.isEmpty){
                   return "Ingresa el RFC";
-                }else if(value.length < 10){
+                }else if(value.length != 10 && value.length != 13){
                   return "Completa el RFC";
                 }
                 return null;

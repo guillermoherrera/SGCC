@@ -1,5 +1,6 @@
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:sgcartera_app/classes/shared_class.dart';
 import 'package:sgcartera_app/models/direccion.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud2.dart';
@@ -32,11 +33,30 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
   var estado;
   String estadoAux = "Estado";
   Color estadoVal = Colors.grey[600];
+  Shared shared = Shared();
+
+  getSharedP() async{
+    await Future.delayed(Duration(seconds:1));
+    Direccion direccionShared;
+
+    direccionShared = await shared.obtenerDireccion();
+    direccion1.text = direccionShared.direccion1;
+    colonia.text = direccionShared.coloniaPoblacion;
+    municipio.text = direccionShared.delegacionMunicipio;
+    ciudad.text = direccionShared.ciudad;
+    estadoCod.text = direccionShared.estado;
+    estadoAux = direccionShared.estado != null ? direccionShared.estado : "Estado";
+    estado = direccionShared.estado;
+    cp.text = direccionShared.cp != null ? direccionShared.cp.toString() : null;
+
+    setState(() {});
+  }
 
   @override
   void initState() {
     if(widget.esRenovacion == null){widget.esRenovacion = false;}
     paisCod.text = "MX";
+    getSharedP();
     super.initState();
   }
   
@@ -365,6 +385,7 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
       );
       widget.datos.direccion = direccion.toJson();
       _buttonStatus();
+      shared.guardarDireccion(direccion);
       Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDocumentos(title: widget.title, datos: widget.datos, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, esRenovacion: widget.esRenovacion)));
       
     }else{

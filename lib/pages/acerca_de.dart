@@ -80,15 +80,17 @@ class _AboutState extends State<About> {
         padding: EdgeInsets.all(10),
         //color: Color(0xfff2f2f2),
       ),
-      Container(
+      Expanded(child: Container(
         child: Center(child:
-          Text('''\nAplicación creada para la precaptura de prospectos de clientes, los datos que se registran son los minimos necesarios para realizar la consulta de buró y para la identificación del cliente, dicho proceso se realiza para una posible futura originación.''', textAlign: TextAlign.justify)
+          Text("Caracteristicas y funciones: \n\n° Captura de nuevas Solicitudes Grupales.\n° Creación de grupos.\n° Captura de integrantes.\n° Seguimiento a solicitudes.\n° Revisión de cartera activa.\n° Consulta de contratos proximos a terminar.\n° Solicitud de renovaciones.\n° ConfiaShop.",
+          textAlign: TextAlign.justify,
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))
         ),
         padding: EdgeInsets.all(10),
         //color: Color(0xfff2f2f2),
-      ),
+      )),
       Container(child:
-        Text("version 1.0."),
+        Tooltip(message: "App desarrollada por el\n Ing. Guillermo Herrera" , child: Text("version 1.0."), waitDuration: Duration(seconds: 10)),
         alignment: Alignment.centerRight,
         padding: EdgeInsets.all(10),
         color: Color(0xfff2f2f2),
