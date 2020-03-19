@@ -20,7 +20,7 @@ class ServiceRepositoryGrupos{
 
   static Future<List<Grupo>> getAllGruposEspera(String userID) async{
     final sql = '''SELECT * FROM ${DataBaseCreator.gruposTable}
-      WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.status} = 1''';
+      WHERE ${DataBaseCreator.userID} = "$userID" AND (${DataBaseCreator.status} = 1 OR ${DataBaseCreator.status} = 4)''';
     
     final data = await db.rawQuery(sql);
     List<Grupo> grupos = List();
@@ -53,13 +53,15 @@ class ServiceRepositoryGrupos{
       WHERE ${DataBaseCreator.idGrupo} = $idGrupo''';
     
     final data = await db.rawQuery(sql);
-
-    return Grupo.fromjson(data[0]);
+    if(data.length > 0)
+      return Grupo.fromjson(data[0]);
+    else
+      return null;
   }
 
   static Future<bool> validaGrupo(Grupo grupo) async{
     final sql = '''SELECT * FROM ${DataBaseCreator.gruposTable}
-      WHERE ${DataBaseCreator.nombreGrupo} = "${grupo.nombreGrupo}"
+      WHERE ${DataBaseCreator.nombreGrupo} = '''+"'${grupo.nombreGrupo}'"+'''
       AND ${DataBaseCreator.userID} = "${grupo.userID}"''';
     
     final data = await db.rawQuery(sql);
@@ -99,7 +101,7 @@ class ServiceRepositoryGrupos{
       ${DataBaseCreator.cantidad}
     )values(
       ${grupo.idGrupo},
-      "${grupo.nombreGrupo}",
+      '''+"'${grupo.nombreGrupo}'"+''',
       ${grupo.status},
       "${grupo.userID}",
       ${grupo.importe},

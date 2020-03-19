@@ -22,10 +22,14 @@ import 'package:sgcartera_app/pages/grupos.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes.dart';
 import 'package:sgcartera_app/pages/renovaciones.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
+import 'package:sgcartera_app/sqlite_files/models/documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart' as grupoModel;
+import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
+import 'package:sgcartera_app/sqlite_files/models/renovaciones.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart' as solicitudModel;
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_renovacion.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as path;
@@ -54,11 +58,12 @@ class _HomePageState extends State<HomePage> {
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey<RefreshIndicatorState>();
   bool abs = false;
   List<solicitudModel.Solicitud> ultimos = List();
+  List<Renovacion> renovaciones = List();
   List<String> nombres = ["Carlos", "Pedro", "Maria"];
   List<String> apellidos = ["Herrera", "Lopez", "Morales"];
   //List<String> personas = List();
   Random rnd = new Random();
-  String mensaje = "* No tienes registros de solicitudes de crédito en este dispositivo. \n\n * Puedes ir al apartado de Solicitudes para comenzar a registrar y/o revisar solicitudes de crédito.";
+  String mensaje = "* No tienes registros de nuevas solicitudes de crédito en este dispositivo. \n\n * Puedes ir al apartado de Solicitudes para comenzar a registrar y/o revisar nuevas solicitudes de crédito.";
   bool changePass = false;
 
   Future<void> getListDocumentos() async{
@@ -66,10 +71,35 @@ class _HomePageState extends State<HomePage> {
     String userID = pref.getString("uid");
     userType = pref.getInt('tipoUsuario');
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);
-    cantSolicitudesCambios = await ServiceRepositorySolicitudes.solicitudesCambioCount(userID); 
+
+    cantSolicitudesCambios = await ServiceRepositorySolicitudes.solicitudesCambioCount(userID);
+
+    renovaciones = await ServiceRepositoryRenovaciones.getAllRenovaciones(userID);
+    for(final ren in renovaciones){
+      solicitudes.add(solicitudModel.Solicitud(nombreGrupo: ren.nombreGrupo, idGrupo: ren.idGrupo));
+    }
     print("******** "+this.mounted.toString()+"**********");
-    
+
     ultimos = await ServiceRepositorySolicitudes.getLastSolicitudes(userID);
+    for(int i=0; i<ultimos.length; i++){
+      Grupo grupo;
+      grupo = await ServiceRepositoryGrupos.getOneGrupo(ultimos[i].idGrupo);
+      if(grupo != null && grupo.status == 0){
+        ultimos[i].status = 12;//en captura nueva solicitud
+        ultimos[i].apellidoSegundo = ultimos[i].apellidoSegundo;
+      }else if(grupo == null && ultimos[i].fechaCaptura != null){
+        ultimos[i].status = 13;//en captura nueva solicitud en Renovacion
+      }else if(ultimos[i].fechaCaptura == null){
+        List<DocumentoSolicitud> documentosActualizados = await ServiceRepositoryDocumentosSolicitud.getAllDocumentosSolcitud(ultimos[i].idSolicitud);
+        int cambio = documentosActualizados.where((f)=>f.cambioDoc == 1).length;
+        if(cambio > 0){
+          ultimos[i].status = 6;
+          solicitudes.add(solicitudModel.Solicitud());
+        }
+      }
+      ultimos[i].apellidoSegundo = ultimos[i].apellidoSegundo+(grupo != null ? " | "+grupo.nombreGrupo : " | "+ultimos[i].nombreGrupo);
+    }
+
     print("ultimos "+ultimos.length.toString());
     changePass = pref.getBool("passGenerico");
     if(changePass == null){changePass = false;}
@@ -310,8 +340,9 @@ class _HomePageState extends State<HomePage> {
         return index == 0 ? Container(child:Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(Icons.watch_later, color: Colors.grey,),
-              Text("ÚLTIMOS REGISTROS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+              Icon(Icons.watch_later, color: Colors.grey, size: 20,),
+              Text(" ÚLTIMOS REGISTROS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+              Icon(Icons.phone_iphone, color: Colors.grey,),
             ],
           ), margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0)) : InkWell(
           onTap: (){},
@@ -328,10 +359,10 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               child: ListTile(
                 leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.person, color: widget.colorTema, size: 40)]),
-                title: Text(nombreCompleto(ultimos[index -1]), style: TextStyle(fontWeight: FontWeight.bold)),
+                title: Text(nombreCompleto(ultimos[index -1]), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                 subtitle: Text(resumen(ultimos[index-1])),
                 isThreeLine: true,
-                trailing:  Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("Estatus", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),Text(ultimos[index-1].status == 0 || ultimos[index-1].status == 6 ? "En espera" : ultimos[index-1].fechaCaptura == null ? "Realizado" : "Sincronizado", style: TextStyle(color: ultimos[index-1].status == 0 || ultimos[index-1].status == 6 ? Colors.yellow[700] : widget.colorTema, fontWeight: FontWeight.bold))])
+                trailing:  Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("Estatus", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),Text(ultimos[index-1].status == 12 ? "En captura" : ultimos[index-1].status == 13 ? "En Captura\nRenovación" : ultimos[index-1].status == 0 || ultimos[index-1].status == 6 ? "En espera" : "Sincronizado", style: TextStyle(color: ultimos[index-1].status == 12 ? Colors.black : ultimos[index-1].status == 13 ? Colors.black : ultimos[index-1].status == 0 || ultimos[index-1].status == 6 ? Colors.yellow[700] : widget.colorTema, fontWeight: FontWeight.bold))])
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -352,7 +383,7 @@ class _HomePageState extends State<HomePage> {
 
   String resumen(solicitudModel.Solicitud obj){
     //DateTime.fromMillisecondsSinceEpoch(ultimos[index-1].fechaCaptura).toString()+"\nIMPORTE: \$"+ultimos[index-1].importe.toStringAsFixed(2)
-    String fecha = obj.fechaCaptura == null ? "Cambio de Documento Atendido" : formatDate(DateTime.fromMillisecondsSinceEpoch(obj.fechaCaptura), [dd, '/', mm, '/', yyyy, ' ', HH, ':', nn]);
+    String fecha = obj.fechaCaptura == null ? "Cambio de Documento" : formatDate(DateTime.fromMillisecondsSinceEpoch(obj.fechaCaptura), [dd, '/', mm, '/', yyyy, ' ', HH, ':', nn]);
     return fecha+"\nIMPORTE: \$"+obj.importe.toStringAsFixed(2);
   }
 

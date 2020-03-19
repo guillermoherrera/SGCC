@@ -47,7 +47,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   
   @override
   Widget build(BuildContext context) {
-    return Drawer(
+    return SizedBox(width: MediaQuery.of(context).size.width * .70, child: Drawer(
       child: Container(color: widget.colorTema, child: Column(children: <Widget>[Expanded(child: ListView(
         children: <Widget>[
           UserAccountsDrawerHeader(
@@ -142,7 +142,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           )
         ],
       ),),Text(fechaSinc != null ? "Ultima Sincronización: "+fechaSinc : "", style: TextStyle(color: sinc == true ? Colors.black38 : Colors.red[200], fontWeight: FontWeight.bold))])
-    ));
+    )));
   }
 
   void _logOut() async{

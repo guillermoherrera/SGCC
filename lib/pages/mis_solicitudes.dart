@@ -31,7 +31,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   getListDocumentos()async{
     await Future.delayed(Duration(milliseconds:250));
     setState(() {
-      items = 6;
+      items = 8;
     });
   }
 
@@ -93,7 +93,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
                     title: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nMIS SOLICITUDES", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:Colors.white))),
                     subtitle: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("Seguimiento y estado de solicitudes.", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70))),
                     //trailing: Text(""),
-                    isThreeLine: true,
+                    //isThreeLine: true,
                     ),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -197,35 +197,77 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
     return ListView.builder(
       itemCount: items,
       itemBuilder: (context, index){
-        return InkWell(
-          onTap: ()=>_accionItem(index),
-          child: Card(
-            shape: RoundedRectangleBorder(
-              side: BorderSide(color:widget.colorTema, width:3.0),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(50.0),
-                topRight: Radius.circular(50.0),
-                bottomLeft: Radius.circular(50.0),
-                bottomRight: Radius.circular(50.0)
-              ),
+        if(index == 0){
+          return Row(children: <Widget>[
+            Expanded(
+              child: new Container(
+                  margin: const EdgeInsets.only(left: 10.0, right: 20.0),
+                  child: Divider(
+                    color: widget.colorTema,
+                    height: 36,
+                  )),
             ),
-            child: Container(
-              child: ListTile(
-                leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[iconoItem(index)]),
-                title: textoItem(index),
-                subtitle: Text("\n"),//Text(getImporte(grupos[index])),
-                isThreeLine: true,
-                trailing: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[getNotif(index)])
-              ),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                colors: [Colors.white, Colors.white])
-              ),
+            Icon(Icons.phone_iphone, color: widget.colorTema),
+            Expanded(
+              child: new Container(
+                  margin: const EdgeInsets.only(left: 20.0, right: 10.0),
+                  child: Divider(
+                    color: widget.colorTema,
+                    height: 36,
+                  )),
             ),
-          )
-        );
+          ]);
+        }else if(index == 4){
+          return Row(children: <Widget>[
+            Expanded(
+              child: new Container(
+                  margin: const EdgeInsets.only(left: 10.0, right: 20.0),
+                  child: Divider(
+                    color: widget.colorTema,
+                    height: 36,
+                  )),
+            ),
+            Icon(Icons.wifi, color: widget.colorTema),
+            Expanded(
+              child: new Container(
+                  margin: const EdgeInsets.only(left: 20.0, right: 10.0),
+                  child: Divider(
+                    color: widget.colorTema,
+                    height: 36,
+                  )),
+            ),
+          ]);
+        }else{
+          return InkWell(
+            onTap: ()=>_accionItem(index),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                side: BorderSide(color:widget.colorTema, width:3.0),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(50.0),
+                  topRight: Radius.circular(50.0),
+                  bottomLeft: Radius.circular(50.0),
+                  bottomRight: Radius.circular(50.0)
+                ),
+              ),
+              child: Container(
+                child: ListTile(
+                  leading: iconoItem(index),
+                  title: textoItem(index),
+                  subtitle: Text(""),//Text(getImporte(grupos[index])),
+                  //isThreeLine: true,
+                  trailing: Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[getNotif(index)])
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  colors: [Colors.white, Colors.white])
+                ),
+              ),
+            )
+          );
+        }
       },
     );
   }
@@ -305,26 +347,26 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
 
   Icon iconoItem(i){
     switch(i){
-      case 0:
+      case 1:
         if(userType == 1){
           return Icon(Icons.format_align_justify, size: 40,);
         }else{
-          return Icon(Icons.group, size: 40,color: Colors.black54);
+          return Icon(Icons.lock_open, size: 40,color: Colors.black);
         }
         break;
-      case 1:
-        return Icon(Icons.access_time, size: 40,color: Colors.yellow[700],);
-        break;
       case 2:
+        return Icon(Icons.lock, size: 40,color: Colors.yellow[700],);
+        break;
+      case 5:
         return Icon(Icons.done_all, size: 40, color: Colors.grey);
         break;
       case 3:
         return Icon(Icons.autorenew, size: 40, color: Colors.blue);
         break;
-      case 4:
+      case 6:
         return Icon(Icons.done_all, size: 40,color: Colors.green,);
         break;
-      case 5:
+      case 7:
         return Icon(Icons.block, size: 40, color: Colors.red);
         break;
       default:
@@ -335,29 +377,29 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
 
   Widget textoItem(i){
     switch(i){
-      case 0:
+      case 1:
         if(userType == 1){
           return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nMIS SOLICITUDES ...", style: TextStyle(fontWeight: FontWeight.bold),)),);
         }
         else{
-          return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nGrupos Capturados", style: TextStyle(fontWeight: FontWeight.bold),)),);
+          return Padding(padding: EdgeInsets.all(10),child: Center(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nGrupos Abiertos (en Captura)", style: TextStyle(fontWeight: FontWeight.bold),))));
         }
         break;
-      case 1:
-        String texto = userType == 1 ? "\nEn Espera (no sincronizado)" : userType == 2 ? "\nEn Espera" : "\nEn Espera";
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text(texto, style: TextStyle(fontWeight: FontWeight.bold),)),);
-        break;
       case 2:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nPor autorizar", style: TextStyle(fontWeight: FontWeight.bold))));
-        break;
-      case 3:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nCambio de Documentos", style: TextStyle(fontWeight: FontWeight.bold))));
-        break;
-      case 4:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nDictaminadas", style: TextStyle(fontWeight: FontWeight.bold))));
+        String texto = userType == 1 ? "\nEn Espera (no sincronizado)" : userType == 2 ? "\nGrupos Cerrados (En Espera)" : "\nEn Espera";
+        return Padding(padding: EdgeInsets.all(10),child: Center(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text(texto, style: TextStyle(fontWeight: FontWeight.bold),)),));
         break;
       case 5:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nRechazadas", style: TextStyle(fontWeight: FontWeight.bold))));
+        return Padding(padding: EdgeInsets.all(10),child: Center(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nGrupos Por Dictaminar", style: TextStyle(fontWeight: FontWeight.bold)))));
+        break;
+      case 3:
+        return Padding(padding: EdgeInsets.all(10),child: Center(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nCambio de Documentos", style: TextStyle(fontWeight: FontWeight.bold)))));
+        break;
+      case 6:
+        return Padding(padding: EdgeInsets.all(10),child: Center(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nGrupos Dictaminados", style: TextStyle(fontWeight: FontWeight.bold)))));
+        break;
+      case 7:
+        return Padding(padding: EdgeInsets.all(10),child: Center(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nGrupos Rechazados", style: TextStyle(fontWeight: FontWeight.bold)))));
         break;
       default:
         return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nx_x")));
@@ -367,7 +409,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
 
   void _accionItem(i){
     switch(i){
-      case 0:
+      case 1:
         if(userType == 1){
 
         }
@@ -375,19 +417,19 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
           Navigator.push(context, MaterialPageRoute(builder: (context) => Group(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome )));
         }
         break;
-      case 1:
+      case 2:
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "En Espera (no sincronizado)", status: 0, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome,) ));
         break;
-      case 2:
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Por autorizar", status: 1, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
+      case 5:
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Por Dictaminar", status: 1, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
       case 3:
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Cambio de Documentos", status: 2, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
-      case 4:
+      case 6:
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Dictaminadas", status: 3, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
-      case 5:
+      case 7:
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ListaSolicitudes(title: "Rechazadas", status: 4, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome) ));
         break;
       default:

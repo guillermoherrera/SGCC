@@ -63,7 +63,10 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
       case 0:
         gruposGuardados = await ServiceRepositoryGrupos.getAllGruposEspera(userID);
         gruposAbiertos = await ServiceRepositoryGrupos.getAllGrupos(userID);
-        solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);  
+        for(Grupo gpo in gruposGuardados){
+          solicitudes.add(Solicitud(nombreGrupo: gpo.nombreGrupo, grupoID: gpo.grupoID, idGrupo: gpo.idGrupo, status: 0, importe: gpo.importe));
+        }
+        //solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);  
         msjEncabezado = "SOLICITUDES EN ESPERA: ";
         mensaje = "Sin solicitudes en espera para mostrar.";
         break;

@@ -227,7 +227,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                   ),
                   child:  Padding(
-                    padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
+                    padding: EdgeInsets.fromLTRB(13, 13, 13, 33),
                     child: listaRenovacion.length > 0 ?  renovacionLista() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
                   ),
                 )
@@ -389,6 +389,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
                     setState(() {solicitable = false;});
                     if(await saveSqfliteRenovacion()){
                       await getListDocumentos();
+                      widget.actualizaHome();
                       showSnackBar("Renovación Solicitada", Colors.green);
                     }else{
                       setState(() {solicitable = true;});
@@ -474,6 +475,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
   void actualizaRenovacion()async{
     await getListNewDocumentos();
     await getSuma();
+    widget.actualizaHome();
     setState(() {});
   }
 }

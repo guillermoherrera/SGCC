@@ -62,7 +62,7 @@ class ServiceRepositoryRenovaciones{
       )values(
         ${renovacion.idRenovacion},
         ${renovacion.idGrupo},
-        "${renovacion.nombreGrupo}",
+        '''+"'${renovacion.nombreGrupo}'"+''',
         ${renovacion.importe},
         "${renovacion.nombreCompleto}",
         ${renovacion.creditoID},

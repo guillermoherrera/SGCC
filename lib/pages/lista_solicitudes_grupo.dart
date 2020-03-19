@@ -7,9 +7,11 @@ import 'package:sgcartera_app/pages/solicitud.dart' as SolicitudPage;
 import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud_editar.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart';
+import 'package:sgcartera_app/sqlite_files/models/renovaciones.dart';
 import 'package:sgcartera_app/sqlite_files/models/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_catIntegrantes.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_grupo.dart';
+import 'package:sgcartera_app/sqlite_files/repositories/repository_service_renovacion.dart';
 import 'package:sgcartera_app/sqlite_files/repositories/repository_service_solicitudes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,7 +27,8 @@ class ListaSolicitudesGrupo extends StatefulWidget {
 }
 
 class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo>  with SingleTickerProviderStateMixin  {
-  List<Solicitud> solicitudes = List();  
+  List<Solicitud> solicitudes = List(); 
+  List<Renovacion> solicitudesR = List();  
   AuthFirebase authFirebase = new AuthFirebase();
   bool status;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -46,7 +49,20 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo>  with Sin
     String userID = pref.getString("uid");
     userType = pref.getInt('tipoUsuario');
     gruposAbiertos = await ServiceRepositoryGrupos.getAllGrupos(userID);
-    solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, widget.title);   
+    solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesGrupo(userID, widget.title);
+    
+    solicitudesR = await ServiceRepositoryRenovaciones.getRenovacionesFromGrupo(widget.grupo.idGrupo);
+    for(Renovacion ren in solicitudesR){
+      solicitudes.add(Solicitud(
+        nombrePrimero: ren.nombreCompleto,
+        nombreSegundo: "",
+        apellidoPrimero: "",
+        apellidoSegundo: "",
+        importe: ren.nuevoImporte,
+        telefono: "",
+        status: 0));
+    } 
+    
     setState(() {});
   }
 
@@ -270,8 +286,8 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo>  with Sin
           itemBuilder: (_) => <PopupMenuItem<int>>[
             new PopupMenuItem<int>(
               child: Row(children: <Widget>[Icon(Icons.mode_edit, color: status ? Colors.green : Colors.grey,),Text(" Ver/Editar Solicitud")],), value: 1),
-            new PopupMenuItem<int>(
-              child: Row(children: <Widget>[Icon(Icons.person_pin, color: status ? Colors.blue : Colors.grey),Text(" Mover a Individual")],), value: 3),
+            //new PopupMenuItem<int>(
+            //  child: Row(children: <Widget>[Icon(Icons.person_pin, color: status ? Colors.blue : Colors.grey),Text(" Mover a Individual")],), value: 3),
             new PopupMenuItem<int>(
               child: Row(children: <Widget>[Icon(Icons.group_work, color: status ? Colors.blue : Colors.grey),Text(" Mover a otro Grupo")],), value: 4),
             new PopupMenuItem<int>(

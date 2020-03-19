@@ -84,9 +84,9 @@ class ServiceRepositorySolicitudes{
   }
 
   static Future<List<Solicitud>> getAllSolicitudesGrupo(String userID, String nombreGrupo) async{
-    nombreGrupo = nombreGrupo.replaceAll(new RegExp(r'[^\w\s]+'),'');
+    //nombreGrupo = nombreGrupo.replaceAll(new RegExp(r'[^\w\s]+'),'');
     final sql = '''SELECT * FROM ${DataBaseCreator.solicitudesTable}
-      WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.nombre_Grupo} = "$nombreGrupo"''';
+      WHERE ${DataBaseCreator.userID} = "$userID" AND ${DataBaseCreator.nombre_Grupo} = '''+"'$nombreGrupo'";
     
     final data = await db.rawQuery(sql);
     List<Solicitud> solicitudes = List();
@@ -133,8 +133,8 @@ class ServiceRepositorySolicitudes{
       "${solicitud.curp}",
       "${solicitud.rfc}",
       "${solicitud.telefono}",
-      ${solicitud.idGrupo},
-      "${solicitud.nombreGrupo}",
+      ${solicitud.idGrupo},'''+
+      "'${solicitud.nombreGrupo}'"+''',
       "${solicitud.userID}",
       ${solicitud.status},
       ${solicitud.tipoContrato},
@@ -191,8 +191,8 @@ class ServiceRepositorySolicitudes{
       "${solicitud.curp}",
       "${solicitud.rfc}",
       "${solicitud.telefono}",
-      ${solicitud.idGrupo},
-      "${solicitud.nombreGrupo}",
+      ${solicitud.idGrupo},'''+
+      "'${solicitud.nombreGrupo}'"+''',
       "${solicitud.userID}",
       ${solicitud.status},
       ${solicitud.tipoContrato},

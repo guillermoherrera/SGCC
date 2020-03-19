@@ -82,7 +82,7 @@ class ConsultaCartera{
         }
 
       }catch(e){
-        result.mensaje = "\nERROR AL CONSULTAR CON LA APLICACIÓN DE CONSULTA.\n\nPOR FAVOR REVISA TU CONEXIÓN A INTERNET O VUELVALO A INTENTAR MAS TARDE";
+        result.mensaje = "\nERROR AL CONECTAR CON LA APLICACIÓN DE CONSULTA.\n\nPOR FAVOR REVISA TU CONEXIÓN A INTERNET O VUELVE A INTENTAR MAS TARDE";
         result.result = false;
       }
     }
@@ -156,7 +156,7 @@ class ConsultaCartera{
         }
 
       }catch(e){
-        result.mensaje = "\nERROR AL CONSULTAR CON LA APLICACIÓN DE CONSULTA.\n\nPOR FAVOR REVISA TU CONEXIÓN A INTERNET O VUELVALO A INTENTAR MAS TARDE";
+        result.mensaje = "\nERROR AL CONSULTAR CON LA APLICACIÓN DE CONSULTA.\n\nPOR FAVOR REVISA TU CONEXIÓN A INTERNET O VUELVE A INTENTAR MAS TARDE";
         result.result = false;
       }
     }
@@ -213,7 +213,7 @@ class ConsultaCartera{
           result.result = false;
         }
       }catch(e){
-        result.mensaje = "\nERROR AL CONSULTAR CON LA APLICACIÓN DE CONSULTA.\n\nPOR FAVOR REVISA TU CONEXIÓN A INTERNET O VUELVALO A INTENTAR MAS TARDE";
+        result.mensaje = "\nERROR AL CONSULTAR CON LA APLICACIÓN DE CONSULTA.\n\nPOR FAVOR REVISA TU CONEXIÓN A INTERNET O VUELVE A INTENTAR MAS TARDE";
         result.result = false;
       }
     }
@@ -261,7 +261,7 @@ class ConsultaCartera{
         }
 
       }catch(e){
-        result.mensaje = "\nERROR AL CONSULTAR CON LA APLICACIÓN DE CONSULTA.\n\nPOR FAVOR REVISA TU CONEXIÓN A INTERNET O VUELVALO A INTENTAR MAS TARDE";
+        result.mensaje = "\nERROR AL CONECTAR CON LA APLICACIÓN DE CONSULTA.\n\nPOR FAVOR REVISA TU CONEXIÓN A INTERNET O VUELVE A INTENTAR MAS TARDE";
         result.result = false;
       }
     }

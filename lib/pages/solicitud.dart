@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:date_format/date_format.dart';
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/classes/consulta.dart';
@@ -46,6 +47,7 @@ class _SolicitudState extends State<Solicitud> {
   Consulta consulta = new Consulta();
   List<CatEstado> estados = List();
   Shared shared = Shared();
+  int intentoCurp = 0; //auxiliar para la validación de las palabras altisonantes 
 
   DateTime now = new DateTime.now();
   DateTime selectedDate;
@@ -213,7 +215,11 @@ class _SolicitudState extends State<Solicitud> {
       Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          flexPadded(TextFormField(
+          Flexible(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child:TextFormField(
               controller: curp,
               maxLength: 18,
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -241,8 +247,12 @@ class _SolicitudState extends State<Solicitud> {
                 return null;
               },
             )
-          ),
-          flexPadded(
+          )),
+          Flexible(
+            flex: 1,
+            child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child:
             Center(child:
             Container(margin: EdgeInsets.only(bottom: 20.0) ,child:
             RaisedButton(
@@ -251,9 +261,9 @@ class _SolicitudState extends State<Solicitud> {
               textColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: Color(0xff1A9CFF), width: 2.0)),
               padding: EdgeInsets.only(top:9, bottom: 9, left: 30.0, right: 30.0),
-              child: Column(children: <Widget>[Icon(Icons.search, color: Colors.white,),Text("CONSULTAR CURP", style: TextStyle(fontWeight: FontWeight.bold),)],),
+              child: Column(children: <Widget>[Icon(Icons.search, color: Colors.white,),Text("CONSULTAR", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),)],),
             )))
-          )
+          ))
         ]
       ),
       Row(
@@ -524,7 +534,7 @@ class _SolicitudState extends State<Solicitud> {
 
   void validaSubmit(){
     FocusScope.of(context).requestFocus(FocusNode());
-    if(formKey.currentState.validate()){
+    if(formKey.currentState.validate() && getCurpRfc()){
       _buttonStatus();
       Persona persona;
       persona = new Persona(
@@ -532,7 +542,7 @@ class _SolicitudState extends State<Solicitud> {
         nombreSegundo: nombreAdicional.text,
         apellido:  apellidoPrimero.text,
         apellidoSegundo: apellidoSegundo.text,
-        curp: curp.text,
+        curp: removeDiacritics(curp.text),
         rfc: rfc.text,
         fechaNacimiento: selectedDate,
         telefono: telefono.text
@@ -552,8 +562,15 @@ class _SolicitudState extends State<Solicitud> {
       shared.guardarPersona(persona);
       Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDireccion(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, estados: estados, esRenovacion: widget.esRenovacion)));
     }else{
+      String  mensaje = '';
+      if(getCurpRfc()){
+        mensaje = 'Error al guardar. Revisa el formulario para más información.';
+      }else{
+        mensaje = 'Error en el formato de la CURP y/o RFC.';
+      }
+
       final snackBar = SnackBar(
-        content: Text("Error al guardar. Revisa el formulario para más información.", style: TextStyle(fontWeight: FontWeight.bold),),
+        content: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold),),
         backgroundColor: Colors.red[300],
         duration: Duration(seconds: 3),
       );
@@ -567,14 +584,28 @@ class _SolicitudState extends State<Solicitud> {
     });
   }
 
-  void getCurpRfc(){
-    String curpStr = "";
-    List<String> vocales = <String>['A','E','I','O','U','a','e','i','o','u'];
+  bool getCurpRfc(){
+    String curpStr = "", nomPila;
+    bool result = false;
+    List<String> vocales = <String>['A','E','I','O','U','a','e','i','o','u','Á','É','Í','Ó','Ú','á','é','í','ó','ú'];
+    List<String> sexo = <String>['M','H'];
+    List<String> entFed = <String>['AS','BC','BS','CC','CL','CM','CS','CH','DF','DG',
+                                   'GT','GR','HG','JC','MC','MN','MS','NT','NL','OC',
+                                   'PL','QT','QR','SP','SL','SR','TC','TS','TL','VZ',
+                                   'YN','ZS','NE'];
+    List<String> palInc = <String>['BACA','BAKA','BUEI','BUEY','CACA','CACO','CAGA','CAGO','CAKA','CAKO','COGE','COGI','COJA','COJE','COJI',
+                                   'COJO','COLA','CULO','FALO','FETO','GETA','GUEI','GUEY','JETA','JOTO','KACA','KACO','KAGA','KAGO','KAKA',
+                                   'KAKO','KOGE','KOGI','KOJA','KOJE','KOJI','KOJO','KOLA','KULO','LILO','LOCA','LOCO','LOKA','LOKO','MAME',
+                                   'MAMO','MEAR','MEAS','MEON','MIAR','MION','MOCO','MOKO','MULA','MULO','NACA','NACO','PEDA','PEDO','PENE',
+                                   'PIPI','PITO','POPO','PUTA','PUTO','QULO','RATA','ROBA','ROBE','ROBO','RUIN','SENO','TETA','VACA','VAGA',
+                                   'VAGO','VAKA','VUEI','VUEY','WUEI','WUEY'];                            
 
+    //primer letra primer Apellido
     curpStr = curpStr + (apellidoPrimero.text.length > 0 ? apellidoPrimero.text[0] : 'X');
 
+    //primer vocal primer Apellido
     bool bandera = false;
-    for(int i = 0;(bandera == false && apellidoPrimero.text.length > 0); i++){
+    for(int i = 1;(bandera == false && apellidoPrimero.text.length > 1); i++){
       if(vocales.contains(apellidoPrimero.text[i])){
         bandera = true;
         curpStr = curpStr + apellidoPrimero.text[i];
@@ -583,25 +614,92 @@ class _SolicitudState extends State<Solicitud> {
         bandera = true;
     }
 
+    //primera letra segundo apellido
     curpStr = curpStr + (apellidoSegundo.text.length > 0 ? apellidoSegundo.text[0] : 'X');
+    
+    //primera letra nombre pila
     if((nombre.text == "MARÍA" || nombre.text == "JOSÉ" || nombre.text == "MARIA" || nombre.text == "JOSE") && nombreAdicional.text.length > 0){
-      curpStr = curpStr + (nombreAdicional.text.length > 0 ? nombreAdicional.text[0] : 'X');
+      nomPila = nombreAdicional.text.length > 0 ? nombreAdicional.text : nombre.text;
+      nomPila = nomPila.replaceAll("DE LAS ", "").replaceAll("DE LOS ", "").replaceAll("DE LA ", "").replaceAll("DEL ", "").replaceAll("DE ", "");
+      curpStr = curpStr + (nomPila.length > 0 ? nomPila[0] : 'X');
     }else{
       curpStr = curpStr + (nombre.text.length > 0 ? nombre.text[0] : 'X');
+      nomPila = nombre.text;
     }
-    if(fechaNacimiento.text.length > 0){
+
+    //validacion tildes y palabras altisonantes
+    curpStr = removeDiacritics(curpStr);
+    if(palInc.contains(curpStr) && intentoCurp != 4){
+      intentoCurp += 1;
+      curpStr = curpStr.substring(0,1) + 'X' + curpStr.substring(2);
+    }else{
+      intentoCurp = 0;
+    }
+
+    //fecha de Nacimiento
+    if(fechaNacimiento.text.length > 9){
       curpStr = curpStr + fechaNacimiento.text[8] +fechaNacimiento.text [9];
       curpStr = curpStr + fechaNacimiento.text[3] +fechaNacimiento.text [4];
       curpStr = curpStr + fechaNacimiento.text[0] +fechaNacimiento.text [1];
     }
 
+    String segConsonantes = "";
+    //segunda consonante primer apellido
+    bandera = false;
+    for(int i = 1;(bandera == false && apellidoPrimero.text.length > 1); i++){
+      if(!vocales.contains(apellidoPrimero.text[i])){
+        bandera = true;
+        segConsonantes = apellidoPrimero.text[i];
+      }
+      if(apellidoPrimero.text.length == i+1)
+        bandera = true;
+      if(bandera && segConsonantes.length == 0)
+        segConsonantes = 'X';
+    }
+    
+    //segunda consonante segundo apellido
+    bandera = false;
+    for(int i = 1;(bandera == false && apellidoSegundo.text.length > 1); i++){
+      if(!vocales.contains(apellidoSegundo.text[i])){
+        bandera = true;
+        segConsonantes = segConsonantes + apellidoSegundo.text[i];
+      }
+      if(apellidoSegundo.text.length == i+1)
+        bandera = true;
+      if(bandera && segConsonantes.length == 1)
+        segConsonantes = segConsonantes + 'X';
+    }
+    if(apellidoSegundo.text.length == 0){segConsonantes = segConsonantes + 'X';}
+
+    //segunda consonante nombre pila
+    bandera = false;
+    for(int i = 1;(bandera == false && nomPila.length > 1); i++){
+      if(!vocales.contains(nomPila[i])){
+        bandera = true;
+        segConsonantes = segConsonantes + nomPila[i];
+      }
+      if(nomPila.length == i+1)
+        bandera = true;
+      if(bandera && segConsonantes.length == 2)
+        segConsonantes = segConsonantes + 'X';
+    }
+    
+    //fill 10 caracteres de campos curp y rfc
     if(curp.text.length < 18) curp.text = curpStr;
-    rfc.text = curpStr;
+    if(rfc.text.length < 10) rfc.text = curpStr;
+    
+    //validaciones
+    if(curp.text.length == 18 && (rfc.text.length == 10 || rfc.text.length == 13)){
+      if(curp.text.substring(0,10) == curpStr && rfc.text.substring(0,10) == curpStr && sexo.contains(curp.text.substring(10,11)) && entFed.contains(curp.text.substring(11,13)) && curp.text.substring(13,16) == segConsonantes && double.tryParse(curp.text.substring(17,18)) != null ){
+         result = true; 
+      }
+    }
+    return result;
   }
 
   consultarCurp()async{
     CurpRequest curpRequest;
-    mostrarShowDialog(1,"\nCONSULTANDO CURP ...");
+    mostrarShowDialog(1,"\nBUSCANDO CLIENTE POR SU CURP ...");
     clearFields();
     if(curp.text.length == 18){
       try {
@@ -694,5 +792,6 @@ class _SolicitudState extends State<Solicitud> {
     rfc.text = persona['rfc'].isEmpty ? curp.text.substring(0,10) :persona['rfc'];
     selectedDate = persona['fechaNacimiento'];
     fechaNacimiento.text = formatDate( persona['fechaNacimiento'], [dd, '/', mm, '/', yyyy]);
+    telefono.text = persona['telefono'];
   }
 }

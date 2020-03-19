@@ -1,4 +1,5 @@
 import 'package:date_format/date_format.dart';
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/models/direccion.dart';
 import 'package:sgcartera_app/models/persona.dart';
@@ -36,6 +37,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
   var telefono = TextEditingController();
   bool buttonEnabled = true;
   List<CatEstado> estados = List();
+  int intentoCurp = 0; //auxiliar para la validación de las palabras altisonantes
 
   String userID;
   int idSolicitud;
@@ -117,7 +119,9 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: (){return new Future(() => false);},
+      child: Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text(widget.title, style: TextStyle(color: Colors.white)),
@@ -173,7 +177,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
           ),
         ),
       )
-    );
+    ));
   }
 
   List<Widget> formSolicitud(){
@@ -323,13 +327,17 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          flexPadded(InkWell(
+          Flexible(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child:InkWell(
               child: AbsorbPointer(child:TextFormField(
                 controller: fechaNacimiento,
                 maxLength: 14,
                 style: TextStyle(fontWeight: FontWeight.bold),
                 decoration: InputDecoration(
-                  labelText: "Fecha de Nacimiento",
+                  labelText: "Fecha de Nac.",
                   //icon: Icon(Icons.calendar_today)
                   helperText: "dia/mes/año",
                   fillColor: Color(0xfff2f2f2),
@@ -354,8 +362,12 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
               ),),
               onTap: () => _selectDate(context),
             )
-          ),
-          flexPadded(TextFormField(
+          )),
+          Flexible(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child:TextFormField(
               controller: curp,
               maxLength: 18,
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -383,7 +395,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
                 return null;
               },
             )
-          ),
+          )),
         ]
       ),
       Divider(),
@@ -492,7 +504,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
 
   void validaSubmit() async{
     FocusScope.of(context).requestFocus(FocusNode());
-    if(formKey.currentState.validate()){
+    if(formKey.currentState.validate()  && getCurpRfc()){
       _buttonStatus();
       
       final Solicitud solicitud = new Solicitud(
@@ -503,7 +515,7 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
         apellidoPrimero: apellidoPrimero.text,
         apellidoSegundo: apellidoSegundo.text,
         fechaNacimiento: selectedDate.millisecondsSinceEpoch,
-        curp: curp.text,
+        curp: removeDiacritics(curp.text),
         rfc: rfc.text,
         telefono:  telefono.text,
         userID: userID,
@@ -567,8 +579,15 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
       estados.sort((a, b) => a.estado.compareTo(b.estado));
       Navigator.push(context, MaterialPageRoute(builder: (context)=>SolicitudDireccionEditar(title: widget.title, datos: solicitudObj, colorTema: widget.colorTema, actualizaHome: (){}, idSolicitud: idSolicitud, estados: estados)));
     }else{
+      String  mensaje = '';
+      if(getCurpRfc()){
+        mensaje = 'Error al guardar. Revisa el formulario para más información.';
+      }else{
+        mensaje = 'Error en el formato de la CURP y/o RFC.';
+      }
+
       final snackBar = SnackBar(
-        content: Text("Error al guardar. Revisa el formulario para más información.", style: TextStyle(fontWeight: FontWeight.bold),),
+        content: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold),),
         backgroundColor: Colors.red[300],
         duration: Duration(seconds: 3),
       );
@@ -582,14 +601,28 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
     });
   }
 
-  void getCurpRfc(){
-    String curpStr = "";
-    List<String> vocales = <String>['A','E','I','O','U','a','e','i','o','u'];
+  bool getCurpRfc(){
+    String curpStr = "", nomPila;
+    bool result = false;
+    List<String> vocales = <String>['A','E','I','O','U','a','e','i','o','u','Á','É','Í','Ó','Ú','á','é','í','ó','ú'];
+    List<String> sexo = <String>['M','H'];
+    List<String> entFed = <String>['AS','BC','BS','CC','CL','CM','CS','CH','DF','DG',
+                                   'GT','GR','HG','JC','MC','MN','MS','NT','NL','OC',
+                                   'PL','QT','QR','SP','SL','SR','TC','TS','TL','VZ',
+                                   'YN','ZS','NE'];
+    List<String> palInc = <String>['BACA','BAKA','BUEI','BUEY','CACA','CACO','CAGA','CAGO','CAKA','CAKO','COGE','COGI','COJA','COJE','COJI',
+                                   'COJO','COLA','CULO','FALO','FETO','GETA','GUEI','GUEY','JETA','JOTO','KACA','KACO','KAGA','KAGO','KAKA',
+                                   'KAKO','KOGE','KOGI','KOJA','KOJE','KOJI','KOJO','KOLA','KULO','LILO','LOCA','LOCO','LOKA','LOKO','MAME',
+                                   'MAMO','MEAR','MEAS','MEON','MIAR','MION','MOCO','MOKO','MULA','MULO','NACA','NACO','PEDA','PEDO','PENE',
+                                   'PIPI','PITO','POPO','PUTA','PUTO','QULO','RATA','ROBA','ROBE','ROBO','RUIN','SENO','TETA','VACA','VAGA',
+                                   'VAGO','VAKA','VUEI','VUEY','WUEI','WUEY'];                            
 
+    //primer letra primer Apellido
     curpStr = curpStr + (apellidoPrimero.text.length > 0 ? apellidoPrimero.text[0] : 'X');
 
+    //primer vocal primer Apellido
     bool bandera = false;
-    for(int i = 0;(bandera == false && apellidoPrimero.text.length > 0); i++){
+    for(int i = 1;(bandera == false && apellidoPrimero.text.length > 1); i++){
       if(vocales.contains(apellidoPrimero.text[i])){
         bandera = true;
         curpStr = curpStr + apellidoPrimero.text[i];
@@ -598,20 +631,86 @@ class _SolicitudEditarState extends State<SolicitudEditar> {
         bandera = true;
     }
 
+    //primera letra segundo apellido
     curpStr = curpStr + (apellidoSegundo.text.length > 0 ? apellidoSegundo.text[0] : 'X');
-    //curpStr = curpStr + (nombre.text.length > 0 ? nombre.text[0] : 'X');
+    
+    //primera letra nombre pila
     if((nombre.text == "MARÍA" || nombre.text == "JOSÉ" || nombre.text == "MARIA" || nombre.text == "JOSE") && nombreAdicional.text.length > 0){
-      curpStr = curpStr + (nombreAdicional.text.length > 0 ? nombreAdicional.text[0] : 'X');
+      nomPila = nombreAdicional.text.length > 0 ? nombreAdicional.text : nombre.text;
+      nomPila = nomPila.replaceAll("DE LAS ", "").replaceAll("DE LOS ", "").replaceAll("DE LA ", "").replaceAll("DEL ", "").replaceAll("DE ", "");
+      curpStr = curpStr + (nomPila.length > 0 ? nomPila[0] : 'X');
     }else{
       curpStr = curpStr + (nombre.text.length > 0 ? nombre.text[0] : 'X');
+      nomPila = nombre.text;
     }
+
+    //validacion tildes y palabras incovenientes
+    curpStr = removeDiacritics(curpStr);
+    if(palInc.contains(curpStr) && intentoCurp != 4){
+      intentoCurp += 1;
+      curpStr = curpStr.substring(0,1) + 'X' + curpStr.substring(2);
+    }else{
+      intentoCurp = 0;
+    }
+
+    //fecha de Nacimiento
     if(fechaNacimiento.text.length > 0){
       curpStr = curpStr + fechaNacimiento.text[8] +fechaNacimiento.text [9];
       curpStr = curpStr + fechaNacimiento.text[3] +fechaNacimiento.text [4];
       curpStr = curpStr + fechaNacimiento.text[0] +fechaNacimiento.text [1];
     }
 
+    String segConsonantes = "";
+    //segunda consonante primer apellido
+    bandera = false;
+    for(int i = 1;(bandera == false && apellidoPrimero.text.length > 1); i++){
+      if(!vocales.contains(apellidoPrimero.text[i])){
+        bandera = true;
+        segConsonantes = apellidoPrimero.text[i];
+      }
+      if(apellidoPrimero.text.length == i+1)
+        bandera = true;
+      if(bandera && segConsonantes.length == 0)
+        segConsonantes = 'X';
+    }
+    
+    //segunda consonante segundo apellido
+    bandera = false;
+    for(int i = 1;(bandera == false && apellidoSegundo.text.length > 1); i++){
+      if(!vocales.contains(apellidoSegundo.text[i])){
+        bandera = true;
+        segConsonantes = segConsonantes + apellidoSegundo.text[i];
+      }
+      if(apellidoSegundo.text.length == i+1)
+        bandera = true;
+      if(bandera && segConsonantes.length == 1)
+        segConsonantes = segConsonantes + 'X';
+    }
+    if(apellidoSegundo.text.length == 0){segConsonantes = segConsonantes + 'X';}
+
+    //segunda consonante nombre pila
+    bandera = false;
+    for(int i = 1;(bandera == false && nomPila.length > 1); i++){
+      if(!vocales.contains(nomPila[i])){
+        bandera = true;
+        segConsonantes = segConsonantes + nomPila[i];
+      }
+      if(nomPila.length == i+1)
+        bandera = true;
+      if(bandera && segConsonantes.length == 2)
+        segConsonantes = segConsonantes + 'X';
+    }
+    
+    //fill 10 caracteres de campos curp y rfc
     if(curp.text.length < 18) curp.text = curpStr;
-    rfc.text = curpStr;
+    if(rfc.text.length < 10) rfc.text = curpStr;
+    
+    //validaciones
+    if(curp.text.length == 18 && (rfc.text.length == 10 || rfc.text.length == 13)){
+      if(curp.text.substring(0,10) == curpStr && rfc.text.substring(0,10) == curpStr && sexo.contains(curp.text.substring(10,11)) && entFed.contains(curp.text.substring(11,13)) && curp.text.substring(13,16) == segConsonantes && double.tryParse(curp.text.substring(17,18)) != null ){
+         result = true; 
+      }
+    }
+    return result;
   }
 }

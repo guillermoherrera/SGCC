@@ -98,7 +98,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
                           Expanded(child:  
                             Align(
                               alignment: FractionalOffset.bottomCenter,
-                              child: styleButton(validaSubmit, buttonEnabled ? "FINALIZAR" : "GUARDANDO ..."),
+                              child: styleButton(confirm, buttonEnabled ? "FINALIZAR" : "GUARDANDO ..."),
                             ),
                           )
                         ]
@@ -302,7 +302,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
 
   List<Widget> buttonWidget(){
     return [
-      styleButton(validaSubmit, buttonEnabled ? "GUARDAR" : "GUARDANDO ..."),
+      styleButton(confirm, buttonEnabled ? "GUARDAR" : "GUARDANDO ..."),
     ];
   }
 
@@ -314,6 +314,37 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
       padding: EdgeInsets.all(12),
       child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Icon(Icons.arrow_forward),Text(text, style: TextStyle(fontSize: 20),)]),
     ));
+  }
+
+  confirm(){
+    showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
+        title: Center(child: Text("CONFIRMAR REGISTRO DE SOLICITUD")),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error, color: Colors.green, size: 100.0,),
+            Text("\nAntes de crear la solicitud confirme que ha revisado que los DATOS DEL CLIENTE se ha capturado correctamente.\n\nLa información capturada es correcta?"),
+          ],
+        ),
+        actions: <Widget>[
+          new FlatButton(
+            child: const Text("Revisar."),
+            onPressed: (){Navigator.pop(context);}
+          ),
+          new FlatButton(
+            child: const Text("Sí, crear."),
+            onPressed: ()async{
+              Navigator.pop(context);
+              validaSubmit();
+            }
+          )
+        ],
+      );
+    });
   }
 
   void validaSubmit() async{
