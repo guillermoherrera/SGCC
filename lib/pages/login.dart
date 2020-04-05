@@ -231,11 +231,15 @@ class _LoginState extends State<Login> {
         pref.setString("name",querySnapshot.documents[0].data['nombre']);
         pref.setBool("passGenerico", querySnapshot.documents[0].data['passGenerico']);
         pref.setString("documentID",querySnapshot.documents[0].documentID);
+        pref.setInt("sistema",querySnapshot.documents[0].data['sistema']);
+        pref.setString("sistemaDesc",querySnapshot.documents[0].data['sistemaDesc']);
       }else{
         pref.setInt("tipoUsuario", 0);
         pref.setString("name","");
         pref.setBool("passGenerico", false);
         pref.setString("documentID","");
+        pref.setInt("sistema", 0);
+        pref.setString("sistemaDesc", null);
       }
       
       //catDocumentos
@@ -262,11 +266,16 @@ class _LoginState extends State<Login> {
         final catEstado = CatEstado(codigo: value.data['codigo'], estado: value.data['estado']);
         await RepositoryCatEstados.addCatEstado(catEstado);
       }
+
+      if(pref.getInt("sistema") == 0 || pref.getInt("sistema") == null)
+        throw new FormatException("Sistema no especificado");
     }catch(e){
       pref.setInt("tipoUsuario",0);
       pref.setString("name","");
       pref.setBool("passGenerico", false);
       pref.setString("documentID","");
+      pref.setInt("sistema", 0);
+      pref.setString("sistemaDesc", null);
     }
 
   }

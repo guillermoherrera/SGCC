@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
   List<String> apellidos = ["Herrera", "Lopez", "Morales"];
   //List<String> personas = List();
   Random rnd = new Random();
-  String mensaje = "* No tienes registros de nuevas solicitudes de crédito en este dispositivo. \n\n * Puedes ir al apartado de Solicitudes para comenzar a registrar y/o revisar nuevas solicitudes de crédito.";
+  String mensaje = "Hola, bienvenido 👋. \n\n * Aún No tienes registros de nuevas solicitudes de crédito en este dispositivo. \n\n * Puedes ir al apartado de 'Solicitudes' para comenzar a registrar y/o revisar nuevas solicitudes de crédito. \n\n * En el apartado de 'Cartera' puedes revisar el detalle de tu cartera. \n\n * Puedes revisar en 'Renovación' los grupos con fechas próximas a terminar para organizar tus renovaciones.";
   bool changePass = false;
 
   Future<void> getListDocumentos() async{

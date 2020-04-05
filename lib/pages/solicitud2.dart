@@ -327,7 +327,7 @@ class _SolicitudDocumentosState extends State<SolicitudDocumentos> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.error, color: Colors.green, size: 100.0,),
-            Text("\nAntes de crear la solicitud confirme que ha revisado que los DATOS DEL CLIENTE se ha capturado correctamente.\n\nLa información capturada es correcta?"),
+            Text("\nAntes de crear la solicitud confirme que ha revisado que los DATOS DEL CLIENTE se han capturado correctamente.\n\n¿La información capturada es correcta?"),
           ],
         ),
         actions: <Widget>[

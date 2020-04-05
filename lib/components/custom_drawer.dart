@@ -25,7 +25,7 @@ class CustomDrawer extends StatefulWidget {
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
-  String email = "correo@dominio.com", name = "", fechaSinc = "";
+  String email = "correo@dominio.com", name = "", fechaSinc = "", sistema = "";
   bool sinc = false;
 
   Future<void> getDatos() async{
@@ -34,6 +34,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     name = pref.getString("name");
     fechaSinc = pref.getString("fechaSinc");
     sinc = pref.getBool("Sinc");
+    sistema = getSistema(pref.getInt('sistema'));
     if(sinc == null){sinc = true;};
     setState(() {});
   }
@@ -52,7 +53,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
         children: <Widget>[
           UserAccountsDrawerHeader(
             accountName: Text(email, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            accountEmail: Text(name != "" ? name : "Nombre Asesor", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            accountEmail: Text((name != "" ? name : "Nombre Asesor")+" | "+sistema, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             currentAccountPicture: GestureDetector(
               child: CircleAvatar(
                 backgroundColor: Colors.white,
@@ -149,6 +150,25 @@ class _CustomDrawerState extends State<CustomDrawer> {
     final pref = await SharedPreferences.getInstance();
     pref.clear();
     await widget.authFirebase.signOut();
+  }
+
+  String getSistema(sistema){
+    switch (sistema) {
+      case 1:
+        return "VR";
+        break;
+      case 2:
+        return "OPORTUNIDADES";
+        break;
+      case 3:
+        return "CRECE";
+        break;
+      case 4:
+        return "GYT";
+        break;
+      default:
+        return "😃";
+    }
   }
 
   Widget numeroACambiar(int n){

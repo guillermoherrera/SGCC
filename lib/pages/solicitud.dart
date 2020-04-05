@@ -202,7 +202,12 @@ class _SolicitudState extends State<Solicitud> {
             if(value.isEmpty){
               return "Ingresa el importe";
             }else{
-              double cant = double.parse(value);
+              double cant;
+              try{
+                cant = double.parse(value);
+              }catch(e){
+                cant = 0;
+              }
               if(cant <= 0 || cant%500 > 0 ){
                 return "El importe debe ser multiplo de 500 (ej. 500, 1000, 1500 ...)";
               }else{
@@ -477,6 +482,8 @@ class _SolicitudState extends State<Solicitud> {
               ),
               keyboardType: TextInputType.number,
               validator: (value){
+                value = value.replaceAll(RegExp(r"[^\s\w]"), "");//quitar simbolos
+                value = value.replaceAll(" ", "");//quitar espacios en blanco
                 if(value.isEmpty){
                   return "Ingresa un teléfono";
                 }else if(value.length < 10){

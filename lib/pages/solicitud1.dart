@@ -301,6 +301,8 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
               ),
               keyboardType: TextInputType.number,
               validator: (value){
+                value = value.replaceAll(RegExp(r"[^\s\w]"), "");//quitar simbolos
+                value = value.replaceAll(" ", "");//quitar espacios en blanco
                 if(value.isEmpty){
                   return "Ingresa el código postal";
                 }else{
