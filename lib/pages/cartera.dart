@@ -89,7 +89,7 @@ class _CarteraState extends State<Cartera> {
         elevation: 0.0,
         leading: Container(),
       ),
-      body: userType == null ? Container() : userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) :  RefreshIndicator(
+      body: userType == null ? Container() : userType == 0 ? SingleChildScrollView(child: Container(child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/page_not_found.png"), Padding(padding: EdgeInsets.all(50), child:Text("Usuario no encontrado.\n\nTu usuario no esta asignado, ponte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)))])),color: Colors.white,)) :  RefreshIndicator(
         key: refreshKey,
         onRefresh: ()async{
           await Future.delayed(Duration(seconds:1));
@@ -136,8 +136,8 @@ class _CarteraState extends State<Cartera> {
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                   ),
                   child:  Padding(
-                    padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
-                    child: listaCartera.length > 0 ? carteraLista() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
+                    padding: EdgeInsets.fromLTRB(13, 16, 13, 3),
+                    child: listaCartera.length > 0 ? carteraLista() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Column(mainAxisAlignment: MainAxisAlignment.center, children:[mensaje == "Cargando ...🕔" ? Padding(padding: EdgeInsets.only(top:5), child: CircularProgressIndicator()) : Image.asset("images/empty.png"), Padding(padding: EdgeInsets.all(50), child:Text(mensaje, style: TextStyle( fontSize: 15)))]);}),),//Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
                   ),
                 )
               )),
@@ -150,7 +150,7 @@ class _CarteraState extends State<Cartera> {
               ),
               listaCartera.length > 0 ? Expanded(child:carteraLista()) : Expanded(child: ListView())*/
             ],),
-            listaCartera.length > 0 ? Container() : ListView()
+            //listaCartera.length > 0 ? Container() : ListView()
           ]
         )
       ),

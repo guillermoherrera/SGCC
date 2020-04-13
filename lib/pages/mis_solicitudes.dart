@@ -29,7 +29,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   }
 
   getListDocumentos()async{
-    await Future.delayed(Duration(milliseconds:250));
+    await Future.delayed(Duration(milliseconds:/*250*/500));
     setState(() {
       items = 8;
     });
@@ -72,7 +72,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
           //IconButton(icon: Icon(Icons.add_circle_outline, color: Colors.white), onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome) ));},)
         ]
       ),
-      body: userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : Container(
+      body: userType == 0 ? SingleChildScrollView(child: Container(child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/page_not_found.png"), Padding(padding: EdgeInsets.all(50), child:Text("Usuario no encontrado.\n\nTu usuario no esta asignado, ponte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)))])),color: Colors.white,)) : Container(
         child: Stack(
           children: <Widget>[
             Container(
@@ -115,7 +115,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
                   ),
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(13, 13, 13, 3),//.all(13.0),
-                    child: items > 0 ? listaOpciones() : Container()
+                    child: items > 0 ? Stack(children:<Widget>[Center(child:Opacity(opacity: .8, child: Image.asset("images/onboarding.png",fit: BoxFit.cover,width: double.infinity,alignment: Alignment.center,))),listaOpciones()]) : Center(child:Opacity(opacity: 1, child: Image.asset("images/onboarding.png")))
                   ),
                 )
               )),
@@ -203,7 +203,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
               child: new Container(
                   margin: const EdgeInsets.only(left: 10.0, right: 20.0),
                   child: Divider(
-                    color: widget.colorTema,
+                    color: Colors.black,
                     height: 36,
                   )),
             ),
@@ -212,7 +212,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
               child: new Container(
                   margin: const EdgeInsets.only(left: 20.0, right: 10.0),
                   child: Divider(
-                    color: widget.colorTema,
+                    color: Colors.black,
                     height: 36,
                   )),
             ),
@@ -223,7 +223,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
               child: new Container(
                   margin: const EdgeInsets.only(left: 10.0, right: 20.0),
                   child: Divider(
-                    color: widget.colorTema,
+                    color: Colors.black,
                     height: 36,
                   )),
             ),
@@ -232,7 +232,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
               child: new Container(
                   margin: const EdgeInsets.only(left: 20.0, right: 10.0),
                   child: Divider(
-                    color: widget.colorTema,
+                    color: Colors.black,
                     height: 36,
                   )),
             ),
@@ -240,7 +240,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
         }else{
           return InkWell(
             onTap: ()=>_accionItem(index),
-            child: Card(
+            child: Opacity(opacity: 0.9, child: Card(
               shape: RoundedRectangleBorder(
                 side: BorderSide(color:widget.colorTema, width:3.0),
                 borderRadius: BorderRadius.only(
@@ -262,10 +262,16 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
                   gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [Colors.white, Colors.white])
+                  colors: [Colors.white, Colors.white]),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(50.0),
+                    topRight: Radius.circular(50.0),
+                    bottomLeft: Radius.circular(50.0),
+                    bottomRight: Radius.circular(50.0)
+                  ),
                 ),
               ),
-            )
+            ))
           );
         }
       },
@@ -345,29 +351,29 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
     );
   }
 
-  Icon iconoItem(i){
+  Widget iconoItem(i){
     switch(i){
       case 1:
         if(userType == 1){
           return Icon(Icons.format_align_justify, size: 40,);
         }else{
-          return Icon(Icons.lock_open, size: 40,color: Colors.black);
+          return Container(child: Icon(Icons.lock_open, size: 40,color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.black ,borderRadius: BorderRadius.all(Radius.circular(25))));
         }
         break;
       case 2:
-        return Icon(Icons.lock, size: 40,color: Colors.yellow[700],);
+        return Container(child: Icon(Icons.lock, size: 40,color: Colors.white,), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.yellow[700] ,borderRadius: BorderRadius.all(Radius.circular(25))));
         break;
       case 5:
-        return Icon(Icons.done_all, size: 40, color: Colors.grey);
+        return Container(child: Icon(Icons.done, size: 40, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.grey ,borderRadius: BorderRadius.all(Radius.circular(25))));
         break;
       case 3:
-        return Icon(Icons.autorenew, size: 40, color: Colors.blue);
+        return Container(child: Icon(Icons.autorenew, size: 40, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.blue ,borderRadius: BorderRadius.all(Radius.circular(25))));
         break;
       case 6:
-        return Icon(Icons.done_all, size: 40,color: Colors.green,);
+        return Container(child: Icon(Icons.done, size: 40,color: Colors.white,), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: widget.colorTema ,borderRadius: BorderRadius.all(Radius.circular(25))));
         break;
       case 7:
-        return Icon(Icons.block, size: 40, color: Colors.red);
+        return Container(child: Icon(Icons.close, size: 40, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.red ,borderRadius: BorderRadius.all(Radius.circular(25))));
         break;
       default:
         return Icon(Icons.add_call, size: 90);

@@ -59,6 +59,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
     listaRenEspera = await ServiceRepositoryRenovaciones.getRenovacionesFromGrupo(widget.grupoInfo.contratoId);
     if(listaRenEspera.length > 0){
       solicitable = false;
+      mensaje = "Renovacion solicitada previamente, es probable que este grupo ya se encuentre en tu cartera";
       listaRenovacion.clear();
       listaRenEnviar.clear();
       listaRenEspera.forEach((f){
@@ -89,7 +90,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
       if(querySnapshot.documents.length > 0){
         importe = querySnapshot.documents[0].data['importe'];
         integrantes = querySnapshot.documents[0].data['integrantes'];
-        mensaje = "Renovacion solicitada previamente";
+        mensaje = "Renovacion solicitada previamente, es probable que este grupo ya se encuentre en tu cartera";
         solicitable = false;
       }else{
         
@@ -100,6 +101,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
           contratoDRequest.contrato.nombreGeneral = widget.grupoInfo.nombreGeneral;
           contratoDRequest.contrato.contratoId = widget.grupoInfo.contratoId;
           contrato = contratoDRequest.contrato;
+          if(!solicitable){mensaje = "Renovacion solicitada previamente, es probable que este grupo ya se encuentre en tu cartera";}
 
           listaRenovacion.clear();
           inputs.clear();
@@ -227,8 +229,8 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                   ),
                   child:  Padding(
-                    padding: EdgeInsets.fromLTRB(13, 13, 13, 33),
-                    child: listaRenovacion.length > 0 ?  renovacionLista() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
+                    padding: EdgeInsets.fromLTRB(13, 16, 13, 33),
+                    child: listaRenovacion.length > 0 ?  renovacionLista() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Column(mainAxisAlignment: MainAxisAlignment.center, children:[mensaje == "Cargando ...🕔" ? Padding(padding: EdgeInsets.only(top:5), child: CircularProgressIndicator()) : Image.asset(mensaje == "Renovacion solicitada previamente, es probable que este grupo ya se encuentre en tu cartera" ? "images/_confirmation.png" : "images/empty.png"), Padding(padding: EdgeInsets.all(50), child:Text(mensaje, style: TextStyle( fontSize: 15)))]);}),),
                   ),
                 )
               )),

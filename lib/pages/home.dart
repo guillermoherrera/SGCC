@@ -63,7 +63,8 @@ class _HomePageState extends State<HomePage> {
   List<String> apellidos = ["Herrera", "Lopez", "Morales"];
   //List<String> personas = List();
   Random rnd = new Random();
-  String mensaje = "Hola, bienvenido 👋. \n\n * Aún No tienes registros de nuevas solicitudes de crédito en este dispositivo. \n\n * Puedes ir al apartado de 'Solicitudes' para comenzar a registrar y/o revisar nuevas solicitudes de crédito. \n\n * En el apartado de 'Cartera' puedes revisar el detalle de tu cartera. \n\n * Puedes revisar en 'Renovación' los grupos con fechas próximas a terminar para organizar tus renovaciones.";
+  String mensaje = "Bienvenido a Asesores App.";// \n\n * Aún No tienes registros de nuevas solicitudes de crédito en este dispositivo. \n\n * Puedes ir al apartado de 'Solicitudes' para comenzar a registrar y/o revisar nuevas solicitudes de crédito. \n\n * En el apartado de 'Cartera' puedes revisar el detalle de tu cartera. \n\n * Puedes revisar en 'Renovación' los grupos con fechas próximas a terminar para organizar tus renovaciones.";
+  String mensaje2 = "Puedes comenzar a capturar nuevas solicitudes de crédito grupal o revisar la información de los grupos con los que ya estas trabajando, solo ve a la barra de navegación inferior y selecciona la opción que necesites.";
   bool changePass = false;
 
   Future<void> getListDocumentos() async{
@@ -197,7 +198,7 @@ class _HomePageState extends State<HomePage> {
           ],*/
         ),
         drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), changePass: changePass, sincManual: sincManual ),
-        body: userType == null ? Container() : userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : RefreshIndicator(
+        body: userType == null ? Container() : userType == 0 ? SingleChildScrollView(child: Container(child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/page_not_found.png"), Padding(padding: EdgeInsets.all(50), child:Text("Usuario no encontrado.\n\nTu usuario no esta asignado, ponte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)))])),color: Colors.white,)) : RefreshIndicator(
             key: refreshKey,
             onRefresh: ()async{
               try {
@@ -263,8 +264,8 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
-                        child: ultimos.length > 0 ? listaOpciones() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black))));})),
+                        padding: EdgeInsets.fromLTRB(13, 16, 13, 3),
+                        child: ultimos.length > 0 ? Stack(children:<Widget>[Center(child:Opacity(opacity: 0, child: Image.asset("images/analysis.png"))),listaOpciones()]) : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Container(child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/analysis.png"),Padding(padding: EdgeInsets.all(20), child:Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35))),Padding(padding: EdgeInsets.all(20), child:Text(mensaje2, style: TextStyle(fontSize: 15)))])),color: Colors.white,);})),
                       ),
                     )
                   )),
@@ -346,7 +347,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ), margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0)) : InkWell(
           onTap: (){},
-          child: Card(
+          child: Opacity(opacity: 0.8, child: Card(
             shape: RoundedRectangleBorder(
               side: BorderSide(color:widget.colorTema, width:3.0),
               borderRadius: BorderRadius.only(
@@ -371,7 +372,7 @@ class _HomePageState extends State<HomePage> {
                 colors: [Colors.white, Colors.white])
               ),
             ),
-          )
+          ))
         );
       },
     );

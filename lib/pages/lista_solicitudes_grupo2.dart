@@ -80,7 +80,7 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
       setState(() {});
     }catch(e){
       solicitudes.clear();
-      mensaje = "Error interno. Revisa tu conexión a internet 🚫☹️";
+      mensaje = "Error interno. Revisa tu conexión a internet";
       setState(() {});
     }
   }
@@ -159,8 +159,8 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                   ),
                   child:  Padding(
-                    padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
-                    child: solicitudes.length > 0 ?listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
+                    padding: EdgeInsets.fromLTRB(13, 16, 13, 3),
+                    child: solicitudes.length > 0 ?listaSolicitudes() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Column(mainAxisAlignment: MainAxisAlignment.center, children:[mensaje == "Cargando ...🕔" ? Padding(padding: EdgeInsets.only(top:5), child: CircularProgressIndicator()) : Image.asset("images/empty.png"), Padding(padding: EdgeInsets.all(50), child:Text(mensaje, style: TextStyle( fontSize: 15)))]);}),),
                   ),
                 ))
               )
@@ -233,31 +233,31 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
     Widget icono;
     switch (solicitud.status) {
       case 1:
-        icono = Tooltip(message: "Por autorizar consulta de Buró", child: Icon(Icons.done_all));
+        icono = Tooltip(message: "Por autorizar consulta de Buró", child: Container(child: Icon(Icons.done, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.grey ,borderRadius: BorderRadius.all(Radius.circular(25)))));
         break;
       case 2:
-        icono = Tooltip(message: "Dictaminado", child: Icon(Icons.done_all, color: widget.colorTema));
+        icono = Tooltip(message: "Dictaminado", child: Container(child: Icon(Icons.done, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: widget.colorTema ,borderRadius: BorderRadius.all(Radius.circular(25)))));
         break;
       case 3:
-        icono = Tooltip(message: "Rechazado", child: Icon(Icons.block, color: Colors.red));
+        icono = Tooltip(message: "Rechazado", child: Container(child: Icon(Icons.close, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.red ,borderRadius: BorderRadius.all(Radius.circular(25)))));
         break;
       case 6:
-        icono = Tooltip(message: "En revisión por cambio de documentos", child: Icon(Icons.done_all, color: Colors.yellow));
+        icono = Tooltip(message: "En revisión por cambio de documentos", child: Container(child: Icon(Icons.done, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.yellow[700] ,borderRadius: BorderRadius.all(Radius.circular(25)))));
         break;
       case 7:
-        icono = Tooltip(message: "En espera de consulta de Buró", child: Icon(Icons.done_all, color: Colors.blue));
+        icono = Tooltip(message: "En espera de consulta de Buró", child: Container(child: Icon(Icons.done, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.blue ,borderRadius: BorderRadius.all(Radius.circular(25)))));
         break;
       case 8:
-        icono = Tooltip(message: "En proceso de consulta de Buró", child: Icon(Icons.done_all, color: Colors.blue));
+        icono = Tooltip(message: "En proceso de consulta de Buró", child: Container(child: Icon(Icons.done, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.blue ,borderRadius: BorderRadius.all(Radius.circular(25)))));
         break;
       case 9:
-        icono = Container(child: Tooltip(message: "Por dictaminar", child: Icon(Icons.done_all, color: Colors.white)),decoration: BoxDecoration(color: widget.colorTema ,borderRadius: BorderRadius.all(Radius.circular(15))));
+        icono = Tooltip(message: "Por dictaminar", child: Container(child: Icon(Icons.done, color: widget.colorTema), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.grey ,borderRadius: BorderRadius.all(Radius.circular(25)))));
         break;
       case 10:
-        icono = Tooltip(message: "Error en consulta de Buró", child: Icon(Icons.done_all, color: Colors.red));
+        icono = Tooltip(message: "Error en consulta de Buró", child: Container(child: Icon(Icons.done, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.red ,borderRadius: BorderRadius.all(Radius.circular(25)))));
         break;
       default:
-        icono = Tooltip(message: "Sin estatus, contactar a soporte", child: Icon(Icons.close, color: Colors.red));
+        icono = Tooltip(message: "Sin estatus, contactar a soporte", child: Container(child: Icon(Icons.error, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.red ,borderRadius: BorderRadius.all(Radius.circular(25)))));
         break;
     }
     return Column(children: <Widget>[icono], mainAxisAlignment: MainAxisAlignment.center);

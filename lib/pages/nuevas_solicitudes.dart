@@ -38,7 +38,7 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
         iconTheme: IconThemeData(color: Colors.white),
         elevation: 0.0,
       ),
-      body: userType == null ? Container() : userType == 0 ? Center(child: Padding(padding: EdgeInsets.all(50), child:Text("Tu Usuario no esta asignado.  ☹️☹️☹️\n\nPonte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: widget.colorTema)))) : Container(
+      body: userType == null ? Container() : userType == 0 ? SingleChildScrollView(child: Container(child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/page_not_found.png"), Padding(padding: EdgeInsets.all(50), child:Text("Usuario no encontrado.\n\nTu usuario no esta asignado, ponte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)))])),color: Colors.white,)) : Container(
           child: Stack(
             children: <Widget>[
               Container(
@@ -142,6 +142,12 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
     return [
       Expanded(child: Padding(padding: EdgeInsets.fromLTRB(5, 10, 5, 0), child: ListView(
         children: <Widget>[
+          Container(child:
+            Image.asset("images/collaborators.png"),
+            padding: EdgeInsets.all(10),
+          ),
+          Padding(padding: EdgeInsets.only(top:0, left:10, right:10, bottom:10), child:Text("Solicitudes.", style: TextStyle(fontWeight: FontWeight.bold ,fontSize: 35))),
+          Padding(padding: EdgeInsets.only(top:0, left:10, right:10, bottom:20), child:Text("Puedes crear nuevos grupos, actulizar y/o eliminar existentes, de igual manera puedes realizar las mismas acciones con sus integrantes.", style: TextStyle(fontSize: 15))),
           userType == 2 ? Container() : InkWell(
             child: Card(
               shape: RoundedRectangleBorder(
@@ -189,7 +195,7 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
                 leading: Icon(Icons.group_add, color: widget.colorTema,size: 80.0,),
                 title: Text("Grupal", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                 subtitle: Text("Solicitudes de Credito Grupal."),
-                //trailing: Icon(Icons.arrow_forward_ios),
+                trailing: Icon(Icons.arrow_forward_ios, color: widget.colorTema,size: 40,),
                 //isThreeLine: true,
                 ),
                 decoration: BoxDecoration(
@@ -201,7 +207,8 @@ class _NuevasSolicitudesState extends State<NuevasSolicitudes> {
               )
             ),
             onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Group(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome )));},
-          )
+          ),
+          
         ],
       )))
     ];

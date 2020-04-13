@@ -66,7 +66,7 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
                           padding: EdgeInsets.all(15),
                           child: Column(children: vista())
                         ),
-                        Expanded(child:  
+                        /*Expanded(child:  
                           Align(
                             alignment: FractionalOffset.bottomCenter,
                             child: SizedBox(width: double.infinity, child: RaisedButton(
@@ -79,7 +79,7 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
                               child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Icon(Icons.edit),Text("ACTUALIZAR IMPORTE", style: TextStyle(fontSize: 20),)]),
                             ))
                           ),
-                        )
+                        )*/
                       ]
                     ))
                   )
@@ -94,8 +94,7 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
 
   List<Widget> vista(){
     return [
-      Padding(padding: EdgeInsets.only(top: 20), child: Image.asset("images/confiaShop.png", height: 70,)),
-      confiaShop(),
+      Padding(padding: EdgeInsets.only(top: 0), child: Image.asset("images/_finance.png", )),
       /*Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
         onPressed: ()async{
           validaSubmit();
@@ -137,7 +136,19 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
           }
         ),
       ),
-      Divider(),
+      Align(
+        alignment: FractionalOffset.bottomCenter,
+        child: SizedBox(width: double.infinity, child: RaisedButton(
+          onPressed: ()async{
+            validaSubmit();
+          },
+          color: Color(0xff1A9CFF),
+          textColor: Colors.white,
+          padding: EdgeInsets.all(12),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Icon(Icons.edit),Text("ACTUALIZAR IMPORTE", style: TextStyle(fontSize: 20),)]),
+        ))
+      ),
+      Divider(color: widget.colorTema,),
       Container(
         child: datos(),
         padding: EdgeInsets.all(10.0),
@@ -145,12 +156,15 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
           color: Color(0xfff2f2f2)
         ),
       ),
+      Padding(padding: EdgeInsets.only(top: 20), child: Image.asset("images/confiaShop.png", height: 70,)),
+      widget.renovacion.beneficios != null ? confiaShop() : Container(),
+      confiaShopVenta(),
     ];
   }
 
   Widget padded(Widget childs){
     return Padding(
-      padding: const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 10),
+      padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
       child: childs,
     );
   }
@@ -239,8 +253,18 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
       onPressed: ()async{
         Navigator.push(context, MaterialPageRoute(builder: (context) => ConfiaShopView()));
       },
-      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.shopping_cart, color: Colors.white) ,Text(" CONFIASHOP", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.shopping_cart, color: Colors.white) ,Text(" BENEFICIOS CONFIASHOP", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
       color: Colors.purple,
+    )));
+  }
+
+  Widget confiaShopVenta(){    
+    return Padding(padding: EdgeInsets.fromLTRB(10.0, 0, 10.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
+      onPressed: ()async{
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ConfiaShopView()));
+      },
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.shopping_cart, color: Colors.white) ,Text(" CONFIASHOP", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
+      color: widget.colorTema,
     )));
   }
 

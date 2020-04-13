@@ -191,8 +191,8 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo>  with Sin
                       borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                     ),
                     child:  Padding(
-                      padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
-                      child: solicitudes.length > 0 ? listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text("Grupo sin solicitudes para mostrar ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))))//Center(child: Text("Sin solicitudes para este Grupo"),) 
+                      padding: EdgeInsets.fromLTRB(13, 16, 13, 3),
+                      child: solicitudes.length > 0 ? listaSolicitudes() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/empty.png"), Padding(padding: EdgeInsets.all(50), child:Text("Grupo sin solicitudes para mostrar ", style: TextStyle( fontSize: 15)))]);}),)//Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text("Grupo sin solicitudes para mostrar ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))))//Center(child: Text("Sin solicitudes para este Grupo"),) 
                     ),
                   ))
                 )
@@ -281,7 +281,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo>  with Sin
       mainAxisSize: MainAxisSize.min,
       children: 
       <Widget>[
-        Icon(Icons.access_time,color: Colors.yellow[700],),
+        Container(child: Icon(Icons.access_time, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.yellow[700] ,borderRadius: BorderRadius.all(Radius.circular(25)))),
         PopupMenuButton(
           itemBuilder: (_) => <PopupMenuItem<int>>[
             new PopupMenuItem<int>(

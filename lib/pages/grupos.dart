@@ -101,13 +101,13 @@ class _GroupState extends State<Group> {
                       borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                     ),
                     child:  Padding(
-                      padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
-                      child: grupos.length > 0 ? listaGrupos() :  Padding(padding: EdgeInsets.all(20.0),child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Sin grupos en captura ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)), Row(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Presiona ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)), Icon(Icons.group_add, size: 30.0), Text(" para agregar un grupo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))],)],)), 
+                      padding: EdgeInsets.fromLTRB(13, 16, 13, 3),
+                      child: grupos.length > 0 ? listaGrupos() :  Center(child: SingleChildScrollView(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/empty.png"),Padding(padding: EdgeInsets.all(20.0),child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Sin grupos en captura ", style: TextStyle(fontSize: 15)), Row(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Presiona ", style: TextStyle(fontSize: 15)), Icon(Icons.group_add, size: 30.0), Text(" para agregar un grupo", style: TextStyle( fontSize: 15))],)],)),)])),//Padding(padding: EdgeInsets.all(20.0),child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Sin grupos en captura ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)), Row(mainAxisAlignment: MainAxisAlignment.center ,children: <Widget>[ Text("Presiona ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)), Icon(Icons.group_add, size: 30.0), Text(" para agregar un grupo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))],)],)), 
                     ),
                   )
                 ))),
               ]),
-              grupos.length > 0 ? Container() : ListView()
+              //grupos.length > 0 ? Container() : ListView()
             /*Column(children: <Widget>[
               ResponsiveContainer(
                 heightPercent: 30.0,
@@ -234,8 +234,8 @@ class _GroupState extends State<Group> {
         title: Center(child: Text("AGREGAR GRUPO")),
         content: Form(
           key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Wrap(
+            //mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               padded(
                 TextFormField(
@@ -286,8 +286,8 @@ class _GroupState extends State<Group> {
         title: Center(child: Text("CAMBIAR NOMBRE DEL GRUPO")),
         content: Form(
           key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Wrap(
+            //mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               padded(
                 TextFormField(

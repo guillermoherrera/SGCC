@@ -88,8 +88,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudesCambio(userID);
         break;
       case 3:
-        msjEncabezado = "SOLICITUDES APROBADAS: ";
-        mensaje = "Sin solicitudes Aprobadas para mostrar.";
+        msjEncabezado = "SOLICITUDES DICTAMINADAS: ";
+        mensaje = "Sin solicitudes Dictaminadas para mostrar.";
         await getSolcitudesespera(userID,2);
         await getRenovacionesEspera(userID,2);
         break;
@@ -215,7 +215,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
 
     }catch(e){
       solicitudes.clear();
-      mensaje = "Error interno. Revisa tu conexión a internet 🚫☹️";
+      mensaje = "Error interno. Revisa tu conexión a internet";
     }
   }
 
@@ -332,7 +332,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
 
     }catch(e){
       solicitudes.clear();
-      mensaje = "Error interno. Revisa tu conexión a internet 🚫☹️";
+      mensaje = "Error interno. Revisa tu conexión a internet";
     }
   }
 
@@ -358,7 +358,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
             icon: Icon(Icons.help),
             itemBuilder: (_) => <PopupMenuItem<int>>[
               PopupMenuItem<int>(
-                child: Row(children: <Widget>[Text("Mantén presionado "), Icon(Icons.done_all, color: Colors.grey),Text(" en la lista.")]),
+                child: Row(children: <Widget>[Text("Mantén presionado "), Container(child: Icon(Icons.done, size: 10, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.grey ,borderRadius: BorderRadius.all(Radius.circular(25)))),Text(" en la lista.")]),
               )
             ]
           )
@@ -437,8 +437,8 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(50.0), topRight: Radius.circular(50.0)),
                   ),
                   child:  Padding(
-                    padding: EdgeInsets.fromLTRB(13, 13, 13, 3),
-                    child: solicitudes.length > 0 ? listaSolicitudes() : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),
+                    padding: EdgeInsets.fromLTRB(13, 16, 13, 3),
+                    child: solicitudes.length > 0 ? listaSolicitudes() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Column(mainAxisAlignment: MainAxisAlignment.center, children:[mensaje == "Por favor espere." ? Padding(padding: EdgeInsets.only(top:5), child: CircularProgressIndicator()) : Image.asset("images/empty.png"), Padding(padding: EdgeInsets.all(50), child:Text(mensaje, style: TextStyle( fontSize: 15)))]);}),),
                   ),
                 )
               )),
@@ -456,7 +456,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
               ),
               solicitudes.length > 0 ? Expanded(child: listaSolicitudes()) : Padding(padding: EdgeInsets.all(20.0),child: Center(child: Text(mensaje, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black)))),*/
             ]),
-            solicitudes.length > 0 ? Container() : ListView()
+            //solicitudes.length > 0 ? Container() : ListView()
           ]
         )
       ),
@@ -619,7 +619,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           icono = Tooltip(message: "Por autorizar consulta de Buró", child: Icon(Icons.done_all));
           break;
         case 2:
-          icono = Tooltip(message: "Aprobado", child: Icon(Icons.done_all, color: widget.colorTema));
+          icono = Tooltip(message: "Dictaminado", child: Icon(Icons.done_all, color: widget.colorTema));
           break;
         case 3:
           icono = Tooltip(message: "Denegado", child: Icon(Icons.block, color: Colors.red));
@@ -657,7 +657,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           children: 
           <Widget>[
             Row(mainAxisSize: MainAxisSize.min ,children: <Widget>[
-              Tooltip(message: "Los integrantes estan en proceso de aprobación.", child: Icon(Icons.done_all)),
+              Tooltip(message: "Los integrantes estan en proceso de dictamen.", child: Container(child: Icon(Icons.done, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.grey ,borderRadius: BorderRadius.all(Radius.circular(25))))),
               Text("        "),
               IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: ()async {
                 await Navigator.push(context, MaterialPageRoute(builder: (context) =>  ListaSolicitudesGrupoSinc(title: solicitud.nombreGrupo, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, solicitudes: solicitudesGrupo.toList())));
@@ -672,7 +672,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           children: 
           <Widget>[
             Row(mainAxisSize: MainAxisSize.min ,children: <Widget>[
-              Tooltip(message: "El grupo fue Aprobado.", child: Icon(Icons.done_all, color: widget.colorTema,)),
+              Tooltip(message: "Grupo dictaminado.", child: Container(child: Icon(Icons.done, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: widget.colorTema ,borderRadius: BorderRadius.all(Radius.circular(25))))),
               Text("        "),
               IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context) =>  ListaSolicitudesGrupoSinc(title: solicitud.nombreGrupo, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, solicitudes: solicitudesGrupo.toList())));
@@ -687,7 +687,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
           children: 
           <Widget>[
             Row(mainAxisSize: MainAxisSize.min ,children: <Widget>[
-              Tooltip(message: "El grupo fue Denegado.", child: Icon(Icons.done_all, color: Colors.red,)),
+              Tooltip(message: "Grupo denegado.", child: Container(child: Icon(Icons.close, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.red ,borderRadius: BorderRadius.all(Radius.circular(25))))),
               Text("        "),
               IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context) =>  ListaSolicitudesGrupoSinc(title: solicitud.nombreGrupo, colorTema: widget.colorTema, actualizaHome: widget.actualizaHome, solicitudes: solicitudesGrupo.toList())));
@@ -866,7 +866,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
       mainAxisSize: MainAxisSize.min,
       children: 
       <Widget>[
-        Icon(Icons.access_time,color: Colors.yellow[700],),
+        Container(child: Icon(Icons.access_time, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.yellow[700] ,borderRadius: BorderRadius.all(Radius.circular(25)))),
         PopupMenuButton(
           itemBuilder: (_) => <PopupMenuItem<int>>[
             new PopupMenuItem<int>(

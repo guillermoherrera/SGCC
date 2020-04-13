@@ -83,6 +83,15 @@ flutter:
     - images/adminconfiaicon.png
     - images/noImage.png
     - images/confiaShop.png
+    - images/page_not_found.png
+    - images/authentication.png
+    - images/source_.png
+    - images/collaborators.png
+    - images/analysis.png
+    - images/empty.png
+    - images/_confirmation.png
+    - images/_finance.png
+    - images/onboarding.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

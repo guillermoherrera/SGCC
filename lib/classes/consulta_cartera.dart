@@ -7,8 +7,8 @@ import 'dart:convert';
 class ConsultaCartera{
   Firestore _firestore = Firestore.instance;
   DocumentSnapshot _datosApi;
-  final String baseURL= "http://192.168.70.94:4000/cartera/";
-  final String baseURL2= "http://192.168.70.94:4000/renovacion/";
+  final String baseURL= "http://192.168.0.33:4000/cartera/";//"http://192.168.70.94:4000/cartera/";
+  final String baseURL2= "http://192.168.0.33:4000/renovacion/";//"http://192.168.70.94:4000/renovacion/";
 
   Future<ConsultaApiKey> getApiKey() async{
     ConsultaApiKey result = new ConsultaApiKey();

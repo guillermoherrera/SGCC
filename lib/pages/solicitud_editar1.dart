@@ -301,7 +301,7 @@ class _SolicitudDireccionEditarState extends State<SolicitudDireccionEditar> {
                 if(value.isEmpty){
                   return "Ingresa el código postal";
                 }else{
-                  return value.length != 5 ? "Completa el código postals" : null;
+                  return value.length != 5 ? "Completa el código postal" : null;
                 }
               },
             )

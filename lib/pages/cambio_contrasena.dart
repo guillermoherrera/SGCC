@@ -112,7 +112,7 @@ class _CambioContrasenaState extends State<CambioContrasena> {
           //color: Color(0xfff2f2f2)
         ),
       ),
-      Divider(),
+      Divider(color: widget.colorTema),
       padded(
         TextFormField(
           controller: passActual,
@@ -210,7 +210,18 @@ class _CambioContrasenaState extends State<CambioContrasena> {
   Widget info(){
     return Column(
       children: <Widget>[
-        Container(child:Column(
+        Container(child:
+          Center(child: 
+            Column(mainAxisAlignment: MainAxisAlignment.center, children:[
+              widget.changePass ? Icon(Icons.error, color: Colors.yellow[900], size: 40) : Icon(Icons.lock, color: widget.colorTema, size: 40),
+              Image.asset("images/authentication.png"), 
+              Container(
+                child: widget.changePass ? Text("\nLa contraseña actual NO es segura.\n\nEs recomendable cambiar la contraseña actual por una personalizada para mayor seguridad.", style: TextStyle( fontSize: 15)) :
+                  Text("\nEs recomendable cambiar la contraseña periodicamente para mayor seguridad.", style: TextStyle(fontSize: 15))
+              )
+            ]
+            )
+          )/*Column(
           //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             widget.changePass ? Icon(Icons.error, color: Colors.yellow[900], size: 40) : Icon(Icons.lock, color: widget.colorTema, size: 40),
@@ -219,7 +230,7 @@ class _CambioContrasenaState extends State<CambioContrasena> {
                 Text("\nEs recomendable cambiar la contraseña periodicamente para mayor seguridad.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
             )
           ],
-        ))
+        )*/)
       ]
     );
   }
@@ -264,7 +275,7 @@ class _CambioContrasenaState extends State<CambioContrasena> {
 
   Widget padded(Widget childs){
     return Padding(
-      padding: const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 10),
+      padding: const EdgeInsets.only(top: 0, left: 5, right: 5, bottom: 5),
       child: childs,
     );
   }
