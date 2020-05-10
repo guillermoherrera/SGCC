@@ -119,7 +119,7 @@ class _RenovacionesState extends State<Renovaciones> {
           //IconButton(icon: Icon(Icons.date_range, color: Colors.white), onPressed: ()async{await displayDateRangePicker(context);},)
         ],
       ),
-      body: userType == null ? Container() : userType == 0 ? SingleChildScrollView(child: Container(child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/page_not_found.png"), Padding(padding: EdgeInsets.all(50), child:Text("Usuario no encontrado.\n\nTu usuario no esta asignado, ponte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)))])),color: Colors.white,)) : RefreshIndicator(
+      body: userType == null ? Container() : userType == 0 ? Container(child: Center(child:SingleChildScrollView(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/page_not_found.png"), Padding(padding: EdgeInsets.all(50), child:Text("Usuario no encontrado.\n\nTu usuario no esta asignado, ponte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)))]))),color: Colors.white,) : RefreshIndicator(
         key: refreshKey,
         onRefresh: ()async{
           await Future.delayed(Duration(seconds:1));
@@ -167,7 +167,7 @@ class _RenovacionesState extends State<Renovaciones> {
                 ),
                 child:  Padding(
                   padding: EdgeInsets.fromLTRB(13, 16, 13, 3),
-                  child: listaRenovacion.length > 0 ? renovacionLista() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Column(mainAxisAlignment: MainAxisAlignment.center, children:[mensaje == "Cargando ...🕔" ? Padding(padding: EdgeInsets.only(top:5), child: CircularProgressIndicator()) : Image.asset("images/empty.png"), Padding(padding: EdgeInsets.all(50), child:Text(mensaje, style: TextStyle( fontSize: 15)))]);}),),
+                  child: listaRenovacion.length > 0 ? renovacionLista() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Column(mainAxisAlignment: MainAxisAlignment.center, children:[mensaje == "Cargando ...🕔" ? Padding(padding: EdgeInsets.only(top:5), child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(widget.colorTema))) : Image.asset("images/empty.png"), Padding(padding: EdgeInsets.all(50), child:Text(mensaje, style: TextStyle( fontSize: 15)))]);}),),
                 ),
               )
             )),

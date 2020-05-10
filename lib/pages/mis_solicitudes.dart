@@ -19,6 +19,7 @@ class MisSolicitudes extends StatefulWidget {
 class _MisSolicitudesState extends State<MisSolicitudes> {
   int userType;
   int items = 0;
+  final GlobalKey<AnimatedListState> _key = GlobalKey();
 
   Future<void> getInfo() async{
     final pref = await SharedPreferences.getInstance();
@@ -29,10 +30,21 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   }
 
   getListDocumentos()async{
-    await Future.delayed(Duration(milliseconds:/*250*/500));
     setState(() {
-      items = 8;
+      items = 1;  
     });
+    await Future.delayed(Duration(milliseconds:/*250*/300));
+    for(int i=0;i<7;i++){
+      _addItem(items);
+      items++;
+      await Future.delayed(Duration(milliseconds:/*250*/50));
+    }
+    /*setState(() {
+      items = 8;
+    });*/
+  }
+  _addItem(i){
+    if(_key.currentState != null) _key.currentState.insertItem(i);
   }
 
   @override
@@ -72,7 +84,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
           //IconButton(icon: Icon(Icons.add_circle_outline, color: Colors.white), onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: widget.actualizaHome) ));},)
         ]
       ),
-      body: userType == 0 ? SingleChildScrollView(child: Container(child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/page_not_found.png"), Padding(padding: EdgeInsets.all(50), child:Text("Usuario no encontrado.\n\nTu usuario no esta asignado, ponte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)))])),color: Colors.white,)) : Container(
+      body: userType == 0 ? Container(child: Center(child:SingleChildScrollView(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/page_not_found.png"), Padding(padding: EdgeInsets.all(50), child:Text("Usuario no encontrado.\n\nTu usuario no esta asignado, ponte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)))]))),color: Colors.white,) : Container(
         child: Stack(
           children: <Widget>[
             Container(
@@ -115,7 +127,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
                   ),
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(13, 13, 13, 3),//.all(13.0),
-                    child: items > 0 ? Stack(children:<Widget>[Center(child:Opacity(opacity: .8, child: Image.asset("images/onboarding.png",fit: BoxFit.cover,width: double.infinity,alignment: Alignment.center,))),listaOpciones()]) : Center(child:Opacity(opacity: 1, child: Image.asset("images/onboarding.png")))
+                    child: items > 0 ? Stack(children:<Widget>[Center(child:Opacity(opacity: 1, child: Image.asset("images/onboarding.png"))),listaOpciones()]) : Center(child:Opacity(opacity: 1, child: Image.asset("images/onboarding.png")))
                   ),
                 )
               )),
@@ -194,84 +206,103 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   }
 
   Widget listaOpciones(){
-    return ListView.builder(
-      itemCount: items,
-      itemBuilder: (context, index){
+    return AnimatedList(
+      key: _key,
+      initialItemCount: items,
+      itemBuilder: (context, index, animation){
         if(index == 0){
-          return Row(children: <Widget>[
-            Expanded(
-              child: new Container(
-                  margin: const EdgeInsets.only(left: 10.0, right: 20.0),
-                  child: Divider(
-                    color: Colors.black,
-                    height: 36,
-                  )),
-            ),
-            Icon(Icons.phone_iphone, color: widget.colorTema),
-            Expanded(
-              child: new Container(
-                  margin: const EdgeInsets.only(left: 20.0, right: 10.0),
-                  child: Divider(
-                    color: Colors.black,
-                    height: 36,
-                  )),
-            ),
-          ]);
-        }else if(index == 4){
-          return Row(children: <Widget>[
-            Expanded(
-              child: new Container(
-                  margin: const EdgeInsets.only(left: 10.0, right: 20.0),
-                  child: Divider(
-                    color: Colors.black,
-                    height: 36,
-                  )),
-            ),
-            Icon(Icons.wifi, color: widget.colorTema),
-            Expanded(
-              child: new Container(
-                  margin: const EdgeInsets.only(left: 20.0, right: 10.0),
-                  child: Divider(
-                    color: Colors.black,
-                    height: 36,
-                  )),
-            ),
-          ]);
-        }else{
-          return InkWell(
-            onTap: ()=>_accionItem(index),
-            child: Opacity(opacity: 0.9, child: Card(
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color:widget.colorTema, width:3.0),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(50.0),
-                  topRight: Radius.circular(50.0),
-                  bottomLeft: Radius.circular(50.0),
-                  bottomRight: Radius.circular(50.0)
-                ),
-              ),
-              child: Container(
-                child: ListTile(
-                  leading: iconoItem(index),
-                  title: textoItem(index),
-                  subtitle: Text(""),//Text(getImporte(grupos[index])),
-                  //isThreeLine: true,
-                  trailing: Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[getNotif(index)])
-                ),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                  colors: [Colors.white, Colors.white]),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(50.0),
-                    topRight: Radius.circular(50.0),
-                    bottomLeft: Radius.circular(50.0),
-                    bottomRight: Radius.circular(50.0)
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: Row(children: <Widget>[
+                  Expanded(
+                    child: new Container(
+                        margin: const EdgeInsets.only(left: 10.0, right: 20.0),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 36,
+                        )),
                   ),
-                ),
-              ),
-            ))
+                  Icon(Icons.phone_iphone, color: widget.colorTema),
+                  Expanded(
+                    child: new Container(
+                        margin: const EdgeInsets.only(left: 20.0, right: 10.0),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 36,
+                        )),
+                  ),
+                ])
+          );
+        }else if(index == 4){
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child:Row(children: <Widget>[
+                  Expanded(
+                    child: new Container(
+                        margin: const EdgeInsets.only(left: 10.0, right: 20.0),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 36,
+                        )),
+                  ),
+                  Icon(Icons.wifi, color: widget.colorTema),
+                  Expanded(
+                    child: new Container(
+                        margin: const EdgeInsets.only(left: 20.0, right: 10.0),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 36,
+                        )),
+                  ),
+                ])
+          );
+        }else{
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child:InkWell(
+                  onTap: ()=>_accionItem(index),
+                  child: Opacity(opacity: 0.9, child: Card(
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(color:widget.colorTema, width:3.0),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(50.0),
+                        topRight: Radius.circular(50.0),
+                        bottomLeft: Radius.circular(50.0),
+                        bottomRight: Radius.circular(50.0)
+                      ),
+                    ),
+                    child: Container(
+                      child: ListTile(
+                        leading: iconoItem(index),
+                        title: textoItem(index),
+                        subtitle: Text(""),//Text(getImporte(grupos[index])),
+                        //isThreeLine: true,
+                        trailing: Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[getNotif(index)])
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
+                        colors: [Colors.white, Colors.white]),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(50.0),
+                          topRight: Radius.circular(50.0),
+                          bottomLeft: Radius.circular(50.0),
+                          bottomRight: Radius.circular(50.0)
+                        ),
+                      ),
+                    ),
+                  ))
+                )
           );
         }
       },
@@ -281,7 +312,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
   Widget getNotif(index){
     if(index == 3){
       if(widget.cambio > 0){
-        return  Container(child:Text(widget.cambio.toString(), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)), padding: EdgeInsets.all(6),decoration: BoxDecoration(color: Colors.red ,borderRadius: BorderRadius.all(Radius.circular(15))),);//Icon(Icons.filter_1, color: Colors.red);    
+        return  Container(child:Text(widget.cambio.toString(), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)), padding: EdgeInsets.all(4),decoration: BoxDecoration(color: Colors.red , shape: BoxShape.circle),);//Icon(Icons.filter_1, color: Colors.red);    
       }else{
         return Text("");
       }
@@ -385,30 +416,30 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
     switch(i){
       case 1:
         if(userType == 1){
-          return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nMIS SOLICITUDES ...", style: TextStyle(fontWeight: FontWeight.bold),)),);
+          return Center(child: FittedBox(fit:BoxFit.fitWidth, child: Text("\nMIS SOLICITUDES ...", style: TextStyle(fontWeight: FontWeight.bold),)),);
         }
         else{
-          return Padding(padding: EdgeInsets.all(10),child: Center(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nGrupos Abiertos (en Captura)", style: TextStyle(fontWeight: FontWeight.bold),))));
+          return Center(child: FittedBox(fit:BoxFit.fitWidth, child: Text("\nGrupos Abiertos (en Captura)", style: TextStyle(fontWeight: FontWeight.bold),)));
         }
         break;
       case 2:
         String texto = userType == 1 ? "\nEn Espera (no sincronizado)" : userType == 2 ? "\nGrupos Cerrados (En Espera)" : "\nEn Espera";
-        return Padding(padding: EdgeInsets.all(10),child: Center(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text(texto, style: TextStyle(fontWeight: FontWeight.bold),)),));
+        return Center(child: FittedBox(fit:BoxFit.fitWidth, child: Text(texto, style: TextStyle(fontWeight: FontWeight.bold),)),);
         break;
       case 5:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nGrupos Por Dictaminar", style: TextStyle(fontWeight: FontWeight.bold)))));
+        return Center(child: FittedBox(fit:BoxFit.fitWidth, child: Text("\nGrupos Por Dictaminar", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       case 3:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nCambio de Documentos", style: TextStyle(fontWeight: FontWeight.bold)))));
+        return Center(child: FittedBox(fit:BoxFit.fitWidth, child: Text("\nCambio de Documentos", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       case 6:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nGrupos Dictaminados", style: TextStyle(fontWeight: FontWeight.bold)))));
+        return Center(child: FittedBox(fit:BoxFit.fitWidth, child: Text("\nGrupos Dictaminados", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       case 7:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("\nGrupos Rechazados", style: TextStyle(fontWeight: FontWeight.bold)))));
+        return Center(child: FittedBox(fit:BoxFit.fitWidth, child: Text("\nGrupos Rechazados", style: TextStyle(fontWeight: FontWeight.bold))));
         break;
       default:
-        return Padding(padding: EdgeInsets.all(10),child: Center(child:Text("\nx_x")));
+        return Center(child: FittedBox(fit:BoxFit.fitWidth, child: Text("\nx_x")));
         break;
     }
   }

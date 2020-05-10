@@ -230,7 +230,7 @@ class _RenovacionesDetalleState extends State<RenovacionesDetalle> {
                   ),
                   child:  Padding(
                     padding: EdgeInsets.fromLTRB(13, 16, 13, 33),
-                    child: listaRenovacion.length > 0 ?  renovacionLista() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Column(mainAxisAlignment: MainAxisAlignment.center, children:[mensaje == "Cargando ...🕔" ? Padding(padding: EdgeInsets.only(top:5), child: CircularProgressIndicator()) : Image.asset(mensaje == "Renovacion solicitada previamente, es probable que este grupo ya se encuentre en tu cartera" ? "images/_confirmation.png" : "images/empty.png"), Padding(padding: EdgeInsets.all(50), child:Text(mensaje, style: TextStyle( fontSize: 15)))]);}),),
+                    child: listaRenovacion.length > 0 ?  renovacionLista() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Column(mainAxisAlignment: MainAxisAlignment.center, children:[mensaje == "Cargando ...🕔" ? Padding(padding: EdgeInsets.only(top:5), child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(widget.colorTema))) : Image.asset(mensaje == "Renovacion solicitada previamente, es probable que este grupo ya se encuentre en tu cartera" ? "images/_confirmation.png" : "images/empty.png"), Padding(padding: EdgeInsets.all(50), child:Text(mensaje, style: TextStyle( fontSize: 15)))]);}),),
                   ),
                 )
               )),

@@ -198,7 +198,7 @@ class _HomePageState extends State<HomePage> {
           ],*/
         ),
         drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), changePass: changePass, sincManual: sincManual ),
-        body: userType == null ? Container() : userType == 0 ? SingleChildScrollView(child: Container(child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/page_not_found.png"), Padding(padding: EdgeInsets.all(50), child:Text("Usuario no encontrado.\n\nTu usuario no esta asignado, ponte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)))])),color: Colors.white,)) : RefreshIndicator(
+        body: userType == null ? Container() : userType == 0 ? Container(child: Center(child:SingleChildScrollView(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/page_not_found.png"), Padding(padding: EdgeInsets.all(50), child:Text("Usuario no encontrado.\n\nTu usuario no esta asignado, ponte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)))]))),color: Colors.white,) : RefreshIndicator(
             key: refreshKey,
             onRefresh: ()async{
               try {
@@ -494,7 +494,7 @@ class _HomePageState extends State<HomePage> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                conectado ? CircularProgressIndicator() : Icon(Icons.error, color: Colors.red, size: 100.0,),
+                conectado ? CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(widget.colorTema)) : Icon(Icons.error, color: Colors.red, size: 100.0,),
                 conectado ? Text("\nSINCRONIZANDO ...") : Text("\nSIN CONEXIÓN"),
               ],
             ),

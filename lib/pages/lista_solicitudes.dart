@@ -438,7 +438,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                   ),
                   child:  Padding(
                     padding: EdgeInsets.fromLTRB(13, 16, 13, 3),
-                    child: solicitudes.length > 0 ? listaSolicitudes() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Column(mainAxisAlignment: MainAxisAlignment.center, children:[mensaje == "Por favor espere." ? Padding(padding: EdgeInsets.only(top:5), child: CircularProgressIndicator()) : Image.asset("images/empty.png"), Padding(padding: EdgeInsets.all(50), child:Text(mensaje, style: TextStyle( fontSize: 15)))]);}),),
+                    child: solicitudes.length > 0 ? listaSolicitudes() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Column(mainAxisAlignment: MainAxisAlignment.center, children:[mensaje == "Por favor espere." ? Padding(padding: EdgeInsets.only(top:5), child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(widget.colorTema))) : Image.asset("images/empty.png"), Padding(padding: EdgeInsets.all(50), child:Text(mensaje, style: TextStyle( fontSize: 15)))]);}),),
                   ),
                 )
               )),
@@ -940,7 +940,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                conectado ? CircularProgressIndicator() : Icon(Icons.error, color: Colors.red, size: 100.0,),
+                conectado ? CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(widget.colorTema)) : Icon(Icons.error, color: Colors.red, size: 100.0,),
                 conectado ? Text("\nSINCRONIZANDO ...") : Text("\nSIN CONEXIÓN"),
               ],
             ),

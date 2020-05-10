@@ -167,7 +167,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
         return "GYT";
         break;
       default:
-        return "😃";
+        return "Sin sistema";
     }
   }
 

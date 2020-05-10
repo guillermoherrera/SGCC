@@ -160,7 +160,7 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
                   ),
                   child:  Padding(
                     padding: EdgeInsets.fromLTRB(13, 16, 13, 3),
-                    child: solicitudes.length > 0 ?listaSolicitudes() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Column(mainAxisAlignment: MainAxisAlignment.center, children:[mensaje == "Cargando ...🕔" ? Padding(padding: EdgeInsets.only(top:5), child: CircularProgressIndicator()) : Image.asset("images/empty.png"), Padding(padding: EdgeInsets.all(50), child:Text(mensaje, style: TextStyle( fontSize: 15)))]);}),),
+                    child: solicitudes.length > 0 ?listaSolicitudes() : Center(child: ListView.builder(shrinkWrap: true,itemCount: 1,itemBuilder:(context, index){ return Column(mainAxisAlignment: MainAxisAlignment.center, children:[mensaje == "Cargando ...🕔" ? Padding(padding: EdgeInsets.only(top:5), child: CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(widget.colorTema))) : Image.asset("images/empty.png"), Padding(padding: EdgeInsets.all(50), child:Text(mensaje, style: TextStyle( fontSize: 15)))]);}),),
                   ),
                 ))
               )
@@ -251,7 +251,7 @@ class _SolicitudesGrupoState extends State<ListaSolicitudesGrupoSinc> {
         icono = Tooltip(message: "En proceso de consulta de Buró", child: Container(child: Icon(Icons.done, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.blue ,borderRadius: BorderRadius.all(Radius.circular(25)))));
         break;
       case 9:
-        icono = Tooltip(message: "Por dictaminar", child: Container(child: Icon(Icons.done, color: widget.colorTema), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.grey ,borderRadius: BorderRadius.all(Radius.circular(25)))));
+        icono = Tooltip(message: "Por dictaminar", child: Container(child: Icon(Icons.done, color: Colors.blue[200]), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.grey ,borderRadius: BorderRadius.all(Radius.circular(25)))));
         break;
       case 10:
         icono = Tooltip(message: "Error en consulta de Buró", child: Container(child: Icon(Icons.done, color: Colors.white), padding: EdgeInsets.all(3),decoration: BoxDecoration(color: Colors.red ,borderRadius: BorderRadius.all(Radius.circular(25)))));

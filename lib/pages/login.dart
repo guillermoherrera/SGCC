@@ -162,7 +162,7 @@ class _LoginState extends State<Login> {
       onPressed: buttonEnabled ? onPress : (){},
       color: Color(0xfff2f2f2),
       textColor: widget.colorTema,
-      child: Text(text, style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+      child: FittedBox(fit:BoxFit.fitWidth, child: Text(text, style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))),
       shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0))
     )));
   }
