@@ -102,7 +102,7 @@ class _CarteraIntegrantesState extends State<CarteraIntegrantes> {
       itemBuilder: (context, index){
         return InkWell(
           child: Card(
-            shape: RoundedRectangleBorder(
+            /*shape: RoundedRectangleBorder(
               side: BorderSide(color:widget.colorTema, width:3.0),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(50.0),
@@ -110,7 +110,7 @@ class _CarteraIntegrantesState extends State<CarteraIntegrantes> {
                 bottomLeft: Radius.circular(50.0),
                 bottomRight: Radius.circular(50.0)
               ),
-            ),
+            ),*/
             child: Container(
               child: ListTile(
                 title: Text(listaIntegrantes[index].nombreCompleto,),

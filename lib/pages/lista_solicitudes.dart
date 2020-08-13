@@ -479,7 +479,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
         if(solicitudes[index].grupoID != null || solicitudes[index].idGrupo != null) grupos.add(solicitudes[index].nombreGrupo);
         return InkWell(
           child: Card(
-            shape: RoundedRectangleBorder(
+            /*shape: RoundedRectangleBorder(
               side: BorderSide(color:widget.colorTema, width:3.0),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(50.0),
@@ -487,7 +487,7 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
                 bottomLeft: Radius.circular(50.0),
                 bottomRight: Radius.circular(50.0)
               ),
-            ),
+            ),*/
             child: Container(
               child: solicitudes[index].grupoID == null && solicitudes[index].idGrupo == null ?
               InkWell(child:  ListTile(
@@ -532,8 +532,12 @@ class _ListaSolicitudesState extends State<ListaSolicitudes> {
   Widget getImpCant(Solicitud solicitud){
     Grupo grupo;
     //if(widget.status == 0){
+    try{
       grupo = gruposGuardados.firstWhere((grupo)=>grupo.grupoID == solicitud.grupoID);
       return Text("Importe: "+grupo.importe.toString()+"\nIntegrantes: "+grupo.cantidad.toString());
+    }catch(e){
+      return Text("Este grupo no esta en status: ${widget.title}");
+    }
     //}else{
     //  return Text("");
     //}

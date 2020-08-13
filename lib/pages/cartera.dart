@@ -218,7 +218,7 @@ class _CarteraState extends State<Cartera> {
       itemBuilder: (context, index){
         return InkWell(
           child: Card(
-            shape: RoundedRectangleBorder(
+            /*shape: RoundedRectangleBorder(
               side: BorderSide(color:widget.colorTema, width:3.0),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(50.0),
@@ -226,7 +226,7 @@ class _CarteraState extends State<Cartera> {
                 bottomLeft: Radius.circular(50.0),
                 bottomRight: Radius.circular(50.0)
               ),
-            ),
+            ),*/
             child: Container(
               child: ListTile(
                 leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.group, color: widget.colorTema,size: 40.0,)]),

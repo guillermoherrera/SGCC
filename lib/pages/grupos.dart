@@ -132,7 +132,7 @@ class _GroupState extends State<Group> {
       itemBuilder: (context, index){
         return InkWell(
           child: Card(
-            shape: RoundedRectangleBorder(
+            /*shape: RoundedRectangleBorder(
               side: BorderSide(color:widget.colorTema, width:3.0),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(50.0),
@@ -140,7 +140,7 @@ class _GroupState extends State<Group> {
                 bottomLeft: Radius.circular(50.0),
                 bottomRight: Radius.circular(50.0)
               ),
-            ),
+            ),*/
             child: Container(
               child: ListTile(
                 leading: Icon(Icons.group, color: widget.colorTema,size: 40.0,),
@@ -266,7 +266,7 @@ class _GroupState extends State<Group> {
                 },
                 color: Color(0xfff2f2f2),
                 textColor: widget.colorTema,
-                child: Text("CREAR GRUPO", style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                child: FittedBox(fit:BoxFit.fitWidth, child: Text("CREAR Y NOMBRAR GRUPO", style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))),
                 shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0))
               ))
             ],
@@ -318,7 +318,7 @@ class _GroupState extends State<Group> {
                 },
                 color: Color(0xfff2f2f2),
                 textColor: widget.colorTema,
-                child: Text("ACTUALIZAR NOMBRE DEL GRUPO"),
+                child: FittedBox(fit:BoxFit.fitWidth, child: Text("ACTUALIZAR NOMBRE DEL GRUPO", style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))),
                 shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0))
               ))
             ],

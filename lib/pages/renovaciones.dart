@@ -65,7 +65,7 @@ class _RenovacionesState extends State<Renovaciones> {
     if(userType != null && userType > 0){
       await Future.delayed(Duration(seconds:1));
       ContratosRequest contratosRequest;
-      contratosRequest = await consultaCartera.consultaContratosR(formatDate(startDate, [dd, '/', mm, '/', yyyy]), formatDate(endDate, [dd, '/', mm, '/', yyyy]));
+      contratosRequest = await consultaCartera.consultaContratosR(formatDate(startDate, [mm, '/', dd, '/', yyyy]), formatDate(endDate, [mm, '/', dd, '/', yyyy]));
       if(contratosRequest.result){
         listaRenovacion.clear();
         mensaje = "Consulta sin resultados.";//"Consulta del día "+formatDate(startDate, [dd, '/', mm, '/', yyyy])+" al día "+formatDate(endDate, [dd, '/', mm, '/', yyyy])+" sin resultados.";
@@ -259,7 +259,7 @@ class _RenovacionesState extends State<Renovaciones> {
       itemBuilder: (context, index){
         return InkWell(
           child: Card(
-            shape: RoundedRectangleBorder(
+            /*shape: RoundedRectangleBorder(
               side: BorderSide(color:widget.colorTema, width:3.0),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(50.0),
@@ -267,7 +267,7 @@ class _RenovacionesState extends State<Renovaciones> {
                 bottomLeft: Radius.circular(50.0),
                 bottomRight: Radius.circular(50.0)
               ),
-            ),
+            ),*/
             child: Container(
               child: ListTile(
                 leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.group, color: widget.colorTema,size: 40.0,)]),

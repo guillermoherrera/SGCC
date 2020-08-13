@@ -11,6 +11,7 @@ import 'package:responsive_container/responsive_container.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/classes/sincroniza.dart';
 import 'package:sgcartera_app/components/custom_drawer.dart';
+import 'package:sgcartera_app/components/drawer_component.dart';
 import 'package:sgcartera_app/models/auth_res.dart';
 import 'package:sgcartera_app/models/direccion.dart';
 import 'package:sgcartera_app/models/documento.dart';
@@ -172,7 +173,7 @@ class _HomePageState extends State<HomePage> {
           title: Image.asset('images/adminconfia.png', color: Colors.white, fit: BoxFit.cover),
           centerTitle: true,
           elevation: 0.0,
-          leading: new IconButton(/*icon: Icon(Icons.menu, color: Colors.white),
+          leading: Container(),/*new IconButton(/*icon: Icon(Icons.menu, color: Colors.white),
                 onPressed: () => _scaffoldKey.currentState.openDrawer()),*/
                 icon: changePass ? Stack(children: <Widget>[
                         Icon(Icons.menu, color: Colors.white),
@@ -192,12 +193,33 @@ class _HomePageState extends State<HomePage> {
                             )),
                           ],
                         ) : Icon(Icons.menu, color: Colors.white),
-                onPressed: () => _scaffoldKey.currentState.openDrawer()),
-          /*actions: <Widget>[
-            IconButton(icon: Icon(Icons.person_add, color: Colors.white), onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo()) ));},)
-          ],*/
+                onPressed: () => _scaffoldKey.currentState.openDrawer()),*/
+          actions: <Widget>[
+            new IconButton(
+                icon: changePass ? Stack(children: <Widget>[
+                  Icon(Icons.account_circle, color: Colors.white, size: 30.0),
+                  Positioned(
+                      bottom: -17.0,
+                      left: -5.0,
+                      child: new Center(
+                        child: new Text(
+                          ".",
+                          style: new TextStyle(
+                              color: Colors.yellow[900],
+                              fontSize: 90.0,
+                              fontWeight: FontWeight.w500
+
+                          ),
+                        ),
+                      )),
+                    ],
+                  ) : Icon(Icons.account_circle, color: Colors.white, size: 30.0),
+                onPressed: () => _scaffoldKey.currentState.openDrawer())
+            //IconButton(icon: Icon(Icons.person_add, color: Colors.white), onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => NuevasSolicitudes(colorTema: widget.colorTema,actualizaHome: ()=>actualizaInfo()) ));},)
+          ],
         ),
-        drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), changePass: changePass, sincManual: sincManual ),
+        drawer: DrawerComponent(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), changePass: changePass, sincManual: sincManual ),
+        //drawer: CustomDrawer(authFirebase: AuthFirebase(),onSingIn: widget.onSingIn, colorTema: widget.colorTema, actualizaHome: ()=>actualizaInfo(), changePass: changePass, sincManual: sincManual ),
         body: userType == null ? Container() : userType == 0 ? Container(child: Center(child:SingleChildScrollView(child: Column(mainAxisAlignment: MainAxisAlignment.center, children:[Image.asset("images/page_not_found.png"), Padding(padding: EdgeInsets.all(50), child:Text("Usuario no encontrado.\n\nTu usuario no esta asignado, ponte en contacto con soporte para mas información.", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)))]))),color: Colors.white,) : RefreshIndicator(
             key: refreshKey,
             onRefresh: ()async{
@@ -348,7 +370,7 @@ class _HomePageState extends State<HomePage> {
           ), margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0)) : InkWell(
           onTap: (){},
           child: Opacity(opacity: 0.8, child: Card(
-            shape: RoundedRectangleBorder(
+            /*shape: RoundedRectangleBorder(
               side: BorderSide(color:widget.colorTema, width:3.0),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(50.0),
@@ -356,7 +378,7 @@ class _HomePageState extends State<HomePage> {
                 bottomLeft: Radius.circular(50.0),
                 bottomRight: Radius.circular(50.0)
               ),
-            ),
+            ),*/
             child: Container(
               child: ListTile(
                 leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.person, color: widget.colorTema, size: 40)]),

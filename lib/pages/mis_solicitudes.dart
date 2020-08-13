@@ -127,7 +127,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
                   ),
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(13, 13, 13, 3),//.all(13.0),
-                    child: items > 0 ? Stack(children:<Widget>[Center(child:Opacity(opacity: 1, child: Image.asset("images/onboarding.png"))),listaOpciones()]) : Center(child:Opacity(opacity: 1, child: Image.asset("images/onboarding.png")))
+                    child: items > 0 ? Stack(children:<Widget>[Center(child:Opacity(opacity: 0.0, child: Image.asset("images/onboarding.png"))),listaOpciones()]) : Center(child:Opacity(opacity: 1, child: Image.asset("images/onboarding.png")))
                   ),
                 )
               )),
@@ -270,8 +270,8 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
             ).animate(animation),
             child:InkWell(
                   onTap: ()=>_accionItem(index),
-                  child: Opacity(opacity: 0.9, child: Card(
-                    shape: RoundedRectangleBorder(
+                  child: Opacity(opacity: 0.8, child: Card(
+                    /*shape: RoundedRectangleBorder(
                       side: BorderSide(color:widget.colorTema, width:3.0),
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(50.0),
@@ -279,7 +279,7 @@ class _MisSolicitudesState extends State<MisSolicitudes> {
                         bottomLeft: Radius.circular(50.0),
                         bottomRight: Radius.circular(50.0)
                       ),
-                    ),
+                    ),*/
                     child: Container(
                       child: ListTile(
                         leading: iconoItem(index),

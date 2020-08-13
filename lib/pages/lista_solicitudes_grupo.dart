@@ -236,7 +236,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo>  with Sin
       itemBuilder: (context, index){
         return InkWell(
           child: Card(
-            shape: RoundedRectangleBorder(
+            /*shape: RoundedRectangleBorder(
               side: BorderSide(color:widget.colorTema, width:3.0),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(50.0),
@@ -244,7 +244,7 @@ class _ListaSolicitudesGrupoState extends State<ListaSolicitudesGrupo>  with Sin
                 bottomLeft: Radius.circular(50.0),
                 bottomRight: Radius.circular(50.0)
               ),
-            ),
+            ),*/
             child: Container(
               child: ListTile(
                 leading: Icon(Icons.person, color: widget.colorTema,size: 40.0,),
