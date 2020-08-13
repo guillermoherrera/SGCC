@@ -94,7 +94,10 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
 
   List<Widget> vista(){
     return [
-      Padding(padding: EdgeInsets.only(top: 0), child: Image.asset("images/_finance.png", )),
+      Padding(padding: EdgeInsets.only(top: 20), child: Image.asset("images/confiaShop.png", height: 70,)),
+      //widget.renovacion.beneficios != null ? confiaShop() : Container(),
+      confiaShopVenta(),
+      //Padding(padding: EdgeInsets.only(top: 0), child: Image.asset("images/_finance.png", height: 300.0,)),
       /*Padding(padding: EdgeInsets.fromLTRB(4.0, 0, 4.0, 0), child:SizedBox(width: double.infinity, child: RaisedButton(
         onPressed: ()async{
           validaSubmit();
@@ -104,7 +107,23 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Text("ACTUALIZAR IMPORTE", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
         color: widget.colorTema,
       ))),*/
+      Divider(color: widget.colorTema,),
+      Container(
+        child: datos(),
+        padding: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          color: Color(0xfff2f2f2)
+        ),
+      ),
       Divider(),
+      SizedBox(height: 20.0),
+      Container(child:Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(Icons.attach_money, color: widget.colorTema,),
+          Text("IMPORTE RENOVACION", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+        ],
+      )),
       padded(
         TextFormField(
           controller: importe,
@@ -148,17 +167,6 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
           child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Icon(Icons.edit),Text("ACTUALIZAR IMPORTE", style: TextStyle(fontSize: 20),)]),
         ))
       ),
-      Divider(color: widget.colorTema,),
-      Container(
-        child: datos(),
-        padding: EdgeInsets.all(10.0),
-        decoration: BoxDecoration(
-          color: Color(0xfff2f2f2)
-        ),
-      ),
-      Padding(padding: EdgeInsets.only(top: 20), child: Image.asset("images/confiaShop.png", height: 70,)),
-      widget.renovacion.beneficios != null ? confiaShop() : Container(),
-      confiaShopVenta(),
     ];
   }
 
@@ -264,7 +272,7 @@ class _RenovacionMontoState extends State<RenovacionMonto> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => ConfiaShopView()));
       },
       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.shopping_cart, color: Colors.white) ,Text(" CONFIASHOP", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),]),
-      color: widget.colorTema,
+      color: Colors.blue[900],
     )));
   }
 

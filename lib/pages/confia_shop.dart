@@ -11,7 +11,7 @@ class ConfiaShopView extends StatefulWidget {
 
 class _ConfiaShopViewState extends State<ConfiaShopView> {
   final flutterWebViewPlugin = FlutterWebviewPlugin(); 
-  final defaultUrl = "https://confia-qa.supernova-desarrollo.com/?page=mobile";
+  final defaultUrl = 'https://confia-dev.supernova-desarrollo.com/?page=mobile';//"https://confia-qa.supernova-desarrollo.com/?page=mobile";
   StreamSubscription<String> _onUrlChanged;
   StreamSubscription _onDestroy;
   StreamSubscription<WebViewStateChanged> _onStateChanged;
