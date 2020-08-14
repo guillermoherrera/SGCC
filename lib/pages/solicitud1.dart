@@ -1,6 +1,7 @@
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/shared_class.dart';
+import 'package:sgcartera_app/helpers/uppercase_format.dart';
 import 'package:sgcartera_app/models/direccion.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
 import 'package:sgcartera_app/pages/solicitud2.dart';
@@ -145,10 +146,12 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
             ),
             //prefixIcon: Icon(Icons.attach_money)
           ),
-          onChanged: (value) {
-            if (direccion1.text != value.toUpperCase())
-              direccion1.value = direccion1.value.copyWith(text: value.toUpperCase());
-          },
+          textCapitalization: TextCapitalization.characters,
+          inputFormatters: [UpperCaseTextFormatter()],
+          //onChanged: (value) {
+          //  if (direccion1.text != value.toUpperCase())
+          //    direccion1.value = direccion1.value.copyWith(text: value.toUpperCase());
+          //},
           validator: (value){
             //return value.isEmpty ? "Ingresa el importe" : null;},
             if(value.isEmpty){
@@ -177,10 +180,11 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
                 ),
               ),
               textCapitalization: TextCapitalization.characters,
-              onChanged: (value) {
-                if (colonia.text != value.toUpperCase())
-                  colonia.value = colonia.value.copyWith(text: value.toUpperCase());
-              },
+              inputFormatters: [UpperCaseTextFormatter()],
+              //onChanged: (value) {
+              //  if (colonia.text != value.toUpperCase())
+              //    colonia.value = colonia.value.copyWith(text: value.toUpperCase());
+              //},
               validator: (value){return value.isEmpty ? "Ingresa la colonia o población" : null;},
             )
           ),
@@ -199,10 +203,11 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
                 ),
               ),
               textCapitalization: TextCapitalization.characters,
-              onChanged: (value) {
-                if (municipio.text != value.toUpperCase())
-                  municipio.value = municipio.value.copyWith(text: value.toUpperCase());
-              },
+              inputFormatters: [UpperCaseTextFormatter()],
+              //onChanged: (value) {
+              //  if (municipio.text != value.toUpperCase())
+              //    municipio.value = municipio.value.copyWith(text: value.toUpperCase());
+              //},
               validator: (value){return value.isEmpty && ciudad.text.isEmpty ? "Ingresa el municipio o delegación" : null;},
             )
           )
@@ -226,10 +231,11 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
                 ),
               ),
               textCapitalization: TextCapitalization.characters,
-              onChanged: (value) {
-                if (ciudad.text != value.toUpperCase())
-                  ciudad.value = ciudad.value.copyWith(text: value.toUpperCase());
-              },
+              inputFormatters: [UpperCaseTextFormatter()],
+              //onChanged: (value) {
+              //  if (ciudad.text != value.toUpperCase())
+              //    ciudad.value = ciudad.value.copyWith(text: value.toUpperCase());
+              //},
               validator: (value){return value.isEmpty && municipio.text.isEmpty ? "Ingresa la ciudad" : null;},
             )
           ),
@@ -327,10 +333,11 @@ class _SolicitudDireccionState extends State<SolicitudDireccion> {
               ),
               enabled: false,
               textCapitalization: TextCapitalization.characters,
-              onChanged: (value) {
-                if (paisCod.text != value.toUpperCase())
-                  paisCod.value = paisCod.value.copyWith(text: value.toUpperCase());
-              },
+              inputFormatters: [UpperCaseTextFormatter()],
+              //onChanged: (value) {
+              //  if (paisCod.text != value.toUpperCase())
+              //    paisCod.value = paisCod.value.copyWith(text: value.toUpperCase());
+              //},
               validator: (value){return value.isEmpty ? "Ingresa el País" : null;},
             )
           )

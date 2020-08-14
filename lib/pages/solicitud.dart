@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
 import 'package:sgcartera_app/classes/consulta.dart';
 import 'package:sgcartera_app/classes/shared_class.dart';
+import 'package:sgcartera_app/helpers/uppercase_format.dart';
 import 'package:sgcartera_app/models/curp_request.dart';
 import 'package:sgcartera_app/models/persona.dart';
 import 'package:sgcartera_app/models/solicitud.dart';
@@ -239,10 +240,11 @@ class _SolicitudState extends State<Solicitud> {
                 ),
               ),
               textCapitalization: TextCapitalization.characters,
-              onChanged: (value) {
-                if (curp.text != value.toUpperCase())
-                  curp.value = nombre.value.copyWith(text: value.toUpperCase());
-              },
+              inputFormatters: [UpperCaseTextFormatter()],
+              //onChanged: (value) {
+              //  if (curp.text != value.toUpperCase())
+              //    curp.value = nombre.value.copyWith(text: value.toUpperCase());
+              //},
               validator: (value){
                 if(value.isEmpty){
                   return "Ingresa la CURP";
@@ -289,10 +291,11 @@ class _SolicitudState extends State<Solicitud> {
                 ),
               ),
               textCapitalization: TextCapitalization.characters,
+              inputFormatters: [UpperCaseTextFormatter()],
               onChanged: (value) {
                 getCurpRfc();
-                if (nombre.text != value.toUpperCase())
-                  nombre.value = nombre.value.copyWith(text: value.toUpperCase());
+                //if (nombre.text != value.toUpperCase())
+                //  nombre.value = nombre.value.copyWith(text: value.toUpperCase());
               },
               validator: (value){return value.isEmpty ? "Ingresa el nombre" : null;},
             )
@@ -312,10 +315,11 @@ class _SolicitudState extends State<Solicitud> {
                 ),
               ),
               textCapitalization: TextCapitalization.characters,
+              inputFormatters: [UpperCaseTextFormatter()],
               onChanged: (value) {
                 getCurpRfc();
-                if (nombreAdicional.text != value.toUpperCase())
-                  nombreAdicional.value = nombre.value.copyWith(text: value.toUpperCase());
+                //if (nombreAdicional.text != value.toUpperCase())
+                //  nombreAdicional.value = nombre.value.copyWith(text: value.toUpperCase());
               },
               //validator: (value){return value.isEmpty ? "Por favor ingresa tu nombre" : null;},
             )
@@ -340,10 +344,11 @@ class _SolicitudState extends State<Solicitud> {
                 ),
               ),
               textCapitalization: TextCapitalization.characters,
+              inputFormatters: [UpperCaseTextFormatter()],
               onChanged: (value) {
                 getCurpRfc();
-                if (apellidoPrimero.text != value.toUpperCase())
-                  apellidoPrimero.value = nombre.value.copyWith(text: value.toUpperCase());
+                //if (apellidoPrimero.text != value.toUpperCase())
+                //  apellidoPrimero.value = nombre.value.copyWith(text: value.toUpperCase());
               },
               validator: (value){return value.isEmpty ? "Ingresa el apellido" : null;},
             )
@@ -363,10 +368,11 @@ class _SolicitudState extends State<Solicitud> {
                 ),
               ),
               textCapitalization: TextCapitalization.characters,
+              inputFormatters: [UpperCaseTextFormatter()],
               onChanged: (value) {
                 getCurpRfc();
-                if (apellidoSegundo.text != value.toUpperCase())
-                  apellidoSegundo.value = nombre.value.copyWith(text: value.toUpperCase());
+                //if (apellidoSegundo.text != value.toUpperCase())
+                //  apellidoSegundo.value = nombre.value.copyWith(text: value.toUpperCase());
               },
               //validator: (value){return value.isEmpty ? "Ingresa el segundo apellido" : null;},
             )
@@ -452,10 +458,11 @@ class _SolicitudState extends State<Solicitud> {
                 ),
               ),
               textCapitalization: TextCapitalization.characters,
-              onChanged: (value) {
-                if (rfc.text != value.toUpperCase())
-                  rfc.value = nombre.value.copyWith(text: value.toUpperCase());
-              },
+              inputFormatters: [UpperCaseTextFormatter()],
+              //onChanged: (value) {
+              //  if (rfc.text != value.toUpperCase())
+              //    rfc.value = nombre.value.copyWith(text: value.toUpperCase());
+              //},
               validator: (value){
                 if(value.isEmpty){
                   return "Ingresa el RFC";

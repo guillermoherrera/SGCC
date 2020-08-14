@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_container/responsive_container.dart';
 import 'package:sgcartera_app/classes/auth_firebase.dart';
+import 'package:sgcartera_app/helpers/uppercase_format.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes_grupo.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
 
@@ -253,10 +254,11 @@ class _GroupState extends State<Group> {
                       ),
                     ),
                   ),
-                  onChanged: (value) {
-                    if (_nombre.text != value.toUpperCase())
-                      _nombre.value = _nombre.value.copyWith(text: value.toUpperCase());
-                  },
+                  inputFormatters: [UpperCaseTextFormatter()],
+                  //onChanged: (value) {
+                  //  if (_nombre.text != value.toUpperCase())
+                  //    _nombre.value = _nombre.value.copyWith(text: value.toUpperCase());
+                  //},
                   validator: (value){return value.isEmpty ? "Ingresa el nombre" : null;},
                 ),
               ),
@@ -305,10 +307,11 @@ class _GroupState extends State<Group> {
                       ),
                     ),
                   ),
-                  onChanged: (value) {
-                    if (_nombre.text != value.toUpperCase())
-                      _nombre.value = _nombre.value.copyWith(text: value.toUpperCase());
-                  },
+                  inputFormatters: [UpperCaseTextFormatter()],
+                  //onChanged: (value) {
+                  //  if (_nombre.text != value.toUpperCase())
+                  //    _nombre.value = _nombre.value.copyWith(text: value.toUpperCase());
+                  //},
                   validator: (value){return value.isEmpty ? "Ingresa el nombre" : null;},
                 ),
               ),
