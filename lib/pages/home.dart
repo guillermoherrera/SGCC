@@ -170,7 +170,7 @@ class _HomePageState extends State<HomePage> {
       child: AbsorbPointer(absorbing: abs ,child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Image.asset('images/adminconfia.png', color: Colors.white, fit: BoxFit.cover),
+          title: Image.asset('images/adminconfia.png', color: Colors.white, fit: BoxFit.cover, height: 50.0),
           centerTitle: true,
           elevation: 0.0,
           leading: Container(),/*new IconButton(/*icon: Icon(Icons.menu, color: Colors.white),
@@ -698,8 +698,8 @@ class MyCustomRoute<T> extends MaterialPageRoute<T> {
       Animation<double> animation,
       Animation<double> secondaryAnimation,
       Widget child) {
-    if (settings.isInitialRoute)
-      return child;
+    //if (settings.isInitialRoute)
+      //return child;
     // Fades between routes. (If you don't want any animation,
     // just return child.)
     return new FadeTransition(opacity: animation, child: child);

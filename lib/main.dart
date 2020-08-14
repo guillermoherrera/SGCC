@@ -8,6 +8,7 @@ import 'classes/auth_firebase.dart';
 //void main() => runApp(MyApp());
 
 void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
   await DataBaseCreator().initDataBase();
   runApp(MyApp());
 }

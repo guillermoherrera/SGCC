@@ -110,7 +110,7 @@ class _RenovacionesState extends State<Renovaciones> {
     final bool isLandscape = orientation == Orientation.landscape;
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset('images/adminconfia.png', color: Colors.white, fit: BoxFit.cover),//Text("Renovaciones", style: TextStyle(color: Colors.white)),
+        title: Image.asset('images/adminconfia.png', color: Colors.white, fit: BoxFit.cover, height: 50.0),//Text("Renovaciones", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
         elevation: 0.0,
@@ -300,8 +300,8 @@ class MyCustomRoute<T> extends MaterialPageRoute<T> {
       Animation<double> animation,
       Animation<double> secondaryAnimation,
       Widget child) {
-    if (settings.isInitialRoute)
-      return child;
+    //if (settings.isInitialRoute)
+      //return child;
     // Fades between routes. (If you don't want any animation,
     // just return child.)
     return new FadeTransition(opacity: animation, child: child);
