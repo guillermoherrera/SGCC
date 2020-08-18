@@ -22,6 +22,7 @@ import 'package:sgcartera_app/pages/confia_shop.dart';
 import 'package:sgcartera_app/pages/grupos.dart';
 import 'package:sgcartera_app/pages/lista_solicitudes.dart';
 import 'package:sgcartera_app/pages/renovaciones.dart';
+import 'package:sgcartera_app/pages/root_page.dart';
 import 'package:sgcartera_app/pages/solicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/documentoSolicitud.dart';
 import 'package:sgcartera_app/sqlite_files/models/grupo.dart' as grupoModel;
@@ -72,6 +73,7 @@ class _HomePageState extends State<HomePage> {
     final pref = await SharedPreferences.getInstance();
     String userID = pref.getString("uid");
     userType = pref.getInt('tipoUsuario');
+    userType == null ? _cerrarSesion(pref) : null;
     solicitudes = await ServiceRepositorySolicitudes.getAllSolicitudes(userID);
 
     cantSolicitudesCambios = await ServiceRepositorySolicitudes.solicitudesCambioCount(userID);
@@ -161,6 +163,39 @@ class _HomePageState extends State<HomePage> {
       break;
       default:
     }
+  }
+
+  _cerrarSesion(pref){
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: (){},
+          child: 
+          AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0),side: BorderSide(color: widget.colorTema, width: 2.0)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.block, color: Colors.red, size: 100.0,),
+                Text("\nTU SESIÓN HA EXPIRADO"),
+              ],
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: const Text("INICIAR SESIÓN"),
+                onPressed: () async {
+                  authFirebase.signOut();
+                  pref.clear();
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RootPage(authFirebase: authFirebase, colorTema: widget.colorTema,)));
+                }
+              )
+            ],
+          )
+        );
+      },
+    );
   }
 
   @override
