@@ -49,19 +49,23 @@ dependencies:
   date_range_picker: ^1.0.6
   responsive_container: ^0.0.1
 
-  flutter_launcher_icons: ^0.7.4
+  #flutter_launcher_icons: ^0.7.4
 
   diacritic: ^0.1.1
 
-flutter_icons:
-  image_path: 'images/adminconfiaicon.png'
-  android: true
-  ios: true
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  flutter_launcher_icons: ^0.7.4
+
+flutter_icons:
+  image_path: 'images/icon.png'
+  android: true
+  ios: true
+  adaptive_icon_background: "images/icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
